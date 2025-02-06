@@ -1,13 +1,21 @@
 import 'package:companion/pages/back_office/dashboard_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
+import 'firebase_options.dart';
 import 'pages/back_office/auth_page.dart';
 import 'pages/mobile/splash_page.dart';
 import 'services/navigation_service.dart';
 
-void main() {
+import 'package:firebase_analytics/firebase_analytics.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Auto-generated configuration
+  );
   runApp(
     MultiProvider(
       providers: [
@@ -39,6 +47,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
           title: 'Catholic Companion',
           theme: ThemeData(
             // This is the theme of your application.

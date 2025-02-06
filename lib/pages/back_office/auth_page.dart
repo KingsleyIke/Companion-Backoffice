@@ -1,7 +1,10 @@
+import 'package:companion/services/utils.service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/user_dto.dart';
 import '../../services/navigation_service.dart';
+import '../../services/user_service.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -189,8 +192,7 @@ class _AuthPageState extends State<AuthPage> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
-                                // TODO: Handle sign-in logic here
-                                navigationService.navigateTo('/dashboard');
+                                login(context, _email, _password);
                               }
                             },
                             child: Text('Sign In'),
@@ -293,4 +295,77 @@ class _AuthPageState extends State<AuthPage> {
       ),
     );
   }
+}
+
+final userService = UserService();
+final utilsService = UtilsService();
+
+Future<void> login(BuildContext context, String email, String password) async {
+  // final navigationService = Provider.of<NavigationService>(context);
+
+
+  if (email.isEmpty || password.isEmpty) {
+    UtilsService.showSnackBar(context, 'Email and password are required!');
+    return;
+  }
+
+  try {
+    UserDto? user = await userService.login(email, password);
+
+    if (user != null) {
+      // Navigate to DashboardPage on successful login
+      // navigationService.navigateTo('/dashboard');
+      UtilsService.showSnackBar(context, 'Login success', backgroundColor: Colors.green);
+
+    } else {
+      UtilsService.showSnackBar(context, 'Login failed. Please check your credentials.');
+    }
+  } catch (e) {
+    UtilsService.showSnackBar(context, 'An error occurred during login.');
+  }
+}
+
+
+// Example: Create a new user and other usages
+Future<void> registerUser() async {
+  UserDto newUser = UserDto(
+    id: '',
+    firstName: 'Kingsley',
+    lastName: 'Okoye',
+    email: 'kingsdanike@gmail.com',
+    phone: '08135425888',
+    gender: 'male',
+    approvedBy: 'amin',
+    contributionPoints: 0,
+    profilePicUrl: '',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    role: 'SUPER',
+    isActive: true,
+  );
+
+  String password = 'Test@123';
+  print('Call creation');
+  await userService.createUser(newUser, password);
+}
+
+// Example: Fetch user data
+Future<void> fetchUser(String userId) async {
+  UserDto? user = await userService.getUser(userId);
+  if (user != null) {
+    print('User fetched: ${user.firstName} ${user.lastName}');
+  }
+}
+
+// Example: Update user data
+Future<void> updateUser(String userId) async {
+  await userService.updateUser(userId, {'firstName': 'Jane', 'isActive': false});
+}
+
+// Example: Fetch all users
+Future<void> fetchAllUsers() async {
+  List<UserDto> users = await userService.getAllUsers();
+  users.forEach((user) {
+    print('User: ${user.firstName} ${user.lastName}');
+  });
 }
