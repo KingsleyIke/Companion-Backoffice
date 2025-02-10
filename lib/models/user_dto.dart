@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:companion/models/roles.dart';
 
 class UserDto {
   final String id;
@@ -12,7 +13,7 @@ class UserDto {
   final String profilePicUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String role; // USER, SUPER-ADMIN, ADMIN
+  final Role role;
   final bool isActive;
 
   UserDto({

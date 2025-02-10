@@ -2,6 +2,7 @@ import 'package:companion/services/utils.service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/roles.dart';
 import '../../models/user_dto.dart';
 import '../../services/navigation_service.dart';
 import '../../services/user_service.dart';
@@ -332,7 +333,7 @@ Future<void> registerUser() async {
     id: '',
     firstName: 'Kingsley',
     lastName: 'Okoye',
-    email: 'kingsdanike@gmail.com',
+    email: '',
     phone: '08135425888',
     gender: 'male',
     approvedBy: 'amin',
@@ -340,11 +341,11 @@ Future<void> registerUser() async {
     profilePicUrl: '',
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
-    role: 'SUPER',
+    role: Role.superAdmin,
     isActive: true,
   );
 
-  String password = 'Test@123';
+  String password = '';
   print('Call creation');
   await userService.createUser(newUser, password);
 }
