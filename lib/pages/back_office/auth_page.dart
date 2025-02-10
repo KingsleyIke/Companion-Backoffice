@@ -345,9 +345,8 @@ Future<void> registerUser() async {
     isActive: true,
   );
 
-  String password = '';
   print('Call creation');
-  await userService.createUser(newUser, password);
+  await userService.createUser(newUser, "");
 }
 
 // Example: Fetch user data
