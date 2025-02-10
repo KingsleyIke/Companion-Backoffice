@@ -302,8 +302,7 @@ final userService = UserService();
 final utilsService = UtilsService();
 
 Future<void> login(BuildContext context, String email, String password) async {
-  // final navigationService = Provider.of<NavigationService>(context);
-
+  final navigationService = Provider.of<NavigationService>(context, listen: false);
 
   if (email.isEmpty || password.isEmpty) {
     UtilsService.showSnackBar(context, 'Email and password are required!');
@@ -315,8 +314,8 @@ Future<void> login(BuildContext context, String email, String password) async {
 
     if (user != null) {
       // Navigate to DashboardPage on successful login
-      // navigationService.navigateTo('/dashboard');
       UtilsService.showSnackBar(context, 'Login success', backgroundColor: Colors.green);
+      navigationService.navigateTo('/dashboard');
 
     } else {
       UtilsService.showSnackBar(context, 'Login failed. Please check your credentials.');
@@ -331,12 +330,12 @@ Future<void> login(BuildContext context, String email, String password) async {
 Future<void> registerUser() async {
   UserDto newUser = UserDto(
     id: '',
-    firstName: 'Kingsley',
-    lastName: 'Okoye',
+    firstName: '',
+    lastName: '',
     email: '',
-    phone: '08135425888',
+    phone: '',
     gender: 'male',
-    approvedBy: 'amin',
+    approvedBy: '',
     contributionPoints: 0,
     profilePicUrl: '',
     createdAt: DateTime.now(),
