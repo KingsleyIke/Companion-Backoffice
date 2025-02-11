@@ -13,7 +13,7 @@ class UserDto {
   final String profilePicUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final Role role;
+  final String role;
   final bool isActive;
 
   UserDto({

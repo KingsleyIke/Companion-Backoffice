@@ -1,134 +1,20 @@
+import 'package:companion/pages/back_office/app_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../services/navigation_service.dart';
+import '../../models/user_dto.dart';
+import '../../services/user_service.dart';
 
 class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final navigationService = Provider.of<NavigationService>(context);
+    final UserDto userDto = ModalRoute.of(context)!.settings.arguments as UserDto;
+
 
     return Scaffold(
       body: Row(
         children: [
-          Container(
-            width: 250,
-            color: Colors.blue,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                // Drawer Header
-                Container(
-                  height: 250.0, // Fixed height for the header
-                  child: DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade700,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/app_icon_no_bg.png',
-                              width: 60,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text(
-                              'MyCompanion',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          ],
-                        ),
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundImage: AssetImage(
-                              'assets/images/app_icon.png'), // Replace with your image asset
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'John Doe',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                        Text(
-                          'johndoe@example.com',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
 
-                // Drawer Items
-                ListTile(
-                  leading: Icon(Icons.home, color: Colors.white),
-                  title:
-                      Text('Parishes', style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    // Handle Home navigation
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.person, color: Colors.white),
-                  title: Text('Users', style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    // Handle Profile navigation
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.settings, color: Colors.white),
-                  title: Text('Create User',
-                      style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    // Handle Settings navigation
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.settings, color: Colors.white),
-                  title:
-                      Text('Add Parish', style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    // Handle Settings navigation
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.settings, color: Colors.white),
-                  title: Text('Add Readings',
-                      style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    // Handle Settings navigation
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.settings, color: Colors.white),
-                  title: Text('Edit Readings',
-                      style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    // Handle Settings navigation
-                  },
-                ),
-                Divider(color: Colors.white70),
-                ListTile(
-                  leading: Icon(Icons.logout, color: Colors.white),
-                  title: Text('Logout', style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    // Handle Logout
-                  },
-                ),
-              ],
-            ),
-          ),
-
+          AppDrawer(userData: userDto),
           // Layout will go here
           Expanded(
             child: Column(
@@ -144,7 +30,7 @@ class DashboardPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Welcome Back, John!!',
+                            'Welcome Back, ${userDto.firstName}!!',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -158,6 +44,7 @@ class DashboardPage extends StatelessWidget {
                         icon: Icon(Icons.logout),
                         onPressed: () {
                           // Handle logout action
+                          _handleLogout(context);
                         },
                       ),
                     ],
@@ -306,4 +193,38 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
+}
+
+void _handleLogout(BuildContext context) {
+  // Show confirmation dialog before logging out
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Logout"),
+      content: Text("Are you sure you want to log out?"),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context), // Close the dialog
+          child: Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () {
+            // Perform logout logic (clear user session, etc.)
+            Navigator.pushReplacementNamed(context, "/");
+            _performLogout();
+
+            // Navigate to the login page and remove all previous routes
+            Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+          },
+          child: Text("Logout"),
+        ),
+      ],
+    ),
+  );
+}
+
+void _performLogout() {
+  final userService = UserService();
+  userService.logout();
+
 }
