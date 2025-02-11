@@ -1,11 +1,17 @@
+import 'package:companion/pages/back_office/auth/all_users_page.dart';
+import 'package:companion/pages/back_office/auth/create_user_page.dart';
 import 'package:companion/pages/back_office/dashboard_page.dart';
+import 'package:companion/pages/back_office/parish/all_parishes.page.dart';
+import 'package:companion/pages/back_office/parish/create_parish_page.dart';
+import 'package:companion/pages/back_office/readings/add_readings_page.dart';
+import 'package:companion/pages/back_office/readings/edit_readings_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'firebase_options.dart';
-import 'pages/back_office/auth_page.dart';
+import 'pages/back_office/auth/auth_page.dart';
 import 'pages/mobile/splash_page.dart';
 import 'services/navigation_service.dart';
 
@@ -75,6 +81,12 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => homeScreen,
             '/dashboard': (context) => DashboardPage(),
+            '/parishes': (context) => Parishes(),
+            '/users': (context) => AllUsersPage(),
+            '/createUser': (context) => CreateUserPage(),
+            '/addParish': (context) => CreateParishPage(),
+            '/addReadings': (context) => AddReadingsPage(),
+            '/editReadings': (context) => EditReadingsPage(),
           },
         );
   }

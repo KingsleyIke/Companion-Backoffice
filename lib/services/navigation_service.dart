@@ -8,6 +8,9 @@ class NavigationService {
     await navigatorKey.currentState?.pushNamed(routeName);
   }
 
+  Future<void> navigateToWithArgs(String routeName, Object arguments) async {
+    await navigatorKey.currentState?.pushNamed(routeName, arguments: arguments);
+  }
   // Replace current page with a new page
   Future<void> replaceWith(String routeName) async {
     await navigatorKey.currentState?.pushReplacementNamed(routeName);

@@ -1,11 +1,12 @@
+import 'package:companion/pages/back_office/auth/password_field.dart';
 import 'package:companion/services/utils.service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/roles.dart';
-import '../../models/user_dto.dart';
-import '../../services/navigation_service.dart';
-import '../../services/user_service.dart';
+import '../../../models/roles.dart';
+import '../../../models/user_dto.dart';
+import '../../../services/navigation_service.dart';
+import '../../../services/user_service.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -135,49 +136,7 @@ class _AuthPageState extends State<AuthPage> {
                                     },
                                   ),
                                   SizedBox(height: 20),
-                                  TextFormField(
-                                    decoration: InputDecoration(
-                                      labelText: 'Password',
-                                      suffixIcon: Icon(Icons.lock),
-                                      labelStyle: TextStyle(
-                                          color: Colors.grey, fontSize: 16),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.grey, width: 1.0),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.blue, width: 1.5),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 16.0, horizontal: 12.0),
-                                    ),
-                                    obscureText: true,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Password is required';
-                                      }
-                                      if (value.length < 6) {
-                                        return 'Password must be at least 6 characters long';
-                                      }
-                                      return null;
-                                    },
+                                  PasswordField(
                                     onSaved: (value) {
                                       _password = value!;
                                     },
@@ -315,7 +274,7 @@ Future<void> login(BuildContext context, String email, String password) async {
     if (user != null) {
       // Navigate to DashboardPage on successful login
       UtilsService.showSnackBar(context, 'Login success', backgroundColor: Colors.green);
-      navigationService.navigateTo('/dashboard');
+      navigationService.navigateToWithArgs('/dashboard', user);
 
     } else {
       UtilsService.showSnackBar(context, 'Login failed. Please check your credentials.');
