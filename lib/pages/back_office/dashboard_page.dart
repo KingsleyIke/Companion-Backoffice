@@ -1,20 +1,21 @@
 import 'package:companion/pages/back_office/app_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/user_dto.dart';
+import '../../services/navigation_service.dart';
 import '../../services/user_service.dart';
 
 class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserDto userDto = ModalRoute.of(context)!.settings.arguments as UserDto;
-
+    final navigationService = Provider.of<NavigationService>(context, listen: false);
 
     return Scaffold(
       body: Row(
         children: [
-
-          AppDrawer(userData: userDto),
+          AppDrawer(),
           // Layout will go here
           Expanded(
             child: Column(
@@ -118,15 +119,23 @@ class DashboardPage extends StatelessWidget {
                                     Expanded(
                                       child: Card(
                                         margin: EdgeInsets.all(8),
-                                        child:
-                                            Center(child: Text('Add Parish')),
+                                        child: InkWell(
+                                          onTap: () {
+                                            navigationService.navigateTo("/addParish");
+                                          },
+                                          child: Center(child: Text('Add Parish')),
+                                        )
                                       ),
                                     ),
                                     Expanded(
                                       child: Card(
                                         margin: EdgeInsets.all(8),
-                                        child:
-                                            Center(child: Text('Edit Parish')),
+                                        child: InkWell (
+                                          onTap: () {
+                                            navigationService.navigateTo("/parishes/more");
+                                          },
+                                          child: Center(child: Text('More')),
+                                        )
                                       ),
                                     ),
                                   ],

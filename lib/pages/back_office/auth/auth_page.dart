@@ -1,8 +1,10 @@
+
 import 'package:companion/pages/back_office/auth/password_field.dart';
 import 'package:companion/services/utils.service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../Utils/user_preferences.dart';
 import '../../../models/roles.dart';
 import '../../../models/user_dto.dart';
 import '../../../services/navigation_service.dart';
@@ -274,6 +276,7 @@ Future<void> login(BuildContext context, String email, String password) async {
     if (user != null) {
       // Navigate to DashboardPage on successful login
       UtilsService.showSnackBar(context, 'Login success', backgroundColor: Colors.green);
+      await UserPreferences.saveUserData(user.toMap());
       navigationService.navigateToWithArgs('/dashboard', user);
 
     } else {
@@ -281,6 +284,8 @@ Future<void> login(BuildContext context, String email, String password) async {
     }
   } catch (e) {
     UtilsService.showSnackBar(context, 'An error occurred during login.');
+    print('Error occurred: $e');
+
   }
 }
 

@@ -3,6 +3,8 @@ import 'package:companion/pages/back_office/auth/create_user_page.dart';
 import 'package:companion/pages/back_office/dashboard_page.dart';
 import 'package:companion/pages/back_office/parish/all_parishes.page.dart';
 import 'package:companion/pages/back_office/parish/create_parish_page.dart';
+import 'package:companion/pages/back_office/parish/edit_parish_page.dart';
+import 'package:companion/pages/back_office/parish/more_page.dart';
 import 'package:companion/pages/back_office/readings/add_readings_page.dart';
 import 'package:companion/pages/back_office/readings/edit_readings_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -87,6 +89,8 @@ class MyApp extends StatelessWidget {
             '/addParish': (context) => CreateParishPage(),
             '/addReadings': (context) => AddReadingsPage(),
             '/editReadings': (context) => EditReadingsPage(),
+            '/parishes/editParishes': (context) => EditParishPage(),
+            '/parishes/more': (context) => MorePage(),
           },
         );
   }

@@ -44,8 +44,12 @@ class UserDto {
       approvedBy: map['approvedBy'] ?? '',
       contributionPoints: map['contributionPoints'] ?? 0,
       profilePicUrl: map['profilePicUrl'] ?? '',
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
-      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
+      createdAt: map['createdAt'] is String
+          ? DateTime.parse(map['createdAt'])
+          : (map['createdAt'] as Timestamp).toDate(),
+      updatedAt: map['updatedAt'] is String
+          ? DateTime.parse(map['updatedAt'])
+          : (map['updatedAt'] as Timestamp).toDate(),
       role: map['role'] ?? 'USER',
       isActive: map['isActive'] ?? true,
     );
@@ -62,8 +66,8 @@ class UserDto {
       'approvedBy': approvedBy,
       'contributionPoints': contributionPoints,
       'profilePicUrl': profilePicUrl,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'createdAt': createdAt.toIso8601String(), // Convert DateTime to String
+      'updatedAt': updatedAt.toIso8601String(), // Convert DateTime to String
       'role': role,
       'isActive': isActive,
     };
