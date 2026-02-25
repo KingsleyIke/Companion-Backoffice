@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:companion/features/auth/domain/entities/user_entity.dart';
 import 'package:companion/features/auth/domain/repositories/auth_repository.dart';
 import 'package:companion/core/services/auth_service.dart';
+import 'package:companion/constants/user_roles.dart';
 
 /// Authentication provider for managing auth state
 class AuthProvider extends ChangeNotifier {
@@ -18,6 +19,25 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _isAuthenticated;
   String? get errorMessage => _errorMessage;
 
+  /// Constructor - initializes auth state on startup
+  AuthProvider() {
+    _initializeAuthState();
+  }
+
+  /// Initialize auth state by checking if user is already logged in
+  Future<void> _initializeAuthState() async {
+    try {
+      final user = await _repository.getCurrentUser();
+      if (user != null) {
+        _currentUser = user;
+        _isAuthenticated = true;
+        notifyListeners();
+      }
+    } catch (e) {
+      // Silently fail - user is just not authenticated yet
+    }
+  }
+
   /// Sign up a new user
   Future<bool> signUp({
     required String firstName,
@@ -25,41 +45,37 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String password,
     String? phoneNumber,
+    UserRole role = UserRole.user,
   }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      print('[AuthProvider] Signing up user: $email');
       final result = await _repository.signUp(
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: password,
         phoneNumber: phoneNumber,
+        role: role,
       );
 
-      print('[AuthProvider] Sign up result: ${result.success}');
-      
       if (result.success) {
         _isAuthenticated = true;
         // Fetch and set current user
         try {
           _currentUser = await _repository.getCurrentUser();
-          print('[AuthProvider] Current user fetched: ${_currentUser?.email}');
         } catch (e) {
-          print('[AuthProvider] Error fetching user: $e');
+          // Silently continue
         }
         return true;
       } else {
         _errorMessage = result.message ?? 'Sign up failed';
-        print('[AuthProvider] Sign up failed: $_errorMessage');
         return false;
       }
     } catch (e) {
       _errorMessage = e.toString();
-      print('[AuthProvider] Sign up exception: $e');
       return false;
     } finally {
       _isLoading = false;
@@ -77,32 +93,26 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('[AuthProvider] Signing in with email: $email');
       final result = await _repository.signIn(
         email: email,
         password: password,
       );
 
-      print('[AuthProvider] Sign in result: ${result.success}');
-      
       if (result.success) {
         _isAuthenticated = true;
         // Fetch and set current user
         try {
           _currentUser = await _repository.getCurrentUser();
-          print('[AuthProvider] Current user fetched: ${_currentUser?.email}');
         } catch (e) {
-          print('[AuthProvider] Error fetching user: $e');
+          // Silently continue
         }
         return true;
       } else {
         _errorMessage = result.message ?? 'Sign in failed';
-        print('[AuthProvider] Sign in failed: $_errorMessage');
         return false;
       }
     } catch (e) {
       _errorMessage = e.toString();
-      print('[AuthProvider] Sign in exception: $e');
       return false;
     } finally {
       _isLoading = false;

@@ -1,5 +1,6 @@
 import 'package:companion/features/auth/domain/entities/user_entity.dart';
 import 'package:companion/features/auth/domain/entities/auth_result.dart';
+import 'package:companion/constants/user_roles.dart';
 
 /// Abstract repository for authentication operations
 abstract class AuthRepository {
@@ -10,6 +11,7 @@ abstract class AuthRepository {
     required String email,
     required String password,
     String? phoneNumber,
+    UserRole role = UserRole.user,
   });
 
   /// Sign in with email and password

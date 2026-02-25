@@ -43,29 +43,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final authProvider = context.read<AuthProvider>();
-      print('[Login] Starting sign in for: ${_emailController.text}');
-      
       final success = await authProvider.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      print('[Login] Sign in result: $success');
-      print('[Login] Is authenticated: ${authProvider.isAuthenticated}');
-      print('[Login] Current user: ${authProvider.currentUser?.email}');
-
       if (!mounted) {
-        print('[Login] Widget not mounted, returning');
         return;
       }
 
       if (success) {
-        print('[Login] Navigation to home...');
         // Navigate to home
         await Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute);
-        print('[Login] Navigation complete');
       } else {
-        print('[Login] Sign in failed: ${authProvider.errorMessage}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.errorMessage ?? 'Login failed'),
@@ -74,7 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
-      print('[Login] Exception: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -254,27 +243,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
 
                   // Sign Up Link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account? ",
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(AppRouter.signupRoute);
-                        },
-                        child: Text(
-                          'Create one',
-                          style: TextStyle(
-                            color: Colors.blue[700],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       "Don't have an account? ",
+                  //       style: TextStyle(color: Colors.grey[600]),
+                  //     ),
+                  //     TextButton(
+                  //       onPressed: () {
+                  //         Navigator.of(context).pushNamed(AppRouter.signupRoute);
+                  //       },
+                  //       child: Text(
+                  //         'Create one',
+                  //         style: TextStyle(
+                  //           color: Colors.blue[700],
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

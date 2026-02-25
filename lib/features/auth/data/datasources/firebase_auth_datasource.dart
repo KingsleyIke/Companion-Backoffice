@@ -15,6 +15,7 @@ class FirebaseAuthDatasource {
     required String email,
     required String password,
     String? phoneNumber,
+    required UserRole role,
   }) async {
     try {
       // Create Firebase Auth user
@@ -24,7 +25,6 @@ class FirebaseAuthDatasource {
       );
 
       final userId = userCredential.user!.uid;
-      print('[FirebaseAuthDatasource] Created Firebase Auth user: $userId');
 
       // Create user document in Firestore with default Super Admin role
       final userModel = UserModel(
@@ -33,17 +33,14 @@ class FirebaseAuthDatasource {
         lastName: lastName,
         email: email,
         phoneNumber: phoneNumber,
-        role: UserRole.superAdmin,
+        role: role,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      print('[FirebaseAuthDatasource] Writing user to Firestore: ${userModel.toJson()}');
       try {
         await _firestore.collection('users').doc(userId).set(userModel.toJson());
-        print('[FirebaseAuthDatasource] User successfully written to Firestore');
       } catch (firestoreError) {
-        print('[FirebaseAuthDatasource] FIRESTORE WRITE ERROR: $firestoreError');
         throw Exception('Failed to save user to Firestore: $firestoreError');
       }
 
@@ -115,22 +112,16 @@ class FirebaseAuthDatasource {
   Future<UserModel?> getCurrentUser() async {
     try {
       final user = _firebaseAuth.currentUser;
-      print('[FirebaseAuthDatasource] Getting current user, Firebase Auth user: ${user?.uid}');
       if (user == null) return null;
 
-      print('[FirebaseAuthDatasource] Querying Firestore for user with UID: ${user.uid}');
       final doc = await _firestore.collection('users').doc(user.uid).get();
-      print('[FirebaseAuthDatasource] Document exists: ${doc.exists}, Data: ${doc.data()}');
       if (!doc.exists) {
-        print('[FirebaseAuthDatasource] Document does not exist in Firestore!');
         return null;
       }
 
       final userModel = UserModel.fromJson(doc.data()!, doc.id);
-      print('[FirebaseAuthDatasource] Successfully retrieved user from Firestore: ${userModel.email}');
       return userModel;
     } catch (e) {
-      print('[FirebaseAuthDatasource] Error in getCurrentUser: $e');
       throw Exception('Failed to get current user: $e');
     }
   }

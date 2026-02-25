@@ -1,7 +1,9 @@
+import 'package:companion/constants/user_roles.dart';
 import 'package:companion/features/auth/domain/entities/user_entity.dart';
 import 'package:companion/features/auth/domain/entities/auth_result.dart';
 import 'package:companion/features/auth/domain/repositories/auth_repository.dart';
 import 'package:companion/features/auth/data/datasources/firebase_auth_datasource.dart';
+import 'package:companion/constants/user_roles.dart';
 
 /// Implementation of AuthRepository using Firebase
 class AuthRepositoryImpl implements AuthRepository {
@@ -17,6 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     String? phoneNumber,
+    UserRole role = UserRole.user,
   }) async {
     try {
       await _datasource.signUp(
@@ -25,6 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
         phoneNumber: phoneNumber,
+        role: role,
       );
 
       return AuthResult.success(
