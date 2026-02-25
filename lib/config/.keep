@@ -1,0 +1,7 @@
+/// App configuration
+/// 
+/// This module contains app-wide configuration:
+/// - App constants (URLs, API keys, etc.)
+/// - Theme configuration
+/// - Feature flags
+/// - Environment-specific settings

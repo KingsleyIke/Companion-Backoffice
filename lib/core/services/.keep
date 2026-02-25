@@ -1,0 +1,8 @@
+/// Core services layer
+/// 
+/// This module contains app-wide services like:
+/// - Authentication service
+/// - API clients
+/// - Database/Storage access
+/// - Navigation service
+/// - Analytics service
