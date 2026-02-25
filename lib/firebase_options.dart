@@ -21,29 +21,37 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDE1lO-wYJ4HLIqC_Vl-G7yqvIZXF3C560',
-    appId: '1:1058395630595:ios:5d9aaf93fb8184c2e87236',
-    messagingSenderId: '1058395630595',
-    projectId: 'mycompanion-f584d',
-    storageBucket: 'mycompanion-f584d.firebasestorage.app',
+    apiKey: 'AIzaSyD992oyq7o-bQ3gKPl82iVM61DdSDvwm0U',
+    appId: '1:664671225920:android:4b8659080d1aa5824ff7a5',
+    messagingSenderId: '664671225920',
+    projectId: 'catholic-companion',
+    storageBucket: 'catholic-companion.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB90768OULFbc1Zmsm5tnlYTEb2W_CmddA',
-    appId: '1:1058395630595:ios:5d9aaf93fb8184c2e87236',
-    messagingSenderId: '1058395630595',
-    projectId: 'mycompanion-f584d',
-    storageBucket: 'mycompanion-f584d.firebasestorage.app',
+    appId: '1:664671225920:ios:5d9aaf93fb8184c2e87236',
+    messagingSenderId: '664671225920',
+    projectId: 'catholic-companion',
+    storageBucket: 'catholic-companion.firebasestorage.app',
     iosClientId: 'YOUR_IOS_CLIENT_ID',
     iosBundleId: 'com.heztech.companion',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: "AIzaSyBaZQy060uvtcFdfQhEuIHVZfXHrJx59ec",
-    appId: "1:1058395630595:web:57c679eaa43a7208e87236",
-    messagingSenderId: '1058395630595',
-    projectId: "mycompanion-f584d",
-    authDomain: "mycompanion-f584d.firebaseapp.com",
-    storageBucket: "mycompanion-f584d.firebasestorage.app",
+    // apiKey: "AIzaSyBaZQy060uvtcFdfQhEuIHVZfXHrJx59ec",
+    // appId: "1:1058395630595:web:57c679eaa43a7208e87236",
+    // messagingSenderId: '1058395630595',
+    // projectId: "mycompanion-f584d",
+    // authDomain: "mycompanion-f584d.firebaseapp.com",
+    // storageBucket: "mycompanion-f584d.firebasestorage.app",
+
+    apiKey: "AIzaSyBcba4t8DB9mm9Rk236PnhshQ3vfqhKofc",
+    authDomain: "catholic-companion.firebaseapp.com",
+    projectId: "catholic-companion",
+    storageBucket: "catholic-companion.firebasestorage.app",
+    messagingSenderId: "664671225920",
+    appId: "1:664671225920:web:56d8737d47a54aa24ff7a5",
+    measurementId: "G-9HSHDSCKPD"
   );
 }
