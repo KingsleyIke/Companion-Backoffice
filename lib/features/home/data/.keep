@@ -1,0 +1,7 @@
+/// Home feature data layer
+/// 
+/// This module contains implementation for home screen data operations.
+/// Structure:
+/// - models/: Data models
+/// - datasources/: Firestore and local storage
+/// - repositories/: Implementation of domain repositories

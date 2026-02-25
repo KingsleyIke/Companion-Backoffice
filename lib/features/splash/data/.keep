@@ -1,0 +1,7 @@
+/// Splash feature data layer
+/// 
+/// This module contains implementation for splash screen data operations.
+/// Structure:
+/// - models/: Data models
+/// - datasources/: Local storage and API calls
+/// - repositories/: Implementation of domain repositories

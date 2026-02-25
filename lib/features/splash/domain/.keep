@@ -1,0 +1,7 @@
+/// Splash feature domain layer
+/// 
+/// This module contains business logic for splash screen.
+/// Structure:
+/// - entities/: Data models
+/// - repositories/: Abstract interfaces
+/// - usecases/: Business logic (initialization checks, etc.)
