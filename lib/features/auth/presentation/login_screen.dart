@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:companion/features/auth/presentation/providers/auth_provider.dart';
+import 'package:companion/navigation/app_router.dart';
 
 /// Login screen displayed on web platform
 class LoginScreen extends StatefulWidget {
@@ -12,7 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -28,16 +30,59 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    // TODO: Implement Firebase authentication
-    setState(() => _isLoading = true);
+  void _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter email and password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        Navigator.of(context).pushReplacementNamed('/home');
+    try {
+      final authProvider = context.read<AuthProvider>();
+      print('[Login] Starting sign in for: ${_emailController.text}');
+      
+      final success = await authProvider.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      print('[Login] Sign in result: $success');
+      print('[Login] Is authenticated: ${authProvider.isAuthenticated}');
+      print('[Login] Current user: ${authProvider.currentUser?.email}');
+
+      if (!mounted) {
+        print('[Login] Widget not mounted, returning');
+        return;
       }
-    });
+
+      if (success) {
+        print('[Login] Navigation to home...');
+        // Navigate to home
+        await Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute);
+        print('[Login] Navigation complete');
+      } else {
+        print('[Login] Sign in failed: ${authProvider.errorMessage}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authProvider.errorMessage ?? 'Login failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('[Login] Exception: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -161,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        // TODO: Implement forgot password flow
+                        Navigator.of(context).pushNamed(AppRouter.forgotPasswordRoute);
                       },
                       child: Text(
                         'Forgot Password?',
@@ -172,34 +217,39 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
 
                   // Login Button
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[700],
-                      disabledBackgroundColor: Colors.grey[400],
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                  Consumer<AuthProvider>(
+                    builder: (context, authProvider, _) {
+                      return ElevatedButton(
+                        onPressed:
+                            authProvider.isLoading ? null : _handleLogin,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[700],
+                          disabledBackgroundColor: Colors.grey[400],
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
+                        ),
+                        child: authProvider.isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
 
@@ -213,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // TODO: Navigate to signup screen
+                          Navigator.of(context).pushNamed(AppRouter.signupRoute);
                         },
                         child: Text(
                           'Create one',
