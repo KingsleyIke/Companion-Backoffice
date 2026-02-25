@@ -32,11 +32,22 @@ class UrlSyncObserver extends NavigatorObserver {
   }
 
   void _updateUrl(Route<dynamic> route) {
-    if (route.settings.name != null) {
-      final url = route.settings.name!.startsWith('/') 
-          ? route.settings.name! 
-          : '/${route.settings.name}';
-      html.window.history.pushState(null, '', url);
+    if (route.settings.name != null && route.settings.name!.isNotEmpty) {
+      final routeName = route.settings.name!;
+      final url = routeName.startsWith('/') ? routeName : '/$routeName';
+      
+      // Only update if URL is different from current
+      final currentUrl = html.window.location.href;
+      if (!currentUrl.contains(url.replaceFirst('/', ''))) {
+        try {
+          // Use replaceState with a small delay to avoid conflicts with Flutter's internal history
+          Future.microtask(() {
+            html.window.history.replaceState(null, '', url);
+          });
+        } catch (e) {
+          // Silently handle any history state errors
+        }
+      }
     }
   }
 }

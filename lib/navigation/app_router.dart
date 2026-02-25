@@ -21,22 +21,22 @@ class AppRouter {
     // Check if user is already authenticated in Firebase
     final currentUser = FirebaseAuth.instance.currentUser;
     
-    // Get the current URL path from browser
-    final currentPath = Uri.parse(html.window.location.href).path;
+    // Get the current URL path from browser (Flask Web URL syncing uses path: /home, /create-account, etc.)
+    final currentUrl = html.window.location.href;
     
     // Parse the requested route from the URL
     String? requestedRoute;
-    if (currentPath.contains('login')) {
+    if (currentUrl.contains('/login')) {
       requestedRoute = loginRoute;
-    } else if (currentPath.contains('signup')) {
+    } else if (currentUrl.contains('/signup')) {
       requestedRoute = signupRoute;
-    } else if (currentPath.contains('forgot-password')) {
+    } else if (currentUrl.contains('/forgot-password')) {
       requestedRoute = forgotPasswordRoute;
-    } else if (currentPath.contains('home') || currentPath.contains('dashboard')) {
+    } else if (currentUrl.contains('/home') || currentUrl.contains('/dashboard')) {
       requestedRoute = homeRoute;
-    } else if (currentPath.contains('create-account')) {
+    } else if (currentUrl.contains('/create-account')) {
       requestedRoute = createAccountRoute;
-    } else if (currentPath.contains('splash')) {
+    } else if (currentUrl.contains('/splash')) {
       requestedRoute = splashRoute;
     }
     
@@ -74,22 +74,40 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splashRoute:
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        return MaterialPageRoute(
+          builder: (_) => const SplashScreen(),
+          settings: settings,
+        );
 
       case loginRoute:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+          settings: settings,
+        );
 
       case signupRoute:
-        return MaterialPageRoute(builder: (_) => const SignUpScreen());
+        return MaterialPageRoute(
+          builder: (_) => const SignUpScreen(),
+          settings: settings,
+        );
 
       case createAccountRoute:
-        return MaterialPageRoute(builder: (_) => const SignUpScreen());
+        return MaterialPageRoute(
+          builder: (_) => const SignUpScreen(),
+          settings: settings,
+        );
 
       case forgotPasswordRoute:
-        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
+        return MaterialPageRoute(
+          builder: (_) => const ForgotPasswordScreen(),
+          settings: settings,
+        );
 
       case homeRoute:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+          settings: settings,
+        );
 
       default:
         return MaterialPageRoute(
@@ -98,6 +116,7 @@ class AppRouter {
               child: Text('No route defined for ${settings.name}'),
             ),
           ),
+          settings: settings,
         );
     }
   }
@@ -111,6 +130,7 @@ class AppRouter {
           child: Text('No route defined for ${settings.name}'),
         ),
       ),
+      settings: settings,
     );
   }
 }
