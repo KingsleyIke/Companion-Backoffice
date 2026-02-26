@@ -1,3 +1,5 @@
+import 'package:companion/features/readings/add_reading_page.dart';
+import 'package:companion/features/readings/view_readings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:companion/core/utils/platform_detector.dart';
 import 'package:companion/features/splash/presentation/splash_screen.dart';
@@ -17,6 +19,8 @@ class AppRouter {
   static const String forgotPasswordRoute = '/forgot-password';
   static const String allUsersRoute = '/all-users';
   static const String homeRoute = '/home';
+  static const String addReadingRoute = '/add-reading';
+  static const String viewReadingsRoute = '/view-readings';
 
   /// Returns the initial route based on platform, authentication state, and current URL
   static String getInitialRoute() {
@@ -42,6 +46,10 @@ class AppRouter {
       requestedRoute = allUsersRoute;
     } else if (currentUrl.contains('/splash')) {
       requestedRoute = splashRoute;
+    } else if (currentUrl.contains('/add-reading')) {
+      requestedRoute = addReadingRoute;
+    } else if (currentUrl.contains('/view-readings')) {
+      requestedRoute = viewReadingsRoute;
     }
     
     // List of public routes (accessible without authentication)
@@ -116,6 +124,18 @@ class AppRouter {
       case homeRoute:
         return MaterialPageRoute(
           builder: (_) => const HomeScreen(),
+          settings: settings,
+        );
+
+      case addReadingRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AddReadingPage(),
+          settings: settings,
+        );
+
+      case viewReadingsRoute:
+        return MaterialPageRoute(
+          builder: (_) => const ViewReadingsPage(),
           settings: settings,
         );
 

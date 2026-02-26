@@ -166,8 +166,7 @@ class AppDrawer extends StatelessWidget {
                               style: TextStyle(color: Colors.white),
                             ),
                             onTap: () {
-                              // TODO: Implement navigation to View Readings page
-                              // Navigator.of(context).pushNamed(AppRouter.viewReadingsRoute);
+                              Navigator.of(context).pushNamed('/view-readings');
                             },
                             hoverColor: Colors.blue[700],
                           ),
