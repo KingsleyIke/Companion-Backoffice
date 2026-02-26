@@ -46,6 +46,7 @@ class AuthProvider extends ChangeNotifier {
     required String password,
     String? phoneNumber,
     UserRole role = UserRole.user,
+    String? createdBy,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -59,6 +60,7 @@ class AuthProvider extends ChangeNotifier {
         password: password,
         phoneNumber: phoneNumber,
         role: role,
+        createdBy: createdBy,
       );
 
       if (result.success) {

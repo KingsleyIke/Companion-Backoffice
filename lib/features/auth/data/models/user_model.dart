@@ -10,6 +10,8 @@ class UserModel {
   final UserRole role;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? createdBy; // UID of user who created this user
+  final String? updatedBy; // UID of user who last updated this user
 
   UserModel({
     this.id,
@@ -20,6 +22,8 @@ class UserModel {
     this.role = UserRole.superAdmin,
     this.createdAt,
     this.updatedAt,
+    this.createdBy,
+    this.updatedBy,
   });
 
   /// Convert to JSON for Firestore
@@ -32,6 +36,8 @@ class UserModel {
       'role': role.name,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'createdBy': createdBy,
+      'updatedBy': updatedBy,
     };
   }
 
@@ -53,6 +59,8 @@ class UserModel {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
+      createdBy: json['createdBy'] as String?,
+      updatedBy: json['updatedBy'] as String?,
     );
   }
 
@@ -66,6 +74,8 @@ class UserModel {
     UserRole? role,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? createdBy,
+    String? updatedBy,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -76,6 +86,8 @@ class UserModel {
       role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
     );
   }
 
@@ -93,6 +105,8 @@ class UserModel {
       role: role,
       createdAt: createdAt ?? DateTime.now(),
       updatedAt: updatedAt ?? DateTime.now(),
+      createdBy: createdBy,
+      updatedBy: updatedBy,
     );
   }
 }

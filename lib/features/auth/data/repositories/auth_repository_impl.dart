@@ -20,6 +20,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     String? phoneNumber,
     UserRole role = UserRole.user,
+    String? createdBy,
   }) async {
     try {
       await _datasource.signUp(
@@ -29,6 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
         phoneNumber: phoneNumber,
         role: role,
+        createdBy: createdBy,
       );
 
       return AuthResult.success(

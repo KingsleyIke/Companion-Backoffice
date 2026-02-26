@@ -85,7 +85,7 @@ class _CompanionAppState extends State<CompanionApp> {
     final isAuthenticated = FirebaseAuth.instance.currentUser != null;
     
     // List of protected routes that require authentication
-    const protectedRoutes = ['home', 'dashboard', 'create-account'];
+    const protectedRoutes = ['home', 'dashboard', 'create-account', 'all-users'];
     const publicRoutes = ['login', 'signup', 'forgot-password', 'splash'];
     
     // Check if trying to access protected route without authentication
@@ -106,6 +106,8 @@ class _CompanionAppState extends State<CompanionApp> {
       _navigatorKey.currentState?.pushReplacementNamed(AppRouter.signupRoute);
     } else if (route.contains('create-account')) {
       _navigatorKey.currentState?.pushReplacementNamed(AppRouter.createAccountRoute);
+    } else if (route.contains('all-users')) {
+      _navigatorKey.currentState?.pushReplacementNamed(AppRouter.allUsersRoute);
     } else if (route.contains('forgot-password')) {
       _navigatorKey.currentState?.pushReplacementNamed(AppRouter.forgotPasswordRoute);
     } else if (route.contains('splash')) {

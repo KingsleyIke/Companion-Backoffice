@@ -12,6 +12,7 @@ abstract class AuthRepository {
     required String password,
     String? phoneNumber,
     UserRole role = UserRole.user,
+    String? createdBy,
   });
 
   /// Sign in with email and password

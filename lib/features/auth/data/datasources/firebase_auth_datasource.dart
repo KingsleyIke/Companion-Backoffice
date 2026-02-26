@@ -16,6 +16,7 @@ class FirebaseAuthDatasource {
     required String password,
     String? phoneNumber,
     required UserRole role,
+    String? createdBy,
   }) async {
     try {
       // Create Firebase Auth user
@@ -36,6 +37,8 @@ class FirebaseAuthDatasource {
         role: role,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        createdBy: createdBy,
+        updatedBy: createdBy,
       );
 
       try {

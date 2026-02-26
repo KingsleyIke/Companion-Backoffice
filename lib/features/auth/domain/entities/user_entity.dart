@@ -10,6 +10,8 @@ class UserEntity {
   final UserRole role;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? createdBy; // UID of user who created this user
+  final String? updatedBy; // UID of user who last updated this user
 
   UserEntity({
     required this.id,
@@ -20,6 +22,8 @@ class UserEntity {
     required this.role,
     required this.createdAt,
     required this.updatedAt,
+    this.createdBy,
+    this.updatedBy,
   });
 
   String get fullName => '$firstName $lastName';

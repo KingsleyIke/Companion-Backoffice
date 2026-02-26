@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:companion/features/auth/presentation/providers/auth_provider.dart';
 import 'package:companion/navigation/app_router.dart';
 import 'package:companion/constants/user_roles.dart';
+import 'package:companion/features/shared/widgets/app_drawer.dart';
 
 /// Home screen displayed after successful authentication
 class HomeScreen extends StatefulWidget {
@@ -77,11 +78,11 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         
-        final userName = authProvider.currentUser?.firstName ?? 'User';
+        // final userName = authProvider.currentUser?.firstName ?? 'User';
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Welcome, $userName!'),
+            // title: Text('Welcome, $userName!'),
             backgroundColor: Colors.blue[700],
             elevation: 0,
             automaticallyImplyLeading: false,
@@ -108,186 +109,55 @@ class _HomeScreenState extends State<HomeScreen> {
           body: Row(
             children: [
               // Left Sidebar Drawer
-              Container(
-                width: 250,
-                color: Colors.grey[900],
-                child: Column(
-                  children: [
-                    // User Info Section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      color: Colors.blue[700],
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.blue[600],
-                            child: Text(
-                              (authProvider.currentUser?.firstName ?? 'U')[0]
-                                  .toUpperCase(),
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            '$userName ${authProvider.currentUser?.lastName ?? ""}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            authProvider.currentUser?.email ?? '',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Navigation Items
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.all(8),
-                        children: [
-                          // Dashboard Item
-                          ListTile(
-                            leading: const Icon(Icons.dashboard, color: Colors.white70),
-                            title: const Text(
-                              'Dashboard',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onTap: () {},
-                            hoverColor: Colors.blue[700],
-                          ),
-                          // Users Item (Admin Only)
-                          if (isAdmin)
-                            ListTile(
-                              leading: const Icon(Icons.people, color: Colors.white70),
-                              title: const Text(
-                                'Users',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              onTap: () {
-                                Navigator.of(context)
-                                    .pushNamed(AppRouter.createAccountRoute);
-                              },
-                              hoverColor: Colors.blue[700],
-                            ),
-                          // Settings Item
-                          ListTile(
-                            leading: const Icon(Icons.settings, color: Colors.white70),
-                            title: const Text(
-                              'Settings',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onTap: () {},
-                            hoverColor: Colors.blue[700],
-                          ),
-                          // const Divider(color: Colors.white24, height: 24),
-                          // Readings Item
-                          ListTile(
-                            leading: const Icon(Icons.library_books, color: Colors.white70),
-                            title: const Text(
-                              'Readings',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onTap: () {},
-                            hoverColor: Colors.blue[700],
-                          ),
-                          // Parishes Item
-                          ListTile(
-                            leading: const Icon(Icons.location_city, color: Colors.white70),
-                            title: const Text(
-                              'Parishes',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onTap: () {},
-                            hoverColor: Colors.blue[700],
-                          ),
-                          // Prayers Item
-                          ListTile(
-                            leading: const Icon(Icons.favorite, color: Colors.white70),
-                            title: const Text(
-                              'Prayers',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onTap: () {},
-                            hoverColor: Colors.blue[700],
-                          ),
-                          // Approvals Item
-                          ListTile(
-                            leading: const Icon(Icons.check_circle, color: Colors.white70),
-                            title: const Text(
-                              'Approvals',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onTap: () {},
-                            hoverColor: Colors.blue[700],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const AppDrawer(),
               // Main Content Area
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.home,
-                        size: 80,
-                        color: Colors.blue[700],
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        '$userName, Welcome to Your Dashboard!',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue[700],
-                            ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Role: ${authProvider.currentUser?.role.displayName ?? "Unknown"}',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.grey[600],
-                            ),
-                      ),
-                      const SizedBox(height: 30),
+              // Expanded(
+                // child: Center(
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: [
+                //       Icon(
+                //         Icons.home,
+                //         size: 80,
+                //         color: Colors.blue[700],
+                //       ),
+                //       const SizedBox(height: 20),
+                //       Text(
+                //         '$userName, Welcome to Your Dashboard!',
+                //         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                //               fontWeight: FontWeight.bold,
+                //               color: Colors.blue[700],
+                //             ),
+                //       ),
+                //       const SizedBox(height: 10),
+                //       Text(
+                //         'Role: ${authProvider.currentUser?.role.displayName ?? "Unknown"}',
+                //         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                //               color: Colors.grey[600],
+                //             ),
+                //       ),
+                //       const SizedBox(height: 30),
                       // Create Account Button - Only for Admins
-                      if (isAdmin)
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushNamed(AppRouter.createAccountRoute);
-                          },
-                          icon: const Icon(Icons.person_add),
-                          label: const Text('Create New Account'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green[600],
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
+                      // if (isAdmin)
+                      //   ElevatedButton.icon(
+                      //     onPressed: () {
+                      //       Navigator.of(context)
+                      //           .pushNamed(AppRouter.createAccountRoute);
+                      //     },
+                      //     icon: const Icon(Icons.person_add),
+                      //     label: const Text('Create New Account'),
+                      //     style: ElevatedButton.styleFrom(
+                      //       backgroundColor: Colors.green[600],
+                      //       padding: const EdgeInsets.symmetric(
+                      //         horizontal: 32,
+                      //         vertical: 16,
+                      //       ),
+                      //     ),
+                      //   ),
+                  //   ],
+                  // ),
+                // ),
+              // ),
             ],
           ),
         );

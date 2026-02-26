@@ -4,6 +4,7 @@ import 'package:companion/features/splash/presentation/splash_screen.dart';
 import 'package:companion/features/auth/presentation/login_screen.dart';
 import 'package:companion/features/auth/presentation/signup_screen.dart';
 import 'package:companion/features/auth/presentation/forgot_password_screen.dart';
+import 'package:companion/features/auth/presentation/all_users_screen.dart';
 import 'package:companion/features/home/presentation/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:html' as html;
@@ -14,6 +15,7 @@ class AppRouter {
   static const String signupRoute = '/signup';
   static const String createAccountRoute = '/create-account';
   static const String forgotPasswordRoute = '/forgot-password';
+  static const String allUsersRoute = '/all-users';
   static const String homeRoute = '/home';
 
   /// Returns the initial route based on platform, authentication state, and current URL
@@ -36,6 +38,8 @@ class AppRouter {
       requestedRoute = homeRoute;
     } else if (currentUrl.contains('/create-account')) {
       requestedRoute = createAccountRoute;
+    } else if (currentUrl.contains('/all-users')) {
+      requestedRoute = allUsersRoute;
     } else if (currentUrl.contains('/splash')) {
       requestedRoute = splashRoute;
     }
@@ -44,7 +48,7 @@ class AppRouter {
     const publicRoutes = [loginRoute, signupRoute, forgotPasswordRoute, splashRoute];
     
     // List of protected routes (requires authentication)
-    const protectedRoutes = [homeRoute, createAccountRoute];
+    const protectedRoutes = [homeRoute, createAccountRoute, allUsersRoute];
     
     // If user is authenticated
     if (currentUser != null) {
@@ -100,6 +104,12 @@ class AppRouter {
       case forgotPasswordRoute:
         return MaterialPageRoute(
           builder: (_) => const ForgotPasswordScreen(),
+          settings: settings,
+        );
+
+      case allUsersRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AllUsersScreen(),
           settings: settings,
         );
 
