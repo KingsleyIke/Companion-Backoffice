@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1058395630595",
-    "project_id": "mycompanion-f584d",
-    "storage_bucket": "mycompanion-f584d.firebasestorage.app"
+    "project_number": "664671225920",
+    "project_id": "catholic-companion",
+    "storage_bucket": "catholic-companion.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1058395630595:android:d613c79a37c85452e87236",
+        "mobilesdk_app_id": "1:664671225920:android:4b8659080d1aa5824ff7a5",
         "android_client_info": {
           "package_name": "com.heztech.companion"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDE1lO-wYJ4HLIqC_Vl-G7yqvIZXF3C560"
+          "current_key": "AIzaSyD992oyq7o-bQ3gKPl82iVM61DdSDvwm0U"
         }
       ],
       "services": {
