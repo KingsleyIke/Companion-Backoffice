@@ -173,16 +173,48 @@ class AppDrawer extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // Parishes Item
-                    ListTile(
-                      leading:
-                          const Icon(Icons.location_city, color: Colors.white70),
+                    // Parishes ExpansionTile
+                    ExpansionTile(
+                      leading: const Icon(Icons.location_city, color: Colors.white70),
                       title: const Text(
                         'Parishes',
                         style: TextStyle(color: Colors.white),
                       ),
-                      onTap: () {},
-                      hoverColor: Colors.blue[700],
+                      collapsedBackgroundColor: Colors.transparent,
+                      backgroundColor: Colors.transparent,
+                      textColor: Colors.white,
+                      iconColor: Colors.white70,
+                      collapsedIconColor: Colors.white70,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: ListTile(
+                            leading: const Icon(Icons.add, color: Colors.white70, size: 20),
+                            title: const Text(
+                              'Add Parish',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed('/add-parish');
+                            },
+                            hoverColor: Colors.blue[700],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: ListTile(
+                            leading: const Icon(Icons.list, color: Colors.white70, size: 20),
+                            title: const Text(
+                              'View Parishes',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed('/view-parishes');
+                            },
+                            hoverColor: Colors.blue[700],
+                          ),
+                        ),
+                      ],
                     ),
                     // Prayers Item
                     ListTile(

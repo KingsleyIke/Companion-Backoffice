@@ -1,3 +1,5 @@
+import 'package:companion/features/parishes/add_parish_page.dart';
+import 'package:companion/features/parishes/view_parishes_page.dart';
 import 'package:companion/features/readings/add_reading_page.dart';
 import 'package:companion/features/readings/view_readings_page.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,8 @@ class AppRouter {
   static const String homeRoute = '/home';
   static const String addReadingRoute = '/add-reading';
   static const String viewReadingsRoute = '/view-readings';
+  static const String addParishRoute = '/add-parish';
+  static const String viewParishesRoute = '/view-parishes';
 
   /// Returns the initial route based on platform, authentication state, and current URL
   static String getInitialRoute() {
@@ -50,6 +54,10 @@ class AppRouter {
       requestedRoute = addReadingRoute;
     } else if (currentUrl.contains('/view-readings')) {
       requestedRoute = viewReadingsRoute;
+    } else if (currentUrl.contains('/add-parish')) {
+      requestedRoute = addParishRoute;
+    } else if (currentUrl.contains('/view-parishes')) {
+      requestedRoute = viewParishesRoute;
     }
     
     // List of public routes (accessible without authentication)
@@ -136,6 +144,18 @@ class AppRouter {
       case viewReadingsRoute:
         return MaterialPageRoute(
           builder: (_) => const ViewReadingsPage(),
+          settings: settings,
+        );
+
+      case addParishRoute:
+        return MaterialPageRoute(
+          builder: (_) => const AddParishPage(),
+          settings: settings,
+        );
+
+      case viewParishesRoute:
+        return MaterialPageRoute(
+          builder: (_) => const ViewParishesPage(),
           settings: settings,
         );
 
