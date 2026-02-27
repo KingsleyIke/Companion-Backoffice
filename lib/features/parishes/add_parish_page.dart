@@ -310,17 +310,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                         validator: (v) => v == null || v.isEmpty ? 'Select country' : null,
                                       ),
                                       const SizedBox(height: 36),
-                                      // DropdownButtonFormField<String>(
-                                      //   value: _selectedArchdiocese,
-                                      //   decoration: const InputDecoration(labelText: 'Archdiocese/Diocese', border: OutlineInputBorder()),
-                                      //   items: _archdioceses.map((a) => DropdownMenuItem(value: a, child: Text(a))).toList(),
-                                      //   onChanged: (v) => setState(() {
-                                      //     _selectedArchdiocese = v;
-                                      //     _selectedDeanery = null;
-                                      //   }),
-                                      //   validator: (v) => v == null || v.isEmpty ? 'Select archdiocese/diocese' : null,
-                                      // ),
-                                      // const SizedBox(height: 16),
                                       DropdownButtonFormField<String>(
                                         value: _selectedDeanery,
                                         decoration: const InputDecoration(labelText: 'Deanery', border: OutlineInputBorder()),
@@ -335,12 +324,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                         validator: (v) => v == null || v.isEmpty ? 'Enter parish name' : null,
                                       ),
                                       const SizedBox(height: 36),
-                                      // TextFormField(
-                                      //   controller: _addressController,
-                                      //   decoration: const InputDecoration(labelText: 'Address', border: OutlineInputBorder()),
-                                      //   validator: (v) => v == null || v.isEmpty ? 'Enter address' : null,
-                                      // ),
-                                      // const SizedBox(height: 16),
                                       Row(
                                         children: [
                                           Expanded(
@@ -447,95 +430,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                           )),
                                         ],
                                       ),
-                                      // const SizedBox(height: 24),
-                                      // const Divider(),
-                                      // const Text('Pastoral Team', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      // const SizedBox(height: 8),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Pastoral Team:'),
-                                      //     const SizedBox(width: 8),
-                                      //     ElevatedButton(
-                                      //       onPressed: () async {
-                                      //         final result = await showDialog<Map<String, String>>(
-                                      //           context: context,
-                                      //           builder: (context) {
-                                      //             final nameController = TextEditingController();
-                                      //             final roleController = TextEditingController();
-                                      //             final phoneController = TextEditingController();
-                                      //             return AlertDialog(
-                                      //               title: const Text('Add Pastoral Team Member'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
-                                      //                   TextFormField(controller: roleController, decoration: const InputDecoration(labelText: 'Role')),
-                                      //                   TextFormField(controller: phoneController, decoration: const InputDecoration(labelText: 'Phone')),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () {
-                                      //                     if (nameController.text.isNotEmpty) {
-                                      //                       Navigator.pop(context, {
-                                      //                         'name': nameController.text,
-                                      //                         'role': roleController.text,
-                                      //                         'phone': phoneController.text,
-                                      //                       });
-                                      //                     }
-                                      //                   },
-                                      //                   child: const Text('Add'),
-                                      //                 ),
-                                      //               ],
-                                      //             );
-                                      //           },
-                                      //         );
-                                      //         if (result != null) setState(() => _pastoralTeam.add(result));
-                                      //       },
-                                      //       child: const Text('Add Member'),
-                                      //     ),
-                                      //     const SizedBox(width: 8),
-                                      //     ..._pastoralTeam.asMap().entries.map((entry) => Padding(
-                                      //       padding: const EdgeInsets.only(right: 4.0),
-                                      //       child: InputChip(
-                                      //         label: Text(entry.value['name'] ?? ''),
-                                      //         onDeleted: () => setState(() => _pastoralTeam.removeAt(entry.key)),
-                                      //         onPressed: () async {
-                                      //           final nameController = TextEditingController(text: entry.value['name']);
-                                      //           final roleController = TextEditingController(text: entry.value['role']);
-                                      //           final phoneController = TextEditingController(text: entry.value['phone']);
-                                      //           final result = await showDialog<Map<String, String>>(
-                                      //             context: context,
-                                      //             builder: (context) => AlertDialog(
-                                      //               title: const Text('Edit Pastoral Team Member'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
-                                      //                   TextFormField(controller: roleController, decoration: const InputDecoration(labelText: 'Role')),
-                                      //                   TextFormField(controller: phoneController, decoration: const InputDecoration(labelText: 'Phone')),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () => Navigator.pop(context, {
-                                      //                     'name': nameController.text,
-                                      //                     'role': roleController.text,
-                                      //                     'phone': phoneController.text,
-                                      //                   }),
-                                      //                   child: const Text('Save'),
-                                      //                 ),
-                                      //               ],
-                                      //             ),
-                                      //           );
-                                      //           if (result != null) setState(() => _pastoralTeam[entry.key] = result);
-                                      //         },
-                                      //       ),
-                                      //     )),
-                                      //   ],
-                                      // ),
                                       const SizedBox(height: 24),
                                       const Divider(),
                                       const Text('Announcements', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -619,242 +513,39 @@ class _AddParishFormState extends State<_AddParishForm> {
                                           )),
                                         ],
                                       ),
-                                      // const SizedBox(height: 24),
-                                      // const Divider(),
-                                      // const Text('Activities', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      // const SizedBox(height: 8),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Activities:'),
-                                      //     const SizedBox(width: 8),
-                                      //     ElevatedButton(
-                                      //       onPressed: () async {
-                                      //         final result = await showDialog<Map<String, String>>(
-                                      //           context: context,
-                                      //           builder: (context) {
-                                      //             final titleController = TextEditingController();
-                                      //             final textController = TextEditingController();
-                                      //             return AlertDialog(
-                                      //               title: const Text('Add Activity'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   TextFormField(controller: titleController, decoration: const InputDecoration(labelText: 'Title')),
-                                      //                   TextFormField(controller: textController, decoration: const InputDecoration(labelText: 'Text')),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () {
-                                      //                     if (titleController.text.isNotEmpty) {
-                                      //                       Navigator.pop(context, {
-                                      //                         'title': titleController.text,
-                                      //                         'text': textController.text,
-                                      //                       });
-                                      //                     }
-                                      //                   },
-                                      //                   child: const Text('Add'),
-                                      //                 ),
-                                      //               ],
-                                      //             );
-                                      //           },
-                                      //         );
-                                      //         if (result != null) setState(() => _activities.add(result));
-                                      //       },
-                                      //       child: const Text('Add Activity'),
-                                      //     ),
-                                      //     const SizedBox(width: 8),
-                                      //     ..._activities.asMap().entries.map((entry) => Padding(
-                                      //       padding: const EdgeInsets.only(right: 4.0),
-                                      //       child: InputChip(
-                                      //         label: Text(entry.value['title'] ?? ''),
-                                      //         onDeleted: () => setState(() => _activities.removeAt(entry.key)),
-                                      //         onPressed: () async {
-                                      //           final titleController = TextEditingController(text: entry.value['title']);
-                                      //           final textController = TextEditingController(text: entry.value['text']);
-                                      //           final result = await showDialog<Map<String, String>>(
-                                      //             context: context,
-                                      //             builder: (context) => AlertDialog(
-                                      //               title: const Text('Edit Activity'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   TextFormField(controller: titleController, decoration: const InputDecoration(labelText: 'Title')),
-                                      //                   TextFormField(controller: textController, decoration: const InputDecoration(labelText: 'Text')),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () => Navigator.pop(context, {
-                                      //                     'title': titleController.text,
-                                      //                     'text': textController.text,
-                                      //                   }),
-                                      //                   child: const Text('Save'),
-                                      //                 ),
-                                      //               ],
-                                      //             ),
-                                      //           );
-                                      //           if (result != null) setState(() => _activities[entry.key] = result);
-                                      //         },
-                                      //       ),
-                                      //     )),
-                                      //   ],
-                                      // ),
-                                      // const SizedBox(height: 24),
-                                      // const Divider(),
-                                      // const Text('Gallery Items', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      // const SizedBox(height: 8),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Gallery Items:'),
-                                      //     const SizedBox(width: 8),
-                                      //     ElevatedButton(
-                                      //       onPressed: () async {
-                                      //         final result = await showDialog<Map<String, dynamic>>(
-                                      //           context: context,
-                                      //           builder: (context) {
-                                      //             final titleController = TextEditingController();
-                                      //             final textController = TextEditingController();
-                                      //             List<String> images = [];
-                                      //             bool isUploading = false;
-                                      //             return StatefulBuilder(
-                                      //               builder: (context, setModalState) => Stack(
-                                      //                 children: [
-                                      //                   AlertDialog(
-                                      //                     title: const Text('Add Gallery Item'),
-                                      //                     content: Column(
-                                      //                       mainAxisSize: MainAxisSize.min,
-                                      //                       children: [
-                                      //                         TextFormField(controller: titleController, decoration: const InputDecoration(labelText: 'Title')),
-                                      //                         TextFormField(controller: textController, decoration: const InputDecoration(labelText: 'Text')),
-                                      //                         ElevatedButton(
-                                      //                           onPressed: () async {
-                                      //                             setModalState(() => isUploading = true);
-                                      //                             final picker = ImagePicker();
-                                      //                             final picked = await picker.pickMultiImage();
-                                      //                             if (picked.isNotEmpty) {
-                                      //                               final storage = FirebaseStorage.instance;
-                                      //                               for (final file in picked) {
-                                      //                                 final ref = storage.ref().child('parish_gallery_item/${file.name}');
-                                      //                                 await ref.putData(await file.readAsBytes());
-                                      //                                 final url = await ref.getDownloadURL();
-                                      //                                 images.add(url);
-                                      //                               }
-                                      //                             }
-                                      //                             setModalState(() => isUploading = false);
-                                      //                           },
-                                      //                           child: const Text('Add Images'),
-                                      //                         ),
-                                      //                         Wrap(
-                                      //                           children: images.map((url) => Image.network(url, width: 60, height: 60)).toList(),
-                                      //                         ),
-                                      //                       ],
-                                      //                     ),
-                                      //                     actions: [
-                                      //                       TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                       ElevatedButton(
-                                      //                         onPressed: () {
-                                      //                           if (titleController.text.isNotEmpty) {
-                                      //                             Navigator.pop(context, {
-                                      //                               'title': titleController.text,
-                                      //                               'text': textController.text,
-                                      //                               'images': images,
-                                      //                             });
-                                      //                           }
-                                      //                         },
-                                      //                         child: const Text('Add'),
-                                      //                       ),
-                                      //                     ],
-                                      //                   ),
-                                      //                   if (isUploading)
-                                      //                     Positioned.fill(
-                                      //                       child: Container(
-                                      //                         color: Colors.black.withOpacity(0.3),
-                                      //                         child: const Center(child: CircularProgressIndicator()),
-                                      //                       ),
-                                      //                     ),
-                                      //                 ],
-                                      //               ),
-                                      //             );
-                                      //           },
-                                      //         );
-                                      //         if (result != null) setState(() => _gallery.add(result));
-                                      //       },
-                                      //       child: const Text('Add Gallery Item'),
-                                      //     ),
-                                      //     const SizedBox(width: 8),
-                                      //     ..._gallery.asMap().entries.map((entry) => Padding(
-                                      //       padding: const EdgeInsets.only(right: 4.0),
-                                      //       child: InputChip(
-                                      //         label: Text(entry.value['title'] ?? ''),
-                                      //         onDeleted: () => setState(() => _gallery.removeAt(entry.key)),
-                                      //         onPressed: () async {
-                                      //           final titleController = TextEditingController(text: entry.value['title']);
-                                      //           final textController = TextEditingController(text: entry.value['text']);
-                                      //           // For images, just show count and allow removal
-                                      //           final result = await showDialog<Map<String, dynamic>>(
-                                      //             context: context,
-                                      //             builder: (context) => AlertDialog(
-                                      //               title: const Text('Edit Gallery Item'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   TextFormField(controller: titleController, decoration: const InputDecoration(labelText: 'Title')),
-                                      //                   TextFormField(controller: textController, decoration: const InputDecoration(labelText: 'Text')),
-                                      //                   if ((entry.value['images'] as List?)?.isNotEmpty ?? false)
-                                      //                     Wrap(
-                                      //                       children: (entry.value['images'] as List<String>).asMap().entries.map((imgEntry) => Stack(
-                                      //                         alignment: Alignment.topRight,
-                                      //                         children: [
-                                      //                           Image.network(imgEntry.value, width: 60, height: 60),
-                                      //                           IconButton(
-                                      //                             icon: const Icon(Icons.cancel, size: 18, color: Colors.red),
-                                      //                             onPressed: () {
-                                      //                               entry.value['images'].removeAt(imgEntry.key);
-                                      //                               (context as Element).markNeedsBuild();
-                                      //                             },
-                                      //                           ),
-                                      //                         ],
-                                      //                       )).toList(),
-                                      //                     ),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () => Navigator.pop(context, {
-                                      //                     'title': titleController.text,
-                                      //                     'text': textController.text,
-                                      //                     'images': entry.value['images'],
-                                      //                   }),
-                                      //                   child: const Text('Save'),
-                                      //                 ),
-                                      //               ],
-                                      //             ),
-                                      //           );
-                                      //           if (result != null) setState(() => _gallery[entry.key] = result);
-                                      //         },
-                                      //       ),
-                                      //     )),
-                                      //   ],
-                                      // ),
                                       const SizedBox(height: 24),
                                       const Divider(),
                                       const Text('Uploaded Images', style: TextStyle(fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 8),
-                                      Wrap(
-                                        children: _imageUrls.asMap().entries.map((entry) => Stack(
-                                          alignment: Alignment.topRight,
-                                          children: [
-                                            Image.network(entry.value, width: 80, height: 80),
-                                            IconButton(
-                                              icon: const Icon(Icons.cancel, size: 18, color: Colors.red),
-                                              onPressed: () => setState(() => _imageUrls.removeAt(entry.key)),
-                                            ),
-                                          ],
-                                        )).toList(),
+                                      ElevatedButton.icon(
+                                        onPressed: _isUploadingImage ? null : _pickAndUploadImages,
+                                        icon: const Icon(Icons.upload),
+                                        label: const Text('Upload Images'),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      SizedBox(
+                                        height: 100,
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            children: _imageUrls.asMap().entries.map((entry) => Container(
+                                              margin: const EdgeInsets.only(right: 8),
+                                              child: Stack(
+                                                alignment: Alignment.topRight,
+                                                children: [
+                                                  Image.network(entry.value, width: 80, height: 80),
+                                                  IconButton(
+                                                    icon: const Icon(Icons.cancel, size: 18, color: Colors.red),
+                                                    onPressed: () => setState(() => _imageUrls.removeAt(entry.key)),
+                                                  ),
+                                                ],
+                                              ),
+                                            )).toList(),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -877,18 +568,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // const SizedBox(height: 16),
-                                      // DropdownButtonFormField<String>(
-                                      //   value: _selectedCountry,
-                                      //   decoration: const InputDecoration(labelText: 'Country', border: OutlineInputBorder()),
-                                      //   items: _countries.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                                      //   onChanged: (v) => setState(() {
-                                      //     _selectedCountry = v;
-                                      //     _selectedArchdiocese = null;
-                                      //     _selectedDeanery = null;
-                                      //   }),
-                                      //   validator: (v) => v == null || v.isEmpty ? 'Select country' : null,
-                                      // ),
                                       const SizedBox(height: 26),
                                       DropdownButtonFormField<String>(
                                         value: _selectedArchdiocese,
@@ -901,14 +580,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                         validator: (v) => v == null || v.isEmpty ? 'Select archdiocese/diocese' : null,
                                       ),
                                       const SizedBox(height: 36),
-                                      // DropdownButtonFormField<String>(
-                                      //   value: _selectedDeanery,
-                                      //   decoration: const InputDecoration(labelText: 'Deanery', border: OutlineInputBorder()),
-                                      //   items: _deaneries.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
-                                      //   onChanged: (v) => setState(() => _selectedDeanery = v),
-                                      //   validator: (v) => v == null || v.isEmpty ? 'Select deanery' : null,
-                                      // ),
-                                      // const SizedBox(height: 36),
                                       TextFormField(
                                         controller: _nameController,
                                         decoration: const InputDecoration(labelText: 'Parish Name', border: OutlineInputBorder()),
@@ -946,87 +617,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                         decoration: const InputDecoration(labelText: 'Parish Website (optional)', border: OutlineInputBorder()),
                                       ),
                                       const SizedBox(height: 16),
-                                      // Socials
-                                      // const SizedBox(height: 24),
-                                      // const Divider(),
-                                      // const Text('Socials', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      // const SizedBox(height: 8),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Socials:'),
-                                      //     const SizedBox(width: 8),
-                                      //     ElevatedButton(
-                                      //       onPressed: () async {
-                                      //         final result = await showDialog<Map<String, String>>(
-                                      //           context: context,
-                                      //           builder: (context) {
-                                      //             String? selected;
-                                      //             final controller = TextEditingController();
-                                      //             return AlertDialog(
-                                      //               title: const Text('Add Social'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   DropdownButtonFormField<String>(
-                                      //                     value: selected,
-                                      //                     items: ['Facebook', 'Instagram', 'YouTube', 'X'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-                                      //                     onChanged: (v) => selected = v,
-                                      //                     decoration: const InputDecoration(labelText: 'Type'),
-                                      //                   ),
-                                      //                   TextFormField(
-                                      //                     controller: controller,
-                                      //                     decoration: const InputDecoration(labelText: 'Handle'),
-                                      //                   ),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () {
-                                      //                     if (selected != null && controller.text.isNotEmpty) {
-                                      //                       Navigator.pop(context, {selected!: controller.text});
-                                      //                     }
-                                      //                   },
-                                      //                   child: const Text('Add'),
-                                      //                 ),
-                                      //               ],
-                                      //             );
-                                      //           },
-                                      //         );
-                                      //         if (result != null && result.isNotEmpty) {
-                                      //           setState(() => _socials.addAll(result));
-                                      //         }
-                                      //       },
-                                      //       child: const Text('Add Social'),
-                                      //     ),
-                                      //     const SizedBox(width: 8),
-                                      //     ..._socials.entries.map((e) => Padding(
-                                      //       padding: const EdgeInsets.only(right: 4.0),
-                                      //       child: InputChip(
-                                      //         label: Text('${e.key}: ${e.value}'),
-                                      //         onDeleted: () => setState(() => _socials.remove(e.key)),
-                                      //         onPressed: () async {
-                                      //           final controller = TextEditingController(text: e.value);
-                                      //           final result = await showDialog<String>(
-                                      //             context: context,
-                                      //             builder: (context) => AlertDialog(
-                                      //               title: Text('Edit ${e.key}'),
-                                      //               content: TextFormField(controller: controller, decoration: const InputDecoration(labelText: 'Handle')),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () => Navigator.pop(context, controller.text),
-                                      //                   child: const Text('Save'),
-                                      //                 ),
-                                      //               ],
-                                      //             ),
-                                      //           );
-                                      //           if (result != null && result.isNotEmpty) setState(() => _socials[e.key] = result);
-                                      //         },
-                                      //       ),
-                                      //     )),
-                                      //   ],
-                                      // ),
                                       const SizedBox(height: 24),
                                       const Divider(),
                                       const Text('Pastoral Team', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -1116,89 +706,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                           )),
                                         ],
                                       ),
-                                      // const SizedBox(height: 24),
-                                      // const Divider(),
-                                      // const Text('Announcements', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      // const SizedBox(height: 8),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Announcements:'),
-                                      //     const SizedBox(width: 8),
-                                      //     ElevatedButton(
-                                      //       onPressed: () async {
-                                      //         final result = await showDialog<Map<String, String>>(
-                                      //           context: context,
-                                      //           builder: (context) {
-                                      //             final titleController = TextEditingController();
-                                      //             final textController = TextEditingController();
-                                      //             return AlertDialog(
-                                      //               title: const Text('Add Announcement'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   TextFormField(controller: titleController, decoration: const InputDecoration(labelText: 'Title')),
-                                      //                   TextFormField(controller: textController, decoration: const InputDecoration(labelText: 'Text')),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () {
-                                      //                     if (titleController.text.isNotEmpty) {
-                                      //                       Navigator.pop(context, {
-                                      //                         'title': titleController.text,
-                                      //                         'text': textController.text,
-                                      //                       });
-                                      //                     }
-                                      //                   },
-                                      //                   child: const Text('Add'),
-                                      //                 ),
-                                      //               ],
-                                      //             );
-                                      //           },
-                                      //         );
-                                      //         if (result != null) setState(() => _announcements.add(result));
-                                      //       },
-                                      //       child: const Text('Add Announcement'),
-                                      //     ),
-                                      //     const SizedBox(width: 8),
-                                      //     ..._announcements.asMap().entries.map((entry) => Padding(
-                                      //       padding: const EdgeInsets.only(right: 4.0),
-                                      //       child: InputChip(
-                                      //         label: Text(entry.value['title'] ?? ''),
-                                      //         onDeleted: () => setState(() => _announcements.removeAt(entry.key)),
-                                      //         onPressed: () async {
-                                      //           final titleController = TextEditingController(text: entry.value['title']);
-                                      //           final textController = TextEditingController(text: entry.value['text']);
-                                      //           final result = await showDialog<Map<String, String>>(
-                                      //             context: context,
-                                      //             builder: (context) => AlertDialog(
-                                      //               title: const Text('Edit Announcement'),
-                                      //               content: Column(
-                                      //                 mainAxisSize: MainAxisSize.min,
-                                      //                 children: [
-                                      //                   TextFormField(controller: titleController, decoration: const InputDecoration(labelText: 'Title')),
-                                      //                   TextFormField(controller: textController, decoration: const InputDecoration(labelText: 'Text')),
-                                      //                 ],
-                                      //               ),
-                                      //               actions: [
-                                      //                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                      //                 ElevatedButton(
-                                      //                   onPressed: () => Navigator.pop(context, {
-                                      //                     'title': titleController.text,
-                                      //                     'text': textController.text,
-                                      //                   }),
-                                      //                   child: const Text('Save'),
-                                      //                 ),
-                                      //               ],
-                                      //             ),
-                                      //           );
-                                      //           if (result != null) setState(() => _announcements[entry.key] = result);
-                                      //         },
-                                      //       ),
-                                      //     )),
-                                      //   ],
-                                      // ),
                                       const SizedBox(height: 24),
                                       const Divider(),
                                       const Text('Activities', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -1420,22 +927,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                           )),
                                         ],
                                       ),
-                                      // const SizedBox(height: 24),
-                                      // const Divider(),
-                                      // const Text('Uploaded Images', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      // const SizedBox(height: 8),
-                                      // Wrap(
-                                      //   children: _imageUrls.asMap().entries.map((entry) => Stack(
-                                      //     alignment: Alignment.topRight,
-                                      //     children: [
-                                      //       Image.network(entry.value, width: 80, height: 80),
-                                      //       IconButton(
-                                      //         icon: const Icon(Icons.cancel, size: 18, color: Colors.red),
-                                      //         onPressed: () => setState(() => _imageUrls.removeAt(entry.key)),
-                                      //       ),
-                                      //     ],
-                                      //   )).toList(),
-                                      // ),
                                     ],
                                   ),
                                 ),
