@@ -1,3 +1,6 @@
+import 'package:companion/features/parishes/parish_location_constants.dart';
+import 'package:companion/features/parishes/add_parish_page.dart';
+import 'package:companion/features/readings/add_reading_page.dart';
 import 'package:flutter/material.dart';
 import 'models/parish.dart';
 import 'repositories/parish_repository.dart';
@@ -19,21 +22,13 @@ class _ViewParishesPageState extends State<ViewParishesPage> {
   String? _selectedArchdiocese;
   String? _selectedDeanery;
 
-  // Example prepopulated data
-  final Map<String, List<String>> _countryArchdioceses = {
-    'Nigeria': ['Lagos', 'Abuja'],
-    'Ghana': ['Accra', 'Kumasi'],
-  };
-  final Map<String, List<String>> _archdioceseDeaneries = {
-    'Lagos': ['Ikeja', 'Badagry'],
-    'Abuja': ['Gwagwalada', 'Kubwa'],
-    'Accra': ['Osu', 'Kaneshie'],
-    'Kumasi': ['Bantama', 'Asokwa'],
-  };
+  // Use shared constants for country/archdiocese/deanery
+  static const countryArchdioceses = kCountryArchdioceses;
+  static const archdioceseDeaneries = kArchdioceseDeaneries;
 
-  List<String> get _countries => _countryArchdioceses.keys.toList();
-  List<String> get _archdioceses => _selectedCountry != null ? _countryArchdioceses[_selectedCountry!] ?? [] : [];
-  List<String> get _deaneries => _selectedArchdiocese != null ? _archdioceseDeaneries[_selectedArchdiocese!] ?? [] : [];
+  List<String> get _countries => countryArchdioceses.keys.toList();
+  List<String> get _archdioceses => _selectedCountry != null ? countryArchdioceses[_selectedCountry!] ?? [] : [];
+  List<String> get _deaneries => _selectedArchdiocese != null ? archdioceseDeaneries[_selectedArchdiocese!] ?? [] : [];
 
   @override
   void initState() {
@@ -86,11 +81,17 @@ class _ViewParishesPageState extends State<ViewParishesPage> {
     }
   }
 
-  void _editParish(Parish parish) {
-    // TODO: Implement edit dialog or navigation to edit page
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit not implemented')),
+  void _editParish(Parish parish) async {
+    // Navigate to AddParishPage for editing, passing the parish
+    final updated = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddParishPage(parish: parish),
+      ),
     );
+    if (updated == true) {
+      _fetchParishes();
+    }
   }
 
   @override

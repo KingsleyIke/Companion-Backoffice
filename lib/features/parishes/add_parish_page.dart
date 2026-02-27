@@ -1,3 +1,4 @@
+import 'package:companion/features/parishes/parish_location_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/parish.dart';
@@ -8,25 +9,45 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddParishPage extends StatelessWidget {
-  const AddParishPage({Key? key}) : super(key: key);
+  final Parish? parish;
+  const AddParishPage({Key? key, this.parish}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AddParishViewModel(ParishRepository()),
-      child: const _AddParishForm(),
+      child: _AddParishForm(parish: parish),
     );
   }
 }
 
 class _AddParishForm extends StatefulWidget {
-  const _AddParishForm({Key? key}) : super(key: key);
+  final Parish? parish;
+  const _AddParishForm({Key? key, this.parish}) : super(key: key);
 
   @override
   State<_AddParishForm> createState() => _AddParishFormState();
 }
 
 class _AddParishFormState extends State<_AddParishForm> {
+      @override
+      void initState() {
+        super.initState();
+        final parish = widget.parish;
+        if (parish != null) {
+          _selectedCountry = parish.country;
+          _selectedArchdiocese = parish.archdiocese;
+          _selectedDeanery = parish.deanery;
+          _nameController.text = parish.name;
+          _addressController.text = parish.address;
+          _websiteController.text = parish.website ?? '';
+          _latitudeController.text = parish.latitude?.toString() ?? '';
+          _longitudeController.text = parish.longitude?.toString() ?? '';
+          _imageUrls = List<String>.from(parish.images ?? []);
+          // Prepopulate socials, team, announcements, activities, gallery if needed
+          // ...
+        }
+      }
     bool _isUploadingImage = false;
     bool _isSaving = false;
   final _formKey = GlobalKey<FormState>();
@@ -107,6 +128,7 @@ class _AddParishFormState extends State<_AddParishForm> {
     final archdiocese = _selectedArchdiocese!;
     final deanery = _selectedDeanery!;
     final parish = Parish(
+      id: widget.parish?.id, // preserve id for update
       country: country,
       archdiocese: archdiocese,
       deanery: deanery,
@@ -137,11 +159,19 @@ class _AddParishFormState extends State<_AddParishForm> {
       )).toList(),
     );
     final viewModel = context.read<AddParishViewModel>();
-    await viewModel.addParish(country, archdiocese, deanery, parish);
+    if (widget.parish != null) {
+      await viewModel.updateParish(country, archdiocese, deanery, parish);
+    } else {
+      await viewModel.addParish(country, archdiocese, deanery, parish);
+    }
     if (viewModel.error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Parish saved to database!')),
+        SnackBar(content: Text(widget.parish != null ? 'Parish updated!' : 'Parish saved to database!')),
       );
+      if (widget.parish != null) {
+        Navigator.pop(context, true); // signal update
+        return;
+      }
       setState(() {
         _nameController.clear();
         _addressController.clear();
@@ -164,104 +194,18 @@ class _AddParishFormState extends State<_AddParishForm> {
     }
   }
 
-  // Full list of Catholic archdioceses and dioceses in Nigeria and their deaneries
-  // (This is a sample; please update with the most current/complete data as needed)
-  final Map<String, List<String>> _countryArchdioceses = {
-    'Nigeria': [
-      'Abuja',
-      'Benin City',
-      'Calabar',
-      'Ibadan',
-      'Jos',
-      'Kaduna',
-      'Lagos',
-      'Onitsha',
-      'Owerri',
-      'Abakaliki',
-      'Abeokuta',
-      'Ahiara',
-      'Awka',
-      'Bauchi',
-      'Bomadi',
-      'Ekiti',
-      'Enugu',
-      'Gboko',
-      'Idah',
-      'Ijebu-Ode',
-      'Ilorin',
-      'Issele-Uku',
-      'Jalingo',
-      'Kafanchan',
-      'Kano',
-      'Kontagora',
-      'Lafia',
-      'Lokoja',
-      'Maiduguri',
-      'Makurdi',
-      'Minna',
-      'Nsukka',
-      'Ogoja',
-      'Okigwe',
-      'Orlu',
-      'Osogbo',
-      'Otukpo',
-      'Port Harcourt',
-      'Shendam',
-      'Sokoto',
-      'Uyo',
-      'Warri',
-      'Yola',
-      'Zaria',
-    ],
-    "Ghana": [
-      'Accra',
-      'Kumasi',
-      'Tamale',
-      'Ho',
-      'Sunyani',
-      'Obuasi',
-      'Wa',
-      'Yendi',
-    ],
-  };
-  final Map<String, List<String>> _archdioceseDeaneries = {
-    'Abuja': [
-      'Garki', 'Gwagwalada', 'Kubwa', 'Lugbe', 'Wuse', 'Bwari', 'Karu', 'Kuje', 'Asokoro', 'Gwagwa',
-    ],
-    'Benin City': [
-      'Benin City', 'Uromi', 'Auchi', 'Ekpoma', 'Igueben', 'Irrua', 'Ubiaja',
-    ],
-    'Calabar': [
-      'Calabar', 'Ikot Ekpene', 'Ogoja', 'Uyo', 'Abak', 'Eket', 'Itu',
-    ],
-    'Ibadan': [
-      'Ibadan North', 'Ibadan South', 'Oyo', 'Ogbomoso', 'Ibarapa', 'Oke-Ogun',
-    ],
-    'Jos': [
-      'Jos North', 'Jos South', 'Bukuru', 'Barkin Ladi', 'Pankshin', 'Shendam',
-    ],
-    'Kaduna': [
-      'Kaduna North', 'Kaduna South', 'Zaria', 'Kafanchan', 'Saminaka', 'Kagoro',
-    ],
-    'Lagos': [
-      'Ikeja', 'Badagry', 'Epe', 'Lagos Island', 'Yaba', 'Ikorodu', 'Festac', 'Agege', 'Surulere',
-    ],
-    'Onitsha': [
-      'Onitsha Urban', 'Nnewi', 'Awka', 'Ogidi', 'Otuocha', 'Nnobi', 'Ihiala',
-    ],
-    'Owerri': [
-      'Owerri', 'Orlu', 'Okigwe', 'Mbaise', 'Ngor Okpala', 'Aboh Mbaise',
-    ],
-  };
+  // Use shared constants for country/archdiocese/deanery
+  static const countryArchdioceses = kCountryArchdioceses;
+  static const archdioceseDeaneries = kArchdioceseDeaneries;
 
-  List<String> get _countries => _countryArchdioceses.keys.toList();
-  List<String> get _archdioceses => _selectedCountry != null ? _countryArchdioceses[_selectedCountry!] ?? [] : [];
-  List<String> get _deaneries => _selectedArchdiocese != null ? _archdioceseDeaneries[_selectedArchdiocese!] ?? [] : [];
+  List<String> get _countries => countryArchdioceses.keys.toList();
+  List<String> get _archdioceses => _selectedCountry != null ? countryArchdioceses[_selectedCountry!] ?? [] : [];
+  List<String> get _deaneries => _selectedArchdiocese != null ? archdioceseDeaneries[_selectedArchdiocese!] ?? [] : [];
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
+      children: [ 
         Scaffold(
           appBar: AppBar(title: const Text('Add Parish')),
           body: Row(
