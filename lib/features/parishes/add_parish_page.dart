@@ -44,8 +44,37 @@ class _AddParishFormState extends State<_AddParishForm> {
           _latitudeController.text = parish.latitude?.toString() ?? '';
           _longitudeController.text = parish.longitude?.toString() ?? '';
           _imageUrls = List<String>.from(parish.images ?? []);
-          // Prepopulate socials, team, announcements, activities, gallery if needed
-          // ...
+          // Prepopulate socials
+          _socials.clear();
+          if (parish.socials != null) {
+            _socials.addAll(parish.socials!);
+          }
+          // Prepopulate pastoral team
+          _pastoralTeam.clear();
+          _pastoralTeam.addAll(parish.pastoralTeam.map((e) => {
+            'name': e.name,
+            'role': e.role,
+            'phone': e.phone,
+          }));
+          // Prepopulate announcements
+          _announcements.clear();
+          _announcements.addAll(parish.announcements.map((e) => {
+            'title': e.title,
+            'text': e.text,
+          }));
+          // Prepopulate activities
+          _activities.clear();
+          _activities.addAll(parish.activities.map((e) => {
+            'title': e.title,
+            'text': e.text,
+          }));
+          // Prepopulate gallery
+          _gallery.clear();
+          _gallery.addAll(parish.gallery.map((e) => {
+            'title': e.title,
+            'text': e.text,
+            'images': List<String>.from(e.images),
+          }));
         }
       }
     bool _isUploadingImage = false;
@@ -262,12 +291,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                         validator: (v) => v == null || v.isEmpty ? 'Select deanery' : null,
                                       ),
                                       const SizedBox(height: 36),
-                                      TextFormField(
-                                        controller: _nameController,
-                                        decoration: const InputDecoration(labelText: 'Parish Name', border: OutlineInputBorder()),
-                                        validator: (v) => v == null || v.isEmpty ? 'Enter parish name' : null,
-                                      ),
-                                      const SizedBox(height: 36),
                                       Row(
                                         children: [
                                           Expanded(
@@ -288,17 +311,14 @@ class _AddParishFormState extends State<_AddParishForm> {
                                         ],
                                       ),
                                       const SizedBox(height: 16),
-                                      // TextFormField(
-                                      //   controller: _websiteController,
-                                      //   decoration: const InputDecoration(labelText: 'Parish Website (optional)', border: OutlineInputBorder()),
-                                      // ),
-                                      // const SizedBox(height: 16),
-                                      // Socials
                                       const SizedBox(height: 24),
                                       const Divider(),
                                       const Text('Socials', style: TextStyle(fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 8),
-                                      Row(
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           const Text('Socials:'),
                                           const SizedBox(width: 8),
@@ -378,7 +398,10 @@ class _AddParishFormState extends State<_AddParishForm> {
                                       const Divider(),
                                       const Text('Announcements', style: TextStyle(fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 8),
-                                      Row(
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           const Text('Announcements:'),
                                           const SizedBox(width: 8),
@@ -536,26 +559,6 @@ class _AddParishFormState extends State<_AddParishForm> {
                                         validator: (v) => v == null || v.isEmpty ? 'Enter address' : null,
                                       ),
                                       const SizedBox(height: 36),
-                                      // Row(
-                                      //   children: [
-                                      //     Expanded(
-                                      //       child: TextFormField(
-                                      //         controller: _latitudeController,
-                                      //         decoration: const InputDecoration(labelText: 'Latitude', border: OutlineInputBorder()),
-                                      //         keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                      //       ),
-                                      //     ),
-                                      //     const SizedBox(width: 8),
-                                      //     Expanded(
-                                      //       child: TextFormField(
-                                      //         controller: _longitudeController,
-                                      //         decoration: const InputDecoration(labelText: 'Longitude', border: OutlineInputBorder()),
-                                      //         keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                      // const SizedBox(height: 16),
                                       TextFormField(
                                         controller: _websiteController,
                                         decoration: const InputDecoration(labelText: 'Parish Website (optional)', border: OutlineInputBorder()),
@@ -565,7 +568,10 @@ class _AddParishFormState extends State<_AddParishForm> {
                                       const Divider(),
                                       const Text('Pastoral Team', style: TextStyle(fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 8),
-                                      Row(
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           const Text('Pastoral Team:'),
                                           const SizedBox(width: 8),
@@ -654,7 +660,10 @@ class _AddParishFormState extends State<_AddParishForm> {
                                       const Divider(),
                                       const Text('Activities', style: TextStyle(fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 8),
-                                      Row(
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           const Text('Activities:'),
                                           const SizedBox(width: 8),
@@ -737,7 +746,10 @@ class _AddParishFormState extends State<_AddParishForm> {
                                       const Divider(),
                                       const Text('Gallery Items', style: TextStyle(fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 8),
-                                      Row(
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           const Text('Gallery Items:'),
                                           const SizedBox(width: 8),
