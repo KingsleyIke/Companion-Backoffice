@@ -37,8 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Simulate splash screen delay
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        // TODO: Add navigation logic here
-        // Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed('/mobile-home');
       }
     });
   }
@@ -64,29 +63,22 @@ class _SplashScreenState extends State<SplashScreen>
                 height: 120,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
-                    colors: [Colors.blue[400]!, Colors.blue[700]!],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.transparent,
                 ),
-                child: const Icon(
-                  Icons.check_circle,
-                  color: Colors.white,
-                  size: 60,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'assets/images/app_icon_main.jpeg',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(height: 30),
-              Text(
-                'Companion',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[700],
-                    ),
-              ),
+              //Todod This is where you loading readings and parishes then save to lacal db
+              // const CircularProgressIndicator(),
               const SizedBox(height: 10),
               Text(
-                'Loading...',
+                'Welcome to Companion',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey[600],
                     ),

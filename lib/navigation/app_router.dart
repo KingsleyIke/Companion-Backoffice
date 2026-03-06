@@ -10,10 +10,11 @@ import 'package:companion/features/auth/presentation/signup_screen.dart';
 import 'package:companion/features/auth/presentation/forgot_password_screen.dart';
 import 'package:companion/features/auth/presentation/all_users_screen.dart';
 import 'package:companion/features/home/presentation/home_screen.dart';
+import 'package:companion/features/home/presentation/mobile_home_page.dart' as mobile_home;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:html' as html;
 
 class AppRouter {
+    static const String mobileHomeRoute = '/mobile-home';
   static const String splashRoute = '/splash';
   static const String loginRoute = '/login';
   static const String signupRoute = '/signup';
@@ -26,73 +27,28 @@ class AppRouter {
   static const String addParishRoute = '/add-parish';
   static const String viewParishesRoute = '/view-parishes';
 
-  /// Returns the initial route based on platform, authentication state, and current URL
+  /// Returns the initial route based on authentication state
   static String getInitialRoute() {
-    // Check if user is already authenticated in Firebase
     final currentUser = FirebaseAuth.instance.currentUser;
-    
-    // Get the current URL path from browser (Flask Web URL syncing uses path: /home, /create-account, etc.)
-    final currentUrl = html.window.location.href;
-    
-    // Parse the requested route from the URL
-    String? requestedRoute;
-    if (currentUrl.contains('/login')) {
-      requestedRoute = loginRoute;
-    } else if (currentUrl.contains('/signup')) {
-      requestedRoute = signupRoute;
-    } else if (currentUrl.contains('/forgot-password')) {
-      requestedRoute = forgotPasswordRoute;
-    } else if (currentUrl.contains('/home') || currentUrl.contains('/dashboard')) {
-      requestedRoute = homeRoute;
-    } else if (currentUrl.contains('/create-account')) {
-      requestedRoute = createAccountRoute;
-    } else if (currentUrl.contains('/all-users')) {
-      requestedRoute = allUsersRoute;
-    } else if (currentUrl.contains('/splash')) {
-      requestedRoute = splashRoute;
-    } else if (currentUrl.contains('/add-reading')) {
-      requestedRoute = addReadingRoute;
-    } else if (currentUrl.contains('/view-readings')) {
-      requestedRoute = viewReadingsRoute;
-    } else if (currentUrl.contains('/add-parish')) {
-      requestedRoute = addParishRoute;
-    } else if (currentUrl.contains('/view-parishes')) {
-      requestedRoute = viewParishesRoute;
-    }
-    
-    // List of public routes (accessible without authentication)
-    const publicRoutes = [loginRoute, signupRoute, forgotPasswordRoute, splashRoute];
-    
-    // List of protected routes (requires authentication)
-    const protectedRoutes = [homeRoute, createAccountRoute, allUsersRoute];
-    
-    // If user is authenticated
-    if (currentUser != null) {
-      // If they requested a valid route, let them access it
-      if (requestedRoute != null) {
-        return requestedRoute;
+    if (currentUser == null) {
+      if (PlatformDetector.isMobile) {
+        return splashRoute;
+      } else {
+        return loginRoute;
       }
-      // Otherwise default to home
-      return homeRoute;
-    }
-    
-    // User is not authenticated
-    // If they requested a public route, allow it
-    if (requestedRoute != null && publicRoutes.contains(requestedRoute)) {
-      return requestedRoute;
-    }
-    
-    // If they requested a protected route or unknown route, redirect to login on web, splash on mobile
-    if (PlatformDetector.isWeb) {
-      return loginRoute;
     } else {
-      return splashRoute;
+      return homeRoute;
     }
   }
 
   /// Generates routes for the app
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case mobileHomeRoute:
+        return MaterialPageRoute(
+          builder: (_) => const mobile_home.MobileHomePage(),
+          settings: settings,
+        );
       case splashRoute:
         return MaterialPageRoute(
           builder: (_) => const SplashScreen(),
