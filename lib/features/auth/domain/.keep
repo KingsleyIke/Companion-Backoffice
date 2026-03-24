@@ -1,7 +1,0 @@
-/// Authentication domain layer
-/// 
-/// This module contains business logic entities and interfaces for authentication.
-/// Structure:
-/// - entities/: Data models that represent core domain concepts
-/// - repositories/: Abstract interfaces for data operations
-/// - usecases/: Business logic operations

@@ -1,6 +1,0 @@
-/// App constants and enums
-/// 
-/// This module contains:
-/// - Constant values (URLs, timeouts, etc.)
-/// - Enumerations (AppStatus, UserRole, etc.)
-/// - String constants and error codes
