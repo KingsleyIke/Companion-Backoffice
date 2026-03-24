@@ -13,7 +13,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-    // Initialize Firebase
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -28,22 +28,31 @@ class CatholicCompanionBackOffice extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider()..initialize(),
+        ),
         ChangeNotifierProvider(create: (_) => ParishProvider()),
         ChangeNotifierProvider(create: (_) => ReadingsProvider()),
         ChangeNotifierProvider(create: (_) => UsersProvider()),
         ChangeNotifierProvider(create: (_) => ApprovalsProvider()),
       ],
-      child: Builder(
-        builder: (context) {
-          final authProvider = context.watch<AuthProvider>();
-          return MaterialApp.router(
-            title: 'CC Back Office',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            routerConfig: AppRouter.router(authProvider),
-          );
-        },
+      child: const _AppBuilder(),
+    );
+  }
+}
+
+class _AppBuilder extends StatelessWidget {
+  const _AppBuilder();
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    return ScaffoldMessenger(
+      child: MaterialApp.router(
+        title: 'CC Back Office',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        routerConfig: AppRouter.router(authProvider),
       ),
     );
   }

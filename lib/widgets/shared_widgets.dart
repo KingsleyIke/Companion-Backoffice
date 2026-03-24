@@ -1,5 +1,101 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../router/app_router.dart' show navigatorKey;
+
+// ── Snackbar Utility ──────────────────────────────────────────────────────────
+/// Shows a reusable snackbar with success (green) or error (red) styling
+/// Works even if the calling widget is being unmounted during navigation
+/// 
+/// Usage:
+/// ```dart
+/// showCustomSnackbar(context, 'Login successful!', isSuccess: true);
+/// showCustomSnackbar(context, 'Invalid credentials', isSuccess: false);
+/// ```
+void showCustomSnackbar(
+  BuildContext context,
+  String message, {
+  bool isSuccess = true,
+  Duration duration = const Duration(seconds: 4),
+  SnackBarAction? action,
+}) {
+  try {
+    print('📱 Snackbar requested - isSuccess: $isSuccess, message: $message');
+    
+    final backgroundColor = isSuccess ? Colors.green[600] : AppColors.error;
+    final icon = isSuccess ? Icons.check_circle_outline : Icons.error_outline;
+
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: backgroundColor,
+      duration: duration,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      action: action,
+    );
+
+    // Try to get the ScaffoldMessenger from context
+    // This works even if the calling widget is being unmounted
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    
+    if (messenger != null) {
+      print('📱 Found ScaffoldMessenger, showing snackbar...');
+      try {
+        // Clear any previous snackbars
+        messenger.clearSnackBars();
+        // Show the new snackbar
+        messenger.showSnackBar(snackBar);
+        print('✅ Snackbar shown successfully');
+      } catch (e) {
+        print('⚠️ Error showing snackbar on first attempt: $e');
+        // Try again with post-frame callback as fallback
+        _showSnackbarWithFallback(snackBar);
+      }
+    } else {
+      print('⚠️ No ScaffoldMessenger found in context, using fallback');
+      _showSnackbarWithFallback(snackBar);
+    }
+  } catch (e) {
+    print('🔴 Critical error in showCustomSnackbar: $e');
+  }
+}
+
+/// Fallback method to show snackbar using post-frame callback and root navigator
+void _showSnackbarWithFallback(SnackBar snackBar) {
+  try {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        // Access the root navigator to get a valid context
+        final context = navigatorKey.currentContext;
+        if (context != null) {
+          final messenger = ScaffoldMessenger.maybeOf(context);
+          if (messenger != null) {
+            messenger.clearSnackBars();
+            messenger.showSnackBar(snackBar);
+            print('✅ Snackbar shown via fallback method');
+          }
+        }
+      } catch (e) {
+        print('🔴 Fallback method failed: $e');
+      }
+    });
+  } catch (e) {
+    print('🔴 Error setting up fallback: $e');
+  }
+}
 
 // ── Page header ───────────────────────────────────────────────────────────────
 class PageHeader extends StatelessWidget {

@@ -34,8 +34,8 @@ class AppColors {
   static const Color textPrimary    = Color(0xFF1A1A2E);
   static const Color textSecondary  = Color(0xFF6B7280);
   static const Color textHint       = Color(0xFFB0B0B0);
-  static const Color sidebarBg     = Color(0xFF1565C0);
-  static const Color sidebarText   = Color(0xFFFFFFFF);
+  static const Color sidebarBg     = Color.fromARGB(255, 6, 28, 54);
+  static const Color sidebarText   = Color.fromARGB(255, 193, 56, 56);
 }
 
 class AppTheme {

@@ -1,3 +1,4 @@
+import 'package:companion/screens/users/create_users.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
@@ -12,6 +13,9 @@ import '../screens/approvals/approvals_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../widgets/bo_scaffold.dart';
 
+// Global navigator key for accessing navigator from anywhere
+final navigatorKey = GlobalKey<NavigatorState>();
+
 class AppRoutes {
   static const login      = '/login';
   static const dashboard  = '/dashboard';
@@ -22,12 +26,14 @@ class AppRoutes {
   static const addReading = '/readings/add';
   static const editReading= '/readings/edit/:id';
   static const users      = '/users';
+  static const createUser = '/create_user';
   static const approvals  = '/approvals';
   static const settings   = '/settings';
 }
 
 class AppRouter {
   static GoRouter router(AuthProvider authProvider) => GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: AppRoutes.dashboard,
     debugLogDiagnostics: false,
 
@@ -94,6 +100,10 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.users,
             builder: (_, __) => const UsersScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.createUser,
+            builder: (_, __) => const CreateUserScreen(),
           ),
 
           // Approvals
