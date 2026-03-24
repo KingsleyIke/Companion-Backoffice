@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:companion/navigation/app_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 /// Observer to sync browser URL with route changes
 

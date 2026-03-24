@@ -1,9 +1,0 @@
-/// Core reusable widgets
-/// 
-/// This module contains widgets that are used across multiple features:
-/// - CustomButton
-/// - CustomTextField
-/// - LoadingIndicator
-/// - ErrorDialog
-/// - SnackBars
-/// - Custom AppBars and Drawers

@@ -81,31 +81,37 @@ class _HomeScreenState extends State<HomeScreen> {
         // final userName = authProvider.currentUser?.firstName ?? 'User';
 
         return Scaffold(
-          appBar: AppBar(
-            // title: Text('Welcome, $userName!'),
-            backgroundColor: Colors.blue[700],
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            actions: [
-              // Profile Icon
-              IconButton(
-                icon: const Icon(Icons.person),
-                onPressed: () {
-                  _showProfileDialog(context, authProvider);
-                },
-                tooltip: 'Profile',
-              ),
-              // Logout Icon
-              IconButton(
-                icon: const Icon(Icons.logout),
-                onPressed: () {
-                  _showLogoutDialog(context, authProvider);
-                },
-                tooltip: 'Logout',
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
+          // appBar: AppBar(
+          //   // title: Text('Welcome, $userName!'),
+          //   backgroundColor: Colors.blue[700],
+          //   elevation: 0,
+          //   automaticallyImplyLeading: false,
+          //   actions: [
+          //     // Profile Icon
+          //     IconButton(
+          //       icon: const Icon(Icons.person),
+          //       onPressed: () {
+          //         _showProfileDialog(context, authProvider);
+          //       },
+          //       tooltip: 'Profile',
+          //     ),
+          //     // Logout Icon
+          //     IconButton(
+          //       icon: const Icon(Icons.logout),
+          //       onPressed: () {
+          //         _showLogoutDialog(context, authProvider);
+          //       },
+          //       tooltip: 'Logout',
+          //     ),
+          //     const SizedBox(width: 8),
+          //   ],
+          // ),
+
+        //   PageHeader(
+        //   title: '',
+        //   subtitle: '',
+        // ),
+
           body: Row(
             children: [
               // Left Sidebar Drawer
@@ -162,121 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context, AuthProvider authProvider) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await authProvider.signOut();
-              if (context.mounted) {
-                Navigator.of(context)
-                    .pushReplacementNamed(AppRouter.loginRoute);
-              }
-            },
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showProfileDialog(BuildContext context, AuthProvider authProvider) {
-    final firstNameController = TextEditingController(
-      text: authProvider.currentUser?.firstName ?? '',
-    );
-    final lastNameController = TextEditingController(
-      text: authProvider.currentUser?.lastName ?? '',
-    );
-    final phoneController = TextEditingController(
-      text: authProvider.currentUser?.phoneNumber ?? '',
-    );
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('User Profile'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: firstNameController,
-                decoration: const InputDecoration(
-                  labelText: 'First Name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: lastNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Last Name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Phone',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintText: authProvider.currentUser?.email ?? 'N/A',
-                  border: const OutlineInputBorder(),
-                  enabled: false,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: 'Role',
-                  hintText: authProvider.currentUser?.role.displayName ?? 'N/A',
-                  border: const OutlineInputBorder(),
-                  enabled: false,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // TODO: Save profile changes (would need to add a method to authProvider)
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Profile update feature coming soon'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
     );
   }
 }

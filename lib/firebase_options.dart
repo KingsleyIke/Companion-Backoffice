@@ -15,7 +15,6 @@ class DefaultFirebaseOptions {
       case TargetPlatform.windows:
       case TargetPlatform.linux:
       case TargetPlatform.fuchsia:
-      default:
         return web;
     }
   }

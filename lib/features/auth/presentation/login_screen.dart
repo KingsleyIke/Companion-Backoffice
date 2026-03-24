@@ -1,3 +1,4 @@
+import 'package:companion/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:companion/features/auth/presentation/providers/auth_provider.dart';
@@ -79,14 +80,53 @@ class _LoginScreenState extends State<LoginScreen> {
     final isMobileLayout = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(isMobileLayout ? 20.0 : 40.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: Row(
+        children: [
+          Expanded(
+            flex: 1,
+              child: Container(
+                color: AppColors.sidebarBg,
+                child: const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(48),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.church, color: Colors.white, size: 60),
+                        SizedBox(height: 24),
+                        Text('Catholic Companion',
+                            style: TextStyle(color: Colors.white, fontSize: 32,
+                                fontWeight: FontWeight.w800)),
+                        SizedBox(height: 8),
+                        Text('Back Office Admin Panel',
+                            style: TextStyle(color: Colors.white70, fontSize: 16)),
+                        SizedBox(height: 32),
+                        _FeatureBullet(icon: Icons.location_city_outlined,
+                            text: 'Manage parishes & contacts'),
+                        _FeatureBullet(icon: Icons.menu_book_outlined,
+                            text: 'Add & publish daily readings'),
+                        _FeatureBullet(icon: Icons.check_circle_outline,
+                            text: 'Review contributor approvals'),
+                        _FeatureBullet(icon: Icons.people_outline,
+                            text: 'Manage users & roles'),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          Expanded(
+            flex: 2,
+            child:
+          SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(isMobileLayout ? 20.0 : 40.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Logo/Header
@@ -97,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         gradient: LinearGradient(
-                          colors: [Colors.blue[400]!, Colors.blue[700]!],
+                          colors: [AppColors.sidebarBg, AppColors.sidebarBg],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -117,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[700],
+                          color: AppColors.sidebarBg,
                         ),
                   ),
                   const SizedBox(height: 10),
@@ -199,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         'Forgot Password?',
-                        style: TextStyle(color: Colors.blue[700]),
+                        style: TextStyle(color: AppColors.sidebarBg, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -212,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed:
                             authProvider.isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[700],
+                          backgroundColor: AppColors.sidebarBg,
                           disabledBackgroundColor: Colors.grey[400],
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
@@ -241,35 +281,41 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-
-                  // Sign Up Link
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Text(
-                  //       "Don't have an account? ",
-                  //       style: TextStyle(color: Colors.grey[600]),
-                  //     ),
-                  //     TextButton(
-                  //       onPressed: () {
-                  //         Navigator.of(context).pushNamed(AppRouter.signupRoute);
-                  //       },
-                  //       child: Text(
-                  //         'Create one',
-                  //         style: TextStyle(
-                  //           color: Colors.blue[700],
-                  //           fontWeight: FontWeight.bold,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
+                  Text(
+                    'Catholic Companion Back Office . Admin only',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                  )
                 ],
               ),
             ),
           ),
         ),
       ),
+      ),
+      ],
+      )
     );
   }
+}
+
+
+class _FeatureBullet extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _FeatureBullet({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white70, size: 18),
+            const SizedBox(width: 10),
+            Text(text, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+          ],
+        ),
+      );
 }

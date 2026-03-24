@@ -43,7 +43,7 @@ class _AddParishFormState extends State<_AddParishForm> {
           _websiteController.text = parish.website ?? '';
           _latitudeController.text = parish.latitude?.toString() ?? '';
           _longitudeController.text = parish.longitude?.toString() ?? '';
-          _imageUrls = List<String>.from(parish.images ?? []);
+          _imageUrls = List<String>.from(parish.images);
           // Prepopulate socials
           _socials.clear();
           if (parish.socials != null) {
@@ -100,35 +100,6 @@ class _AddParishFormState extends State<_AddParishForm> {
   final List<Map<String, String>> _activities = [];
   // Gallery
   final List<Map<String, dynamic>> _gallery = [];
-
-  // Gallery image picker
-  Future<void> _pickGalleryImages() async {
-    setState(() => _isUploadingImage = true);
-    final picker = ImagePicker();
-    final pickedFiles = await picker.pickMultiImage();
-    if (pickedFiles.isEmpty) {
-      setState(() => _isUploadingImage = false);
-      return;
-    }
-    final storage = FirebaseStorage.instance;
-    List<String> galleryImageUrls = [];
-    for (final file in pickedFiles) {
-      final ref = storage.ref().child('parish_gallery/${file.name}');
-      await ref.putData(await file.readAsBytes());
-      final url = await ref.getDownloadURL();
-      galleryImageUrls.add(url);
-    }
-    setState(() {
-      _gallery.add({
-        'title': '',
-        'text': '',
-        'images': galleryImageUrls,
-        'names': pickedFiles.map((f) => f.name).toList(),
-        'previews': galleryImageUrls,
-      });
-      _isUploadingImage = false;
-    });
-  }
 
   Future<void> _pickAndUploadImages() async {
     setState(() => _isUploadingImage = true);

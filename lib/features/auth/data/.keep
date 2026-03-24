@@ -1,7 +1,0 @@
-/// Authentication data layer
-/// 
-/// This module contains implementation details for authentication.
-/// Structure:
-/// - models/: Data models with JSON serialization
-/// - datasources/: Firebase and local data sources
-/// - repositories/: Implementation of domain repositories

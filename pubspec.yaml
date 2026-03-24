@@ -41,6 +41,8 @@ dependencies:
   firebase_storage: 12.1.2 # Optional, for storage
   firebase_analytics: 11.2.1 # Optional, for analytics
   image_picker: ^1.2.1
+  go_router: ^13.2.0
+
 #  font_awesome_flutter: ^10.4.0
 
 

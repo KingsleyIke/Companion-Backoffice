@@ -1,6 +1,5 @@
 import 'package:companion/features/parishes/parish_location_constants.dart';
 import 'package:companion/features/parishes/add_parish_page.dart';
-import 'package:companion/features/readings/add_reading_page.dart';
 import 'package:flutter/material.dart';
 import 'models/parish.dart';
 import 'repositories/parish_repository.dart';

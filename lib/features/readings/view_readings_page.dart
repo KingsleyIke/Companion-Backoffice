@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'models/reading.dart';
 import 'repositories/reading_repository.dart';
 import 'package:companion/features/shared/widgets/app_drawer.dart';
-import 'package:companion/features/readings/add_reading_page.dart' show AddReadingPage;
+import 'package:companion/features/readings/add_reading_page.dart';
 
 class ViewReadingsPage extends StatefulWidget {
   const ViewReadingsPage({Key? key}) : super(key: key);

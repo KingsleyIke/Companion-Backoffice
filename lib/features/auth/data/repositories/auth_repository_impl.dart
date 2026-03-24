@@ -3,7 +3,6 @@ import 'package:companion/features/auth/domain/entities/user_entity.dart';
 import 'package:companion/features/auth/domain/entities/auth_result.dart';
 import 'package:companion/features/auth/domain/repositories/auth_repository.dart';
 import 'package:companion/features/auth/data/datasources/firebase_auth_datasource.dart';
-import 'package:companion/constants/user_roles.dart';
 
 /// Implementation of AuthRepository using Firebase
 class AuthRepositoryImpl implements AuthRepository {

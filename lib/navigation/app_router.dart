@@ -3,14 +3,11 @@ import 'package:companion/features/parishes/view_parishes_page.dart';
 import 'package:companion/features/readings/add_reading_page.dart';
 import 'package:companion/features/readings/view_readings_page.dart';
 import 'package:flutter/material.dart';
-import 'package:companion/core/utils/platform_detector.dart';
-import 'package:companion/features/splash/presentation/splash_screen.dart';
 import 'package:companion/features/auth/presentation/login_screen.dart';
 import 'package:companion/features/auth/presentation/signup_screen.dart';
 import 'package:companion/features/auth/presentation/forgot_password_screen.dart';
 import 'package:companion/features/auth/presentation/all_users_screen.dart';
 import 'package:companion/features/home/presentation/home_screen.dart';
-import 'package:companion/features/home/presentation/mobile_home_page.dart' as mobile_home;
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AppRouter {
@@ -31,11 +28,11 @@ class AppRouter {
   static String getInitialRoute() {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      if (PlatformDetector.isMobile) {
-        return splashRoute;
-      } else {
+      // if (PlatformDetector.isMobile) {
+      //   return splashRoute;
+      // } else {
         return loginRoute;
-      }
+      // }
     } else {
       return homeRoute;
     }
@@ -44,16 +41,16 @@ class AppRouter {
   /// Generates routes for the app
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case mobileHomeRoute:
-        return MaterialPageRoute(
-          builder: (_) => const mobile_home.MobileHomePage(),
-          settings: settings,
-        );
-      case splashRoute:
-        return MaterialPageRoute(
-          builder: (_) => const SplashScreen(),
-          settings: settings,
-        );
+      // case mobileHomeRoute:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const mobile_home.MobileHomePage(),
+      //     settings: settings,
+      //   );
+      // case splashRoute:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const SplashScreen(),
+      //     settings: settings,
+      //   );
 
       case loginRoute:
         return MaterialPageRoute(

@@ -1,7 +1,0 @@
-/// Home feature domain layer
-/// 
-/// This module contains business logic for home screen.
-/// Structure:
-/// - entities/: Data models
-/// - repositories/: Abstract interfaces
-/// - usecases/: Business logic (fetch data, etc.)
