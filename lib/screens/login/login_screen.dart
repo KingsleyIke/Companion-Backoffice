@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                 color: AppColors.sidebarBg,
                 padding: const EdgeInsets.all(48),
-                child: SingleChildScrollView(
+                child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,14 +119,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // ── Login form ────────────────────────────────────────────────────
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 440),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(35),
+                // constraints: const BoxConstraints(maxWidth: 440),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -209,7 +208,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
