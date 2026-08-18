@@ -1,0 +1,59 @@
+# --- OS ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# --- Editors / IDEs ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.swp
+*.swo
+
+# Editor/IDE workspace state — machine-local, never shared
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+*.code-workspace
+*.sublime-workspace
+*.sublime-project
+.project
+.classpath
+.settings/
+
+# --- Node / pnpm ---
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+
+# --- Build output ---
+dist/
+tmp/
+out-tsc/
+coverage/
+.angular/
+
+# --- Nx ---
+.nx/cache
+.nx/workspace-data
+
+# --- Environment (never commit secrets — .env.example only) ---
+.env
+.env.*
+!.env.example
+
+# --- Misc ---
+*.log
+.cache/
