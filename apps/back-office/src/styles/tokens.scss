@@ -1,0 +1,109 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  Catholic Companion — Design Tokens
+//  Angular back office. Mirror of theme.dart — change both together.
+//
+//  Source: extracted from the Figma-generated React code (task 1.1.10).
+//  Values marked OBSERVED appear in the design components. Values marked
+//  DERIVED were interpolated to complete the scale — approve or replace them.
+//
+//  NOTE: the design's own theme.css was stock shadcn/ui defaults and contained
+//  none of these colours. The palette below was mined from hardcoded values in
+//  individual components. See Doc 6 §1.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Brand: maroon (mobile primary, liturgical red/violet register) ──────────
+$maroon-50:  #fdf2f4;  // DERIVED — pale surface, icon-circle backgrounds
+$maroon-100: #fbe4e8;  // DERIVED — accent circles behind icons
+$maroon-200: #f5c6cd;  // DERIVED — borders on tinted cards
+$maroon-300: #e89aa5;  // DERIVED
+$maroon-400: #8b1a26;  // OBSERVED
+$maroon-500: #7a1520;  // OBSERVED
+$maroon-600: #6b0f1a;  // OBSERVED — ★ BRAND PRIMARY
+$maroon-700: #5a0d17;  // OBSERVED
+$maroon-800: #3a0509;  // OBSERVED — header gradient end
+$maroon-900: #2a0408;  // OBSERVED — deepest
+
+// ── Back office: blue ──────────────────────────────────────────────────────
+// ⚠ #2196f3 has only 3.12:1 against white — it FAILS WCAG AA (4.5:1) for
+//   body text and links. Use $blue-700 for text and keep $blue-500 for large
+//   headers and filled buttons only.
+$blue-50:   #e3f2fd;  // DERIVED
+$blue-100:  #bbdefb;  // DERIVED
+$blue-500:  #2196f3;  // OBSERVED — large surfaces / filled buttons only
+$blue-600:  #1976d2;  // DERIVED
+$blue-700:  #1565c0;  // DERIVED — 5.75:1, use for text and links
+$navy-900:  #1a1d2e;  // OBSERVED — sidebar
+$navy-800:  #1a2035;  // OBSERVED — sidebar hover
+
+// ── Neutrals (from the design's shadcn base) ────────────────────────────────
+$white:        #ffffff;
+$page-bg:      #f2f3f8;  // OBSERVED — mobile page background
+$surface:      #ffffff;
+$input-bg:     #f3f3f5;  // OBSERVED
+$neutral-100:  #ececf0;  // OBSERVED — muted
+$neutral-200:  #e9ebef;  // OBSERVED — accent
+$neutral-500:  #717182;  // OBSERVED — muted foreground
+$neutral-900:  #030213;  // OBSERVED — foreground
+$switch-bg:    #cbced4;  // OBSERVED
+
+// ── Semantic ───────────────────────────────────────────────────────────────
+$destructive:  #d4183d;  // OBSERVED
+$success:      #2e7d32;  // DERIVED — approval states
+$warning:      #b26a00;  // DERIVED — pending states, "Tradition:" callouts
+$info:         $blue-700;
+
+// ── Liturgical colours ─────────────────────────────────────────────────────
+// Displayed as vestment-colour indicators. NOT theme colours — do not restyle
+// the UI with these. `gold` is required (Doc 2 B2).
+$liturgical: (
+  white:  #f5f5f0,
+  red:    #b71c1c,
+  green:  #2e7d32,
+  violet: #6a1b9a,
+  rose:   #e91e63,
+  black:  #212121,
+  gold:   #c9a227,
+);
+
+// ── Radii (from the design's --radius: 0.625rem) ────────────────────────────
+$radius-sm: 0.375rem;  //  6px
+$radius-md: 0.5rem;    //  8px
+$radius-lg: 0.625rem;  // 10px — base
+$radius-xl: 0.875rem;  // 14px
+$radius-2xl: 1.25rem;  // 20px — cards
+$radius-pill: 999px;
+
+// ── Spacing (4px base) ─────────────────────────────────────────────────────
+$space-1: 0.25rem; $space-2: 0.5rem;  $space-3: 0.75rem; $space-4: 1rem;
+$space-5: 1.25rem; $space-6: 1.5rem;  $space-8: 2rem;    $space-10: 2.5rem;
+$space-12: 3rem;   $space-16: 4rem;
+
+// ── Type ───────────────────────────────────────────────────────────────────
+// Base 16px from the design's --font-size. Only two weights are used.
+$font-base:   1rem;      // 16px
+$text-xs:     0.75rem;   // 12px
+$text-sm:     0.875rem;  // 14px
+$text-md:     1rem;      // 16px
+$text-lg:     1.125rem;  // 18px
+$text-xl:     1.25rem;   // 20px
+$text-2xl:    1.5rem;    // 24px
+$text-3xl:    1.875rem;  // 30px
+
+$weight-normal: 400;   // OBSERVED
+$weight-medium: 500;   // OBSERVED
+$line-height:   1.5;   // OBSERVED — design applies 1.5 to all headings
+
+// ── Elevation ──────────────────────────────────────────────────────────────
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
+
+// ── Scrim for text over photography ────────────────────────────────────────
+// Doc 4 §6.7: several home tiles fail contrast. Apply this gradient under any
+// text sitting on an image, and re-check the result reaches 4.5:1.
+$image-scrim: linear-gradient(
+  to top,
+  rgba(0, 0, 0, 0.78) 0%,
+  rgba(0, 0, 0, 0.45) 45%,
+  rgba(0, 0, 0, 0.05) 100%
+);
