@@ -1,10 +1,10 @@
-const nx = require('@nx/eslint-plugin');
-const baseConfig = require('../../eslint.config.js');
+import nx from '@nx/eslint-plugin';
+import baseConfig from '../../eslint.config.mjs';
 
-module.exports = [
-  ...baseConfig,
+export default [
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
+  ...baseConfig,
   {
     files: ['**/*.ts'],
     rules: {

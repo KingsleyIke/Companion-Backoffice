@@ -74,9 +74,9 @@ Work through these in a browser before touching any code. ~45 minutes.
 Everything via Homebrew. No containers.
 
 ```bash
-# Node 20 + package manager
-brew install node@20 pnpm
-node --version    # expect v20.x
+# Node 24 LTS + package manager
+brew install node@24 pnpm
+node --version    # expect v24.x
 
 # CLIs
 pnpm add -g @angular/cli @nestjs/cli

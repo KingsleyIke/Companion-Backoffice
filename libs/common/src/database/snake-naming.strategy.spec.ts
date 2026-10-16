@@ -7,6 +7,10 @@ describe('SnakeNamingStrategy', () => {
     expect(strategy.tableName('ParishContact', undefined)).toBe('parish_contact');
   });
 
+  it('splits acronyms from the following word', () => {
+    expect(strategy.tableName('OSMImportBatch', undefined)).toBe('osm_import_batch');
+  });
+
   it('keeps an explicit table name', () => {
     expect(strategy.tableName('Parish', 'parish_v2')).toBe('parish_v2');
   });

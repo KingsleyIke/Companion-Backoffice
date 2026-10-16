@@ -1,5 +1,4 @@
 import { DefaultNamingStrategy, NamingStrategyInterface } from 'typeorm';
-import { snakeCase } from 'typeorm/util/StringUtils';
 
 export class SnakeNamingStrategy extends DefaultNamingStrategy implements NamingStrategyInterface {
   override tableName(targetName: string, userSpecifiedName: string | undefined): string {
@@ -40,4 +39,11 @@ export class SnakeNamingStrategy extends DefaultNamingStrategy implements Naming
   ): string {
     return snakeCase(`${tableName}_${columnName ?? propertyName}`);
   }
+}
+
+function snakeCase(value: string): string {
+  return value
+    .replace(/([A-Z])([A-Z])([a-z])/g, '$1_$2$3')
+    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+    .toLowerCase();
 }

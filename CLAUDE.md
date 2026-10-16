@@ -9,10 +9,11 @@ NestJS API + BullMQ worker + Angular back office for a Nigerian Catholic parish 
 | Layer | Choice |
 |---|---|
 | Database | PostgreSQL 16 + PostGIS (hosted Supabase, **no Docker**) |
-| ORM | TypeORM |
-| API | NestJS 10, Node 20, TypeScript strict |
+| Monorepo | Nx 23, pnpm |
+| ORM | TypeORM 1.x |
+| API | NestJS 11, Node 24 LTS, TypeScript 6 strict |
 | Queue | BullMQ + Redis *(not needed until task 1.2.6)* |
-| Back office | Angular 18 + Angular Material |
+| Back office | Angular 22 + Angular Material |
 | Storage | Cloudflare R2 via the S3 API |
 | Push | FCM via `firebase-admin` |
 | Calendar | **Annual Ordo import. No calendar library.** |
