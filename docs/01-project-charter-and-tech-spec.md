@@ -239,7 +239,7 @@ Mobile flavours: `dev`, `staging`, `prod` — separate bundle IDs so all three c
 
 ### 6.2 Git
 
-- Branches: `main` (production) ← `develop` ← `feature/*`, `fix/*`
+- Branches: `main` (production) ← `snapshot` ← `TSK-<task-number>-<task-to-be-done>`, e.g. `TSK-1.2.9-parish-contacts` (see `CLAUDE.md`)
 - Conventional Commits (`feat:`, `fix:`, `chore:`) — drives changelog generation
 - PRs require: passing CI, one approval, no direct pushes to `main`
 
