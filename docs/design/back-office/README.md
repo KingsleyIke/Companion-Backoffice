@@ -18,6 +18,7 @@ parishes-list.png
 parishes-add.png
 approvals.png
 settings.png
+and more
 ```
 
 `Screenshot 2026-08-17 at 14.32.11.png` is useless for this. Rename them.
