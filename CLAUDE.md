@@ -52,6 +52,17 @@ When asked to create a branch, build the name from the task ID and branch from `
 
 ---
 
+## Working agreement
+
+These apply to every task, whether or not the prompt repeats them.
+
+- **Never commit.** Leave every change uncommitted so it can be reviewed in the IDE, and finish with a suggested commit message (Conventional Commits). Push or open pull requests only when explicitly asked, and only what has already been committed.
+- **No Claude attribution.** No `Co-Authored-By` trailer in commit messages, suggested or real, and no "Generated with Claude Code" line in pull request descriptions.
+- **Never invent liturgical data.** Feast days, dates, ranks, colours and readings come only from the imported Ordo and Lectionary. If a task needs them, stop and ask.
+- **Never seed, fixture or test from the design mockups.** Their liturgical content is placeholder and factually wrong (Doc 4 §4, Doc 6 §3).
+
+---
+
 ## Hard rules
 
 1. **`synchronize: false`. Always.** TypeORM's synchronize silently drops columns. Every schema change is a migration.
