@@ -103,10 +103,10 @@ No Docker. All infrastructure is hosted from the first commit — see Document 3
 | Layer | Technology | Why |
 |---|---|---|
 | Database | **PostgreSQL 16 + PostGIS 3.4** | Native geospatial indexing for "nearest parish"; relational integrity for the moderation workflow |
-| ORM | **TypeORM** | Mature migrations, raw-SQL escape hatch for PostGIS queries |
-| Backend | **NestJS 10 (Node 20, TypeScript)** | Modular structure that survives a broad codebase; DI model mirrors Angular |
+| ORM | **TypeORM 1.x** | Mature migrations, raw-SQL escape hatch for PostGIS queries |
+| Backend | **NestJS 11 (Node 24 LTS, TypeScript 6)** | Modular structure that survives a broad codebase; DI model mirrors Angular |
 | Queue | **BullMQ + Redis 7** | Notification fan-out, image processing, scheduled jobs |
-| Back office | **Angular 18 + Angular Material** | Shares NestJS's architectural model — one mental model across both |
+| Back office | **Angular 22 + Angular Material** | Shares NestJS's architectural model — one mental model across both |
 | Mobile | **Flutter 3.x (Dart)** | Best-in-class offline story via Drift; consistent rendering; single codebase |
 | Local DB | **Drift (SQLite)** | Type-safe, reactive queries, ships a pre-built seed database |
 | Object storage | **Cloudflare R2** | Zero egress cost — decisive for an image- *and audio*-heavy app |
@@ -160,6 +160,7 @@ Recorded so nobody relitigates them.
 | React / Next.js back office | Angular | Angular mirrors NestJS's DI and module model — one mental model for a small team |
 | Ionic for mobile | Flutter | Webview rendering degrades on the long, content-heavy scrolling that *is* this app |
 | Elasticsearch | Postgres FTS | Enormous operational overhead for a dataset of thousands of rows |
+| NestJS 12 | NestJS 11 | ESM-only; Nx 23 still generates and tests CommonJS NestJS 11, and ESM would complicate Jest and the TypeORM CLI. Revisit when Nx supports it. |
 | romcal (or any calendar library) | Annual Ordo import | Computes the *General* Roman Calendar, which Nigeria's particular calendar overrides. Generate-then-correct permanently risks the app disagreeing with the printed Ordo. |
 | Scraping USCCB / Universalis / competitor apps | Licensed Lectionary text, entered | Prohibited by their terms, breaks without warning, and redistributing licensed scripture is a takedown risk |
 | Computing readings from citations + a Bible text table | Storing Lectionary text directly | Its only benefit was cheap translation-swapping. The Lectionary *is* the authority — you will never swap. |
@@ -239,7 +240,7 @@ Mobile flavours: `dev`, `staging`, `prod` — separate bundle IDs so all three c
 
 ### 6.2 Git
 
-- Branches: `main` (production) ← `develop` ← `feature/*`, `fix/*`
+- Branches: `main` (production) ← `snapshot` ← `TSK-<task-number>-<task-to-be-done>`, e.g. `TSK-1.2.9-parish-contacts` (see `CLAUDE.md`)
 - Conventional Commits (`feat:`, `fix:`, `chore:`) — drives changelog generation
 - PRs require: passing CI, one approval, no direct pushes to `main`
 

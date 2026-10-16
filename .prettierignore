@@ -1,0 +1,8 @@
+/dist
+/coverage
+/.nx/cache
+/.nx/workspace-data
+docs/
+CLAUDE.md
+pnpm-lock.yaml
+apps/back-office/src/styles/tokens.scss

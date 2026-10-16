@@ -1,7 +1,5 @@
 # Catholic Companion — Platform
 
-> Rename this file to `CLAUDE.md` at the root of `catholic-platform`.
-
 NestJS API + BullMQ worker + Angular back office for a Nigerian Catholic parish directory and liturgical companion. Mobile app lives in the separate `catholic-mobile` repo.
 
 ---
@@ -11,10 +9,11 @@ NestJS API + BullMQ worker + Angular back office for a Nigerian Catholic parish 
 | Layer | Choice |
 |---|---|
 | Database | PostgreSQL 16 + PostGIS (hosted Supabase, **no Docker**) |
-| ORM | TypeORM |
-| API | NestJS 10, Node 20, TypeScript strict |
+| Monorepo | Nx 23, pnpm |
+| ORM | TypeORM 1.x |
+| API | NestJS 11, Node 24 LTS, TypeScript 6 strict |
 | Queue | BullMQ + Redis *(not needed until task 1.2.6)* |
-| Back office | Angular 18 + Angular Material |
+| Back office | Angular 22 + Angular Material |
 | Storage | Cloudflare R2 via the S3 API |
 | Push | FCM via `firebase-admin` |
 | Calendar | **Annual Ordo import. No calendar library.** |
@@ -36,6 +35,19 @@ Located in `docs/`:
 | `design/back-office/` | Building a back-office screen — read the relevant image |
 
 Work is identified by task ID (`1.2.4`, `1.3.15`). If a prompt names one, read that task in Doc 2 Part A first.
+
+---
+
+## Branches
+
+Every branch is named `TSK-<task-number>-<task-to-be-done>`:
+
+- `<task-number>` is the Doc 2 Part A task ID, dots kept: `1.2.9`. When a branch covers several tasks, use the first ID.
+- `<task-to-be-done>` is a short kebab-case summary of the work.
+
+Examples: `TSK-1.1.4-church-hierarchy-schema`, `TSK-1.4.3-delta-sync-engine`.
+
+When asked to create a branch, build the name from the task ID and branch from `snapshot` unless told otherwise. If no task ID applies, ask for one rather than inventing a number.
 
 ---
 
@@ -89,19 +101,24 @@ Read Doc 1 §9 in full. The traps:
 
 ```bash
 pnpm install
+cp .env.example .env                # then fill in the Supabase connection strings
 
-npx nx serve api                    # API on :3000, Swagger at /api/docs
+npx nx serve api                    # API on :3000 under /api/v1
 npx nx serve back-office            # Angular on :4200
-npx nx serve worker                 # BullMQ processors
+npx nx serve worker                 # BullMQ processors (from task 1.2.6)
 
 pnpm migration:generate -- <Name>   # after entity changes
+pnpm migration:create -- <Name>     # empty migration, for SQL TypeORM can't diff
 pnpm migration:run
 pnpm migration:revert
+pnpm migration:show
 
-npx nx test api
-npx nx e2e api
-pnpm generate:client                # OpenAPI → Angular client
+pnpm lint && pnpm test && pnpm build   # what CI runs, after pnpm format:check
+npx nx e2e api-e2e
+pnpm generate:client                # OpenAPI → Angular client (from task 1.1.7)
 ```
+
+Entities live in `libs/entities` and must be added to its `ENTITIES` array. Migrations live in `migrations/`. Tables and columns are snake_case via `SnakeNamingStrategy`, so entity properties stay camelCase.
 
 ---
 
