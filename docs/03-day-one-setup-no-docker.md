@@ -6,6 +6,8 @@
 > **Reading of the requirement:** no Docker, no local database or Redis installation. Develop directly against hosted managed services from the first commit, so there is never a migration from "local setup" to "real setup".
 >
 > This is a legitimate approach and it is what this document describes. Trade-offs in §2 — read them before committing.
+>
+> **Update, October 2026:** local development now uses a Docker database; Supabase hosts staging (`snapshot`) and production (`main`). Doc 7 in the platform repo is authoritative for environments. Sections 3–4 and 9 still apply.
 
 ---
 

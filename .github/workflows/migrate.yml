@@ -1,0 +1,48 @@
+name: Migrate database
+
+# snapshot → Supabase test project (GitHub environment "staging")
+# main     → Supabase production project (GitHub environment "production", requires approval)
+on:
+  push:
+    branches: [snapshot, main]
+  workflow_dispatch:
+
+concurrency:
+  group: migrate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    env:
+      NODE_ENV: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      MIGRATION_DATABASE_URL: ${{ secrets.MIGRATION_DATABASE_URL }}
+      DATABASE_SSL: 'true'
+      PRODUCTION_DATABASE_REF: ${{ vars.PRODUCTION_DATABASE_REF }}
+    steps:
+      - name: Check the environment is configured
+        id: configured
+        run: |
+          if [ -z "$MIGRATION_DATABASE_URL" ] || [ -z "$DATABASE_URL" ]; then
+            echo "::notice::Database secrets are not set for this environment yet; skipping migrations."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.configured.outputs.ready == 'true'
+        uses: actions/checkout@v4
+      - if: steps.configured.outputs.ready == 'true'
+        uses: pnpm/action-setup@v4
+      - if: steps.configured.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - if: steps.configured.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.configured.outputs.ready == 'true'
+        run: pnpm migration:show
+      - if: steps.configured.outputs.ready == 'true'
+        run: pnpm migration:run

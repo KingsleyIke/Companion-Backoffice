@@ -219,9 +219,11 @@ catholic-mobile/
 
 | Env | Database | Storage | Hosting | Purpose |
 |---|---|---|---|---|
-| **local** | Supabase `catholic-dev` (hosted) | R2 dev bucket | App runs natively on your Mac | Development. Zero cost, no containers. |
-| **staging** | Supabase free project | R2 (staging bucket) | Railway | Internal QA, TestFlight builds |
-| **production** | Supabase Pro | R2 | Railway/Fly.io | Live |
+| **local** (`TSK-*`, `snapshot-dev`) | Postgres 17 + PostGIS in Docker | R2 dev bucket | App runs natively on your Mac | Development |
+| **staging** (`snapshot`) | Supabase `catholic-test` | R2 (staging bucket) | Railway | Internal QA, TestFlight builds |
+| **production** (`main`) | Supabase `catholic-prod` (Pro) | R2 | Railway/Fly.io | Live |
+
+Migrations reach staging and production only through CI. See Doc 7 in the platform repo.
 
 Mobile flavours: `dev`, `staging`, `prod` — separate bundle IDs so all three can coexist on one device.
 
@@ -240,7 +242,7 @@ Mobile flavours: `dev`, `staging`, `prod` — separate bundle IDs so all three c
 
 ### 6.2 Git
 
-- Branches: `main` (production) ← `snapshot` ← `TSK-<task-number>-<task-to-be-done>`, e.g. `TSK-1.2.9-parish-contacts` (see `CLAUDE.md`)
+- Branches: `main` (production) ← `snapshot` (staging) ← `snapshot-dev` (local integration) ← `TSK-<task-number>-<task-to-be-done>`, e.g. `TSK-1.2.9-parish-contacts` (see `CLAUDE.md`)
 - Conventional Commits (`feat:`, `fix:`, `chore:`) — drives changelog generation
 - PRs require: passing CI, one approval, no direct pushes to `main`
 
