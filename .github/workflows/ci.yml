@@ -41,10 +41,12 @@ jobs:
           --health-interval 2s
           --health-timeout 3s
           --health-retries 30
+    # The image pre-installs PostGIS and its add-ons in POSTGRES_DB; the built-in `postgres`
+    # database starts empty, like the local image and a new Supabase project.
     env:
       NODE_ENV: test
-      DATABASE_URL: postgresql://companion:companion@localhost:5432/companion_ci
-      MIGRATION_DATABASE_URL: postgresql://companion:companion@localhost:5432/companion_ci
+      DATABASE_URL: postgresql://companion:companion@localhost:5432/postgres
+      MIGRATION_DATABASE_URL: postgresql://companion:companion@localhost:5432/postgres
       DATABASE_SSL: 'false'
     steps:
       - uses: actions/checkout@v4
