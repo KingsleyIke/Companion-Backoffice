@@ -1,0 +1,23 @@
+# Local development database. Credentials are for this machine only and never reach staging or production.
+name: companion
+
+services:
+  db:
+    build: ./docker/postgres
+    image: companion-postgres:17
+    ports:
+      - '127.0.0.1:${LOCAL_DB_PORT:-5432}:5432'
+    environment:
+      POSTGRES_USER: companion
+      POSTGRES_PASSWORD: companion
+      POSTGRES_DB: companion_dev
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U companion -d companion_dev']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  db-data:

@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, snapshot, snapshot-dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_USER: companion
+          POSTGRES_PASSWORD: companion
+          POSTGRES_DB: companion_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U companion -d companion_ci"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://companion:companion@localhost:5432/companion_ci
+      MIGRATION_DATABASE_URL: postgresql://companion:companion@localhost:5432/companion_ci
+      DATABASE_SSL: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm migration:verify
