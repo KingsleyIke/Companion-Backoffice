@@ -1,6 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typeorm';
 
 import { BaseEntity } from '../base.entity';
+import { ContactDetails } from './contact-details';
 import { MediaAsset } from '../media/media-asset.entity';
 import { Country } from './country.entity';
 import { EcclesiasticalProvince } from './ecclesiastical-province.entity';
@@ -60,14 +61,8 @@ export class Diocese extends BaseEntity {
   @Column({ type: 'date', nullable: true })
   establishedDate!: string | null;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  website!: string | null;
-
-  @Column({ type: 'varchar', length: 254, nullable: true })
-  email!: string | null;
-
-  @Column({ type: 'varchar', length: 32, nullable: true })
-  phone!: string | null;
+  @Column(() => ContactDetails, { prefix: false })
+  contact!: ContactDetails;
 
   @Column({ type: 'uuid', nullable: true })
   logoMediaId!: string | null;

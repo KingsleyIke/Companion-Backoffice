@@ -2,7 +2,7 @@ import { Check, Column, Entity, JoinColumn, ManyToOne, type Relation } from 'typ
 
 import { BaseEntity } from '../base.entity';
 import { MediaAsset } from '../media/media-asset.entity';
-import { RECORD_STATUSES, type RecordStatus } from '../record-status';
+import { RECORD_STATUS_COLUMN, type RecordStatus } from '../record-status';
 
 @Entity()
 @Check('CHK_saint_feast_date_complete', `("feast_month" IS NULL) = ("feast_day" IS NULL)`)
@@ -42,6 +42,6 @@ export class Saint extends BaseEntity {
   @JoinColumn()
   imageMedia!: Relation<MediaAsset> | null;
 
-  @Column({ type: 'enum', enum: RECORD_STATUSES, enumName: 'record_status', default: 'draft' })
+  @Column(RECORD_STATUS_COLUMN)
   status!: RecordStatus;
 }

@@ -3,9 +3,9 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typ
 import { BaseEntity } from '../base.entity';
 import { Country } from '../church/country.entity';
 import { Diocese } from '../church/diocese.entity';
-import { LITURGICAL_SEASONS, type LiturgicalSeason } from '../liturgy/liturgical-enums';
+import { LITURGICAL_SEASON_COLUMN, type LiturgicalSeason } from '../liturgy/liturgical-enums';
 import { MediaAsset } from '../media/media-asset.entity';
-import { RECORD_STATUSES, type RecordStatus } from '../record-status';
+import { RECORD_STATUS_COLUMN, type RecordStatus } from '../record-status';
 import { ContentCategory } from './content-category.entity';
 
 export const CONTENT_COLLECTION_TYPES = [
@@ -88,15 +88,9 @@ export class ContentCollection extends BaseEntity {
   @JoinColumn()
   country!: Relation<Country> | null;
 
-  @Column({
-    type: 'enum',
-    enum: LITURGICAL_SEASONS,
-    enumName: 'liturgical_season',
-    nullable: true,
-  })
+  @Column({ ...LITURGICAL_SEASON_COLUMN, nullable: true })
   liturgicalSeason!: LiturgicalSeason | null;
 
-  // Set for diocese-specific versions of a devotion.
   @Index()
   @Column({ type: 'uuid', nullable: true })
   dioceseId!: string | null;
@@ -121,7 +115,7 @@ export class ContentCollection extends BaseEntity {
   @Column({ type: 'smallint', default: 0 })
   sortOrder!: number;
 
-  @Column({ type: 'enum', enum: RECORD_STATUSES, enumName: 'record_status', default: 'draft' })
+  @Column(RECORD_STATUS_COLUMN)
   status!: RecordStatus;
 
   @Index({ type: 'gin' })

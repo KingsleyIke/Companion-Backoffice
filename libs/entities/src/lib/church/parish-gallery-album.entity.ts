@@ -2,7 +2,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typ
 
 import { BaseEntity } from '../base.entity';
 import { MediaAsset } from '../media/media-asset.entity';
-import { RECORD_STATUSES, type RecordStatus } from '../record-status';
+import { RECORD_STATUS_COLUMN, type RecordStatus } from '../record-status';
 import { Parish } from './parish.entity';
 
 @Entity()
@@ -31,6 +31,6 @@ export class ParishGalleryAlbum extends BaseEntity {
   @Column({ type: 'smallint', default: 0 })
   sortOrder!: number;
 
-  @Column({ type: 'enum', enum: RECORD_STATUSES, enumName: 'record_status', default: 'draft' })
+  @Column(RECORD_STATUS_COLUMN)
   status!: RecordStatus;
 }

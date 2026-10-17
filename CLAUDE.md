@@ -135,11 +135,18 @@ pnpm migration:run
 pnpm migration:revert
 pnpm migration:show
 pnpm migration:verify               # up, down, up — what CI runs on every PR
+pnpm test:db                        # database constraint specs, against a migrated database
 
 pnpm lint && pnpm test && pnpm build   # what CI runs, after pnpm format:check
 npx nx e2e api-e2e
 pnpm generate:client                # OpenAPI → Angular client (from task 1.1.7)
 ```
+
+**Generated migrations can need hand edits** — review every generated file for them:
+
+- A Postgres enum shared by several tables (`record_status`, `liturgical_color`, …) is emitted as one `CREATE TYPE` / `DROP TYPE` per table. Keep one `CREATE` before the first table that uses it and one `DROP` after the last table is dropped.
+- A generated column writes a `typeorm_metadata` row with the local database name hardcoded. Use `current_database()` and `current_schema()` instead (see the `parish` and `content_collection` migrations).
+- A rename is generated as a new table or column, orphaning the old one. Write it as `RENAME`, including constraint names (see `ReviewFixes`).
 
 Entities live in `libs/entities` and must be added to its `ENTITIES` array. Migrations live in `migrations/`. Tables and columns are snake_case via `SnakeNamingStrategy`, so entity properties stay camelCase.
 

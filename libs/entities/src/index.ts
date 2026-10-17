@@ -22,7 +22,7 @@ import { ContentCategory } from './lib/content/content-category.entity';
 import { ContentCollection } from './lib/content/content-collection.entity';
 import { ContentItemTranslation } from './lib/content/content-item-translation.entity';
 import { ContentItem } from './lib/content/content-item.entity';
-import { BibleTranslation } from './lib/liturgy/bible-translation.entity';
+import { LicensedTextSource } from './lib/liturgy/licensed-text-source.entity';
 import { Celebration } from './lib/liturgy/celebration.entity';
 import { LiturgicalDay } from './lib/liturgy/liturgical-day.entity';
 import { LiturgicalYearImport } from './lib/liturgy/liturgical-year-import.entity';
@@ -52,6 +52,7 @@ export * from './lib/admin/admin-session.entity';
 export * from './lib/admin/admin-user.entity';
 export * from './lib/audit-log.entity';
 export * from './lib/base.entity';
+export * from './lib/church/contact-details';
 export * from './lib/church/country.entity';
 export * from './lib/church/deanery.entity';
 export * from './lib/church/diocese-interest.entity';
@@ -70,7 +71,7 @@ export * from './lib/content/content-category.entity';
 export * from './lib/content/content-collection.entity';
 export * from './lib/content/content-item-translation.entity';
 export * from './lib/content/content-item.entity';
-export * from './lib/liturgy/bible-translation.entity';
+export * from './lib/liturgy/licensed-text-source.entity';
 export * from './lib/liturgy/celebration.entity';
 export * from './lib/liturgy/liturgical-day.entity';
 export * from './lib/liturgy/liturgical-enums';
@@ -123,7 +124,7 @@ export const ENTITIES: NonNullable<DataSourceOptions['entities']> = [
   ContributorProfile,
   Submission,
   SubmissionAttachment,
-  BibleTranslation,
+  LicensedTextSource,
   LiturgicalYearImport,
   LiturgicalDay,
   Saint,

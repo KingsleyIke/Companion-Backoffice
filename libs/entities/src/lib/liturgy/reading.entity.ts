@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 import { MediaAsset } from '../media/media-asset.entity';
-import { BibleTranslation } from './bible-translation.entity';
+import { LicensedTextSource } from './licensed-text-source.entity';
 import { ReadingImportBatch } from './reading-import-batch.entity';
 import { ReadingSet } from './reading-set.entity';
 import { VerifiedContent } from './verified-content';
@@ -72,11 +72,11 @@ export class Reading extends VerifiedContent {
   isShorterForm!: boolean;
 
   @Column({ type: 'uuid' })
-  translationId!: string;
+  sourceId!: string;
 
-  @ManyToOne(() => BibleTranslation)
+  @ManyToOne(() => LicensedTextSource)
   @JoinColumn()
-  translation!: Relation<BibleTranslation>;
+  source!: Relation<LicensedTextSource>;
 
   @Column({ type: 'uuid', nullable: true })
   audioMediaId!: string | null;

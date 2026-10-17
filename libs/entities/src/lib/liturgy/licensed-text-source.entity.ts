@@ -11,7 +11,7 @@ export type TextSourceKind = (typeof TEXT_SOURCE_KINDS)[number];
 // country_id. Internal only: never exposed by a public endpoint.
 @Entity()
 @Unique(['countryId', 'abbreviation'])
-export class BibleTranslation extends BaseEntity {
+export class LicensedTextSource extends BaseEntity {
   @Column({ type: 'uuid' })
   countryId!: string;
 

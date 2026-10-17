@@ -2,8 +2,9 @@ import { Check, Column, Entity, Index, JoinColumn, ManyToOne, type Relation } fr
 import type { Point } from 'typeorm';
 
 import { BaseEntity } from '../base.entity';
+import { ContactDetails } from './contact-details';
 import { MediaAsset } from '../media/media-asset.entity';
-import { RECORD_STATUSES, type RecordStatus } from '../record-status';
+import { RECORD_STATUS_COLUMN, type RecordStatus } from '../record-status';
 import { Deanery } from './deanery.entity';
 import { Diocese } from './diocese.entity';
 import { Institution } from './institution.entity';
@@ -109,14 +110,8 @@ export class Parish extends BaseEntity {
   @Column({ type: 'geography', spatialFeatureType: 'Point', srid: 4326, nullable: true })
   location!: Point | null;
 
-  @Column({ type: 'varchar', length: 32, nullable: true })
-  phone!: string | null;
-
-  @Column({ type: 'varchar', length: 254, nullable: true })
-  email!: string | null;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  website!: string | null;
+  @Column(() => ContactDetails, { prefix: false })
+  contact!: ContactDetails;
 
   @Column({ type: 'date', nullable: true })
   establishedDate!: string | null;
@@ -131,7 +126,7 @@ export class Parish extends BaseEntity {
   @JoinColumn()
   coverMedia!: Relation<MediaAsset> | null;
 
-  @Column({ type: 'enum', enum: RECORD_STATUSES, enumName: 'record_status', default: 'draft' })
+  @Column(RECORD_STATUS_COLUMN)
   status!: RecordStatus;
 
   @Index({ type: 'gin' })

@@ -3,7 +3,11 @@ import { Check, Column, Entity, Index, JoinColumn, ManyToOne, type Relation } fr
 import { AdminUser } from '../admin/admin-user.entity';
 import { BaseEntity } from '../base.entity';
 import { MediaAsset } from '../media/media-asset.entity';
-import { IMPORT_STATUSES, type ImportErrorReport, type ImportStatus } from './liturgical-enums';
+import {
+  IMPORT_STATUS_COLUMN,
+  type ImportErrorReport,
+  type ImportStatus,
+} from './liturgical-enums';
 
 export const IMPORT_FORMATS = ['xlsx', 'csv', 'json', 'docx'] as const;
 export type ImportFormat = (typeof IMPORT_FORMATS)[number];
@@ -54,7 +58,7 @@ export class ReadingImportBatch extends BaseEntity {
   @Column({ type: 'int', default: 0 })
   skippedCount!: number;
 
-  @Column({ type: 'enum', enum: IMPORT_STATUSES, enumName: 'import_status', default: 'uploaded' })
+  @Column(IMPORT_STATUS_COLUMN)
   status!: ImportStatus;
 
   @Column({ type: 'jsonb', nullable: true })
