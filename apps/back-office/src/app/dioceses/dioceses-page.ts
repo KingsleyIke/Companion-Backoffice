@@ -4,6 +4,7 @@ import { Api, DioceseDto, listDioceses } from '@companion/contracts';
 @Component({
   selector: 'app-dioceses-page',
   templateUrl: './dioceses-page.html',
+  styleUrl: './dioceses-page.scss',
 })
 export class DiocesesPage {
   private readonly api = inject(Api);

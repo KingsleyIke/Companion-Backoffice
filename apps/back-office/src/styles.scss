@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'tokens' as t;
+
+body {
+  margin: 0;
+  background: t.$surface-page;
+  color: t.$text-primary;
+  font-size: t.$font-base;
+  line-height: t.$line-height;
+}
+
+a {
+  color: t.$text-link;
+}
+
+:focus-visible {
+  outline: 2px solid t.$focus-ring;
+  outline-offset: 2px;
+}

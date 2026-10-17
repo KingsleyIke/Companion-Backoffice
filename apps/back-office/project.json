@@ -21,7 +21,10 @@
             "input": "apps/back-office/public"
           }
         ],
-        "styles": ["apps/back-office/src/styles.scss"]
+        "styles": ["apps/back-office/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["apps/back-office/src/styles"]
+        }
       },
       "configurations": {
         "production": {

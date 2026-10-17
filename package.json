@@ -23,6 +23,7 @@
     "generate:spec": "TS_NODE_PROJECT=tsconfig.scripts.json TS_NODE_TRANSPILE_ONLY=true node -r ts-node/register -r tsconfig-paths/register apps/api/scripts/generate-openapi.ts",
     "generate:client": "pnpm generate:spec && ng-openapi-gen -c libs/contracts/ng-openapi-gen.json",
     "admin:create-super-admin": "TS_NODE_PROJECT=tsconfig.scripts.json TS_NODE_TRANSPILE_ONLY=true node --env-file-if-exists=.env -r ts-node/register -r tsconfig-paths/register apps/api/scripts/create-super-admin.ts",
+    "check:colours": "sh tools/scripts/check-colour-literals.sh",
     "test:db": "node --env-file-if-exists=.env node_modules/jest/bin/jest.js -c jest.db.config.cts"
   },
   "dependencies": {
