@@ -1,10 +1,10 @@
 import { getMetadataArgsStorage } from 'typeorm';
 
-import { AuditLog, BaseEntity, ENTITIES } from './index';
+import { AuditLog, BaseEntity, ContentVersion, ENTITIES } from './index';
 
 // Doc 2 Part B allows exactly three tables outside BaseEntity: audit_log, content_version and
 // parish_follow. Adding to this list needs written justification in the pull request.
-const BASE_ENTITY_EXCEPTIONS: (new () => object)[] = [AuditLog];
+const BASE_ENTITY_EXCEPTIONS: (new () => object)[] = [AuditLog, ContentVersion];
 
 describe('ENTITIES', () => {
   const declared = getMetadataArgsStorage().tables.map((t) => t.target);
