@@ -60,6 +60,15 @@ These apply to every task, whether or not the prompt repeats them.
 - **No Claude attribution.** No `Co-Authored-By` trailer in commit messages, suggested or real, and no "Generated with Claude Code" line in pull request descriptions.
 - **Never invent liturgical data.** Feast days, dates, ranks, colours and readings come only from the imported Ordo and Lectionary. If a task needs them, stop and ask.
 - **Never seed, fixture or test from the design mockups.** Their liturgical content is placeholder and factually wrong (Doc 4 §4, Doc 6 §3).
+- **Hold every code change to the thermo-nuclear quality bar before handing it over.** After implementing, review your own diff the way `/thermo-nuclear-code-quality-review` would, and fix what it finds rather than only reporting it:
+  - Look for the restructuring that deletes complexity (fewer branches, helpers, modes or layers), not a tidier version of the same idea.
+  - No file goes from 1000 lines or fewer to more than 1000. Decompose first.
+  - No ad-hoc conditionals or special cases bolted onto unrelated flows. Give the logic its own abstraction.
+  - No thin wrappers, pass-through helpers, unnecessary casts, `any`, `unknown` or optionality that hides the real contract.
+  - Logic lives in the layer that owns the concept. Reuse existing helpers instead of writing near-duplicates.
+  - No needlessly sequential orchestration and no updates that can leave state half-applied.
+
+  End the hand-over with a short **Quality review** note: what was simplified, and any finding deliberately left, with the reason. For a formal review before a pull request, run `/thermo-nuclear-code-quality-review`.
 
 ---
 
@@ -144,6 +153,7 @@ Entities live in `libs/entities` and must be added to its `ENTITIES` array. Migr
 - [ ] Error and empty states handled
 - [ ] No new lint warnings; strict mode clean
 - [ ] `docs/` updated if behaviour changed
+- [ ] Self-reviewed against the thermo-nuclear quality bar (Working agreement); findings fixed or explained
 
 ---
 
