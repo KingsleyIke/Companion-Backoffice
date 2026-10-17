@@ -138,6 +138,7 @@ pnpm migration:revert
 pnpm migration:show
 pnpm migration:verify               # up, down, up — what CI runs on every PR
 pnpm test:db                        # database constraint specs, against a migrated database
+pnpm admin:create-super-admin       # interactive; creates a super admin with TOTP enrolled
 
 pnpm lint && pnpm test && pnpm build   # what CI runs, after pnpm format:check
 npx nx e2e api-e2e

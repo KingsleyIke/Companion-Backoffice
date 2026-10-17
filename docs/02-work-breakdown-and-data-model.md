@@ -876,6 +876,8 @@ LIMIT 20;
 `id` · `admin_user_id` (FK) · `token_hash` (unique) · `family_id` · `expires_at` · `revoked_at` · `replaced_by_id` (self-FK)
 
 > One row per issued refresh token. Rotation links each token to its replacement; reuse of an already-replaced token revokes every session in its `family_id`. Only hashes are stored.
+>
+> A token lasts 30 days and each refresh issues a new one, but a family can be refreshed for at most 90 days after its first sign-in. A replaced token presented again within 10 seconds (two requests racing with one cookie) is refused without revoking the family; after that it counts as reuse. Logout ends the presented family only — this device.
 
 ### `admin_password_reset`
 `id` · `admin_user_id` (FK) · `token_hash` (unique) · `expires_at` · `used_at`
@@ -926,6 +928,8 @@ LIMIT 20;
 **Index:** `(entity_type, entity_id, created_at)` · `(actor_type, actor_id, created_at)`
 
 **Append-only**, enforced by a trigger that rejects UPDATE and DELETE.
+
+> `ip_address` and `user_agent` are personal data under the NDPR. Retain them for 12 months; a scheduled job clearing older values is still to be built. Auth events are recorded only for admins that exist — an email that matches no account is never stored.
 
 ---
 
@@ -1052,7 +1056,13 @@ POST /api/v1/parishes/{id}/follow · DELETE
 ## C3. Back office (admin)
 
 ```
-POST /api/v1/admin/auth/login                 → + MFA for super_admin
+POST /api/v1/admin/auth/login                 → email + password; super_admin gets mfa_required
+POST /api/v1/admin/auth/login/mfa             → TOTP code completes a super_admin sign-in
+POST /api/v1/admin/auth/refresh               → refresh cookie → new access token, rotated cookie
+POST /api/v1/admin/auth/logout                → ends this device's session
+POST /api/v1/admin/auth/forgot-password       → always 202
+POST /api/v1/admin/auth/reset-password        → single-use link token; ends every session
+GET  /api/v1/admin/auth/me                    → the signed-in admin
 GET  /api/v1/admin/dashboard                  → pending counts by category
 
 CRUD /api/v1/admin/parishes · /dioceses · /deaneries · /mass-schedules

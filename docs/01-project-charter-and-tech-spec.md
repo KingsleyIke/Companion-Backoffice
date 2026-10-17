@@ -131,7 +131,7 @@ This is the table to consult when you pick up a task and need to know what to re
 | 8 | **Scheduled reminders** | BullMQ delayed + repeatable jobs; nightly planner computes tomorrow's sends | Local timezone stored per device |
 | 9 | **Liturgical calendar** | Annual Ordo spreadsheet import (`exceljs`); persisted, never computed | Read from local SQLite |
 | 9b | **Readings ingestion** | `exceljs` (xlsx), `csv-parse`, `mammoth` (docx) → normalised intermediate → dry-run → commit with reversible batch | — |
-| 10 | **Authentication** | `@nestjs/passport` + `passport-jwt`, `argon2` hashing, refresh rotation | `google_sign_in`, `sign_in_with_apple`, `flutter_secure_storage` |
+| 10 | **Authentication** | `@nestjs/jwt` with one global guard (every route needs a token unless marked `@Public()`), `argon2` hashing, refresh rotation | `google_sign_in`, `sign_in_with_apple`, `flutter_secure_storage` |
 | 11 | **Authorization** | Custom `RolesGuard` + diocese-scope guard | Route guards (Angular) |
 | 12 | **Admin data grids** | Paginated, filterable endpoints | Angular Material Table, or PrimeNG for heavier grids |
 | 13 | **API client generation** | `@nestjs/swagger` emits OpenAPI 3 | `ng-openapi-gen` (Angular), `openapi-generator` dart-dio (Flutter) |
@@ -279,7 +279,7 @@ Non-negotiable: **an integration test that launches the app with the network dis
 ## 7. Security baseline
 
 - Argon2id password hashing. Never bcrypt, never MD5, never plaintext.
-- JWT access tokens (15 min) + rotating refresh tokens (30 days), revocable server-side.
+- JWT access tokens (15 min) + rotating refresh tokens (30 days, at most 90 days from sign-in), revocable server-side. The back office keeps the refresh token in an `httpOnly`, `SameSite=Strict` cookie, so **the back office and the API must be served from the same site** in every environment.
 - Back office requires TOTP MFA for `super_admin`.
 - Rate limiting on auth, submission and upload endpoints (`@nestjs/throttler`).
 - All user-supplied HTML sanitised server-side on write, never trusted on read.
