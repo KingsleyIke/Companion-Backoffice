@@ -15,7 +15,7 @@
 | `snapshot` | Supabase **test** project | CI on push (`migrate.yml`, environment `staging`) | `staging` |
 | `main` | Supabase **production** project | CI on push, **after manual approval** (environment `production`) | `production` |
 
-Work flows `TSK-*` → `snapshot-dev` → `snapshot` → `main`, each step a pull request. Every pull request also runs every migration up, down and up again against a throwaway PostGIS container in CI, so a migration that only works one way never reaches Supabase, then runs the database constraint specs (`pnpm test:db`) against the migrated schema.
+Work flows `TSK-*` → `snapshot-dev` → `snapshot` → `main`, each step a pull request. Every pull request also runs every migration up, down and up again against a throwaway PostGIS container in CI, so a migration that only works one way never reaches Supabase, then runs the database constraint specs (`pnpm test:db`) against the migrated schema. CI also regenerates the OpenAPI spec and Angular client (`pnpm generate:client`) and fails if `libs/contracts` differs from what is committed.
 
 The same migrations run in all three places. Nothing is applied by hand in a dashboard.
 

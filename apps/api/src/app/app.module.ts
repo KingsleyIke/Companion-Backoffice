@@ -3,8 +3,7 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { createDataSourceOptions, environmentConfig } from '@companion/common';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { DiocesesModule } from '../modules/dioceses/dioceses.module';
 
 @Module({
   imports: [
@@ -14,8 +13,7 @@ import { AppService } from './app.service';
       useFactory: (environment: ConfigType<typeof environmentConfig>) =>
         createDataSourceOptions(environment),
     }),
+    DiocesesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

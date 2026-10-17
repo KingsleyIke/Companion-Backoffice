@@ -9,8 +9,10 @@
   "include": [
     "jest.config.ts",
     "jest.config.cts",
+    "jest.db.config.cts",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
+    "src/**/*.db-spec.ts",
     "src/**/*.d.ts"
   ]
 }

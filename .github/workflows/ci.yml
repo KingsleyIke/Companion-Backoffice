@@ -24,6 +24,14 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+      - name: Check the API contract and client are regenerated
+        run: |
+          pnpm generate:client
+          if [ -n "$(git status --porcelain -- libs/contracts)" ]; then
+            git status --porcelain -- libs/contracts
+            echo "::error::libs/contracts is out of date. Run pnpm generate:client and commit the result."
+            exit 1
+          fi
 
   migrations:
     runs-on: ubuntu-latest

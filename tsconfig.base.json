@@ -17,7 +17,8 @@
     "paths": {
       "@companion/entities": ["./libs/entities/src/index.ts"],
       "@companion/dto": ["./libs/dto/src/index.ts"],
-      "@companion/common": ["./libs/common/src/index.ts"]
+      "@companion/common": ["./libs/common/src/index.ts"],
+      "@companion/contracts": ["./libs/contracts/src/generated/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
