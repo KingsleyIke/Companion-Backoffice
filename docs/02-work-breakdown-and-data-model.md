@@ -536,7 +536,9 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `user_id` | uuid | FK, nullable |
 | `state` | varchar(120) | nullable — coarse location for unknown dioceses |
 
-**Unique:** `(device_id, diocese_id)` — one vote per device per diocese
+**Unique:** `(device_id, diocese_id)` — one vote per device per diocese · `(device_id)` where `diocese_id IS NULL` — one "not listed" vote per device
+
+**Check:** `diocese_id` or `requested_name` is set
 
 > Drives `rollout_priority` in the back office. This is how you learn where your users actually are rather than guessing which diocese to seed next.
 
@@ -832,7 +834,7 @@ LIMIT 20;
 | `size_bytes` | bigint | non-negative |
 | `blurhash` | varchar(60) | image placeholder |
 | `variants` | jsonb | `{thumb, medium, large}` or `{low, high}` for audio |
-| `uploaded_by_user_id` | uuid | FK, nullable |
+| `uploaded_by_user_id` | uuid | FK → `app_user`, nullable, indexed |
 | `moderation_status` | enum | `pending` \| `auto_passed` \| `auto_flagged` \| `approved` \| `rejected` — default `pending`, indexed |
 | `moderation_labels` | jsonb | Vision/Rekognition output |
 
@@ -846,7 +848,9 @@ LIMIT 20;
 ## B6. Users, auth & contributions
 
 ### `app_user`
-`id` · `email` (unique, nullable) · `phone` · `display_name` · `avatar_media_id` · `auth_provider` (`email`\|`google`\|`apple`) · `provider_uid` · `password_hash` (nullable) · `email_verified_at` · `status` · `points` · `locale` · `timezone` · `country_id`
+`id` · `email` (unique, nullable, stored lowercase) · `phone` · `display_name` · `avatar_media_id` · `auth_provider` (`email`\|`google`\|`apple`) · `provider_uid` · `password_hash` (Argon2id, nullable, never selected by default) · `email_verified_at` · `status` (`active`\|`suspended`) · `points` · `locale` · `timezone` · `country_id`
+
+**Unique:** `(auth_provider, provider_uid)` · **Check:** the `email` provider needs `email` and `password_hash`; Google and Apple need `provider_uid`
 
 ### `admin_user`
 `id` · `email` (unique, stored lowercase) · `name` · `password_hash` (Argon2id, nullable until an invited admin sets one; required once `active`) · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable; required for `diocese_admin`) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret_ciphertext` (encrypted by the application) · `last_login_at` · `invited_by_id` (self-FK)
@@ -864,31 +868,37 @@ LIMIT 20;
 > Single use: `used_at` is set on redemption.
 
 ### `contributor_profile`
-`id` · `user_id` (FK, unique) · `status` (`pending`\|`approved`\|`rejected`\|`revoked`) · `applied_at` · `reviewed_by_admin_id` · `reviewed_at` · `diocese_id` · `parish_affiliation_id` · `bio` · `verification_notes` · `rejection_reason`
+`id` · `user_id` (FK, unique) · `status` (`pending`\|`approved`\|`rejected`\|`revoked`) · `applied_at` · `reviewed_by_admin_id` · `reviewed_at` · `diocese_id` · `parish_affiliation_id` · `bio` · `verification_notes` · `rejection_reason` (required when `rejected`)
 
 ### `submission` ★ moderation core
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
-| `submitter_user_id` | uuid | FK |
+| `submitter_user_id` | uuid | FK, nullable — null for anonymous "suggest my parish" (task 1.5.8) |
+| `submitter_device_id` | uuid | FK, nullable — the anonymous submitter's device |
+| `contact_name`, `contact_email`, `contact_phone` | varchar | nullable — optional anonymous contact details; PII, never logged or exposed |
 | `entity_type` | enum | `parish` \| `parish_info` \| `mass_schedule` \| `gallery` \| `announcement` |
-| `target_entity_id` | uuid | null for creations |
+| `target_entity_id` | uuid | null for creations; required for `update` and `delete` |
 | `operation` | enum | `create` \| `update` \| `delete` |
 | `payload` | jsonb | proposed values |
 | `diff` | jsonb | `{field: {before, after}}` |
 | `status` | enum | `pending` \| `approved` \| `rejected` \| `withdrawn` \| `superseded` |
 | `reviewed_by_admin_id` | uuid | FK, nullable |
 | `reviewed_at` | timestamptz | |
-| `rejection_reason` | text | |
+| `rejection_reason` | text | required when `rejected` |
 | `applied_entity_version` | int | optimistic-lock guard |
-| `diocese_id` | uuid | denormalised for admin scoping |
+| `diocese_id` | uuid | denormalised for admin scoping; null for chaplaincies outside a diocese |
 
-**Index:** `(status, diocese_id, created_at)` · `(submitter_user_id)` · `(target_entity_id)`
+**Index:** `(status, diocese_id, created_at)` · `(submitter_user_id)` · `(submitter_device_id)` · `(target_entity_id)`
+
+**Check:** `submitter_user_id` or `submitter_device_id` is set
 
 > **Never write directly from a contribution.** Store payload, compute diff, apply on approval.
 
 ### `submission_attachment`
-`submission_id` (FK) · `media_asset_id` (FK) · `sort_order`
+`id` · `submission_id` (FK) · `media_asset_id` (FK) · `sort_order`
+
+**Unique:** `(submission_id, media_asset_id)`
 
 ### `announcement`
 `id` · `parish_id` (FK) · `title` · `body_html` · `event_date` · `expires_at` · `media_asset_id` · `status` · `created_by_user_id` · `approved_by_admin_id`
@@ -907,7 +917,7 @@ LIMIT 20;
 ## B7. Notifications runtime
 
 ### `device`
-`id` · `user_id` (FK, **nullable**) · `fcm_token` (unique) · `platform` · `app_version` · `locale` · `timezone` · `country_id` · `last_seen_at` · `is_active`
+`id` · `user_id` (FK, **nullable**) · `fcm_token` (unique) · `platform` (`android`\|`ios`) · `app_version` · `locale` · `timezone` (required — the planner groups by it) · `country_id` · `last_seen_at` · `is_active`
 
 **Index:** `(fcm_token)` unique · `(user_id)` · `(is_active, timezone)`
 
