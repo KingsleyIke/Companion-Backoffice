@@ -849,9 +849,19 @@ LIMIT 20;
 `id` · `email` (unique, nullable) · `phone` · `display_name` · `avatar_media_id` · `auth_provider` (`email`\|`google`\|`apple`) · `provider_uid` · `password_hash` (nullable) · `email_verified_at` · `status` · `points` · `locale` · `timezone` · `country_id`
 
 ### `admin_user`
-`id` · `email` (unique) · `name` · `password_hash` · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret` · `last_login_at` · `invited_by`
+`id` · `email` (unique, stored lowercase) · `name` · `password_hash` (Argon2id, nullable until an invited admin sets one; required once `active`) · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable; required for `diocese_admin`) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret_ciphertext` (encrypted by the application) · `last_login_at` · `invited_by_id` (self-FK)
 
-> **No self-registration.** A super admin creates accounts.
+> **No self-registration.** A super admin creates accounts. `password_hash` and `mfa_secret_ciphertext` are never selected by default.
+
+### `admin_session` — refresh tokens
+`id` · `admin_user_id` (FK) · `token_hash` (unique) · `family_id` · `expires_at` · `revoked_at` · `replaced_by_id` (self-FK)
+
+> One row per issued refresh token. Rotation links each token to its replacement; reuse of an already-replaced token revokes every session in its `family_id`. Only hashes are stored.
+
+### `admin_password_reset`
+`id` · `admin_user_id` (FK) · `token_hash` (unique) · `expires_at` · `used_at`
+
+> Single use: `used_at` is set on redemption.
 
 ### `contributor_profile`
 `id` · `user_id` (FK, unique) · `status` (`pending`\|`approved`\|`rejected`\|`revoked`) · `applied_at` · `reviewed_by_admin_id` · `reviewed_at` · `diocese_id` · `parish_affiliation_id` · `bio` · `verification_notes` · `rejection_reason`
@@ -886,9 +896,11 @@ LIMIT 20;
 **Index:** `(parish_id, status, expires_at)`
 
 ### `audit_log`
-`id` · `actor_type` (`admin`\|`user`\|`system`) · `actor_id` · `action` · `entity_type` · `entity_id` · `before` (jsonb) · `after` (jsonb) · `ip_address` · `user_agent` · `created_at`
+`id` · `actor_type` (`admin`\|`user`\|`system`) · `actor_id` · `action` · `entity_type` · `entity_id` · `before` (jsonb) · `after` (jsonb) · `reason` (text — mandatory override reason, rollback notes) · `ip_address` (inet) · `user_agent` · `created_at`
 
-**Append-only.**
+**Index:** `(entity_type, entity_id, created_at)` · `(actor_type, actor_id, created_at)`
+
+**Append-only**, enforced by a trigger that rejects UPDATE and DELETE.
 
 ---
 

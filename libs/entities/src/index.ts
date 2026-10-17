@@ -1,5 +1,9 @@
 import type { DataSourceOptions } from 'typeorm';
 
+import { AdminPasswordReset } from './lib/admin/admin-password-reset.entity';
+import { AdminSession } from './lib/admin/admin-session.entity';
+import { AdminUser } from './lib/admin/admin-user.entity';
+import { AuditLog } from './lib/audit-log.entity';
 import { Country } from './lib/church/country.entity';
 import { Deanery } from './lib/church/deanery.entity';
 import { Diocese } from './lib/church/diocese.entity';
@@ -15,6 +19,10 @@ import { Parish } from './lib/church/parish.entity';
 import { ReligiousInstitute } from './lib/church/religious-institute.entity';
 import { MediaAsset } from './lib/media/media-asset.entity';
 
+export * from './lib/admin/admin-password-reset.entity';
+export * from './lib/admin/admin-session.entity';
+export * from './lib/admin/admin-user.entity';
+export * from './lib/audit-log.entity';
 export * from './lib/base.entity';
 export * from './lib/church/country.entity';
 export * from './lib/church/deanery.entity';
@@ -43,6 +51,10 @@ export const ENTITIES: NonNullable<DataSourceOptions['entities']> = [
   MassSchedule,
   ParishContact,
   ParishActivity,
+  AdminUser,
+  AdminSession,
+  AdminPasswordReset,
+  AuditLog,
   MediaAsset,
   ParishGalleryAlbum,
   ParishGalleryItem,
