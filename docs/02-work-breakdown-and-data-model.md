@@ -868,9 +868,22 @@ LIMIT 20;
 **Unique:** `(auth_provider, provider_uid)` · **Check:** the `email` provider needs `email` and `password_hash`; Google and Apple need `provider_uid`
 
 ### `admin_user`
-`id` · `email` (stored lowercase, unique among non-deleted rows) · `name` · `password_hash` (Argon2id, nullable until an invited admin sets one; required once `active`) · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable; required for `diocese_admin`) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret_ciphertext` (encrypted by the application) · `last_login_at` · `invited_by_id` (self-FK)
+`id` · `email` (stored lowercase, unique among non-deleted rows) · `name` · `password_hash` (Argon2id, nullable until an invited admin sets one; required once `active`) · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable; set exactly when `role = 'diocese_admin'`) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret_ciphertext` (encrypted by the application) · `last_login_at` · `invited_by_id` (self-FK)
 
 > **No self-registration.** A super admin creates accounts. `password_hash` and `mfa_secret_ciphertext` are never selected by default.
+
+**Role permissions** (task 1.1.6; named sets in `libs/common/src/auth/permissions.ts`):
+
+| Capability | `super_admin` | `admin` | `diocese_admin` | `content_editor` |
+|---|---|---|---|---|
+| Admin accounts and roles, readings override-publish, super-admin-only settings | ✅ | — | — | — |
+| Rollout console (publishing dioceses), app settings, modules, notification topics | ✅ | ✅ | — | — |
+| Directory: dioceses, deaneries, parishes and their children, imports | ✅ all | ✅ all | ✅ own diocese | — |
+| Submissions and contributor applications | ✅ all | ✅ all | ✅ own diocese | — |
+| Readings, Ordo, saints, national content collections | ✅ | ✅ | — | ✅ |
+| Content collections, including diocese-specific devotions | ✅ | ✅ | ✅ own diocese | ✅ |
+
+> `admin` is a national administrator: everything except the super-admin-only row. Diocese scope is enforced in the query layer (`applyDioceseScope`, `assertInScope`): a row outside a diocese admin's scope — including a row with no diocese — answers **404**, so its existence is not revealed. Every route is `@Public()` or declares its roles; the API refuses to start otherwise.
 
 ### `admin_session` — refresh tokens
 `id` · `admin_user_id` (FK) · `token_hash` (unique) · `family_id` · `expires_at` · `revoked_at` · `replaced_by_id` (self-FK)

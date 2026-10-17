@@ -88,7 +88,7 @@ These apply to every task, whether or not the prompt repeats them.
 10. **Money as integer minor units (kobo).** Never floats.
 11. **Cursor pagination** on list endpoints. Offset pagination breaks on live data.
 12. **Argon2id** for passwords. Never bcrypt, never plaintext.
-13. **Diocese scoping is enforced in the query layer**, not the UI. A Lagos admin must not be able to approve Enugu submissions even by crafting a request.
+13. **Diocese scoping is enforced in the query layer**, not the UI. A Lagos admin must not be able to approve Enugu submissions even by crafting a request. Every route is `@Public()` or declares `@Roles(<named set from permissions.ts>)` — the API refuses to start otherwise — and scoped queries use `applyDioceseScope` / `assertInScope` (Doc 2 B6, role permissions).
 
 ---
 

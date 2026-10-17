@@ -15,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { SkipThrottle, Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import {
+  AnyAdmin,
   authConfig,
   CurrentAdmin,
   environmentConfig,
@@ -198,6 +199,7 @@ export class AdminAuthController {
   }
 
   @Get('me')
+  @AnyAdmin()
   @ApiBearerAuth()
   @ApiOperation({ operationId: 'adminMe', summary: 'The signed-in admin' })
   @ApiOkResponse({ type: AdminProfileDto })
