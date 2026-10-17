@@ -10,12 +10,16 @@
     "test": "nx run-many -t test",
     "format": "nx format:write --all",
     "format:check": "nx format:check --all",
-    "typeorm": "TS_NODE_PROJECT=tsconfig.typeorm.json TS_NODE_TRANSPILE_ONLY=true node --env-file=.env -r ts-node/register -r tsconfig-paths/register node_modules/typeorm/cli.js -d libs/common/src/database/migration-data-source.ts",
+    "typeorm": "TS_NODE_PROJECT=tsconfig.typeorm.json TS_NODE_TRANSPILE_ONLY=true node --env-file-if-exists=.env -r ts-node/register -r tsconfig-paths/register node_modules/typeorm/cli.js -d libs/common/src/database/migration-data-source.ts",
     "migration:generate": "sh tools/scripts/migration-generate.sh",
     "migration:create": "sh tools/scripts/migration-generate.sh --empty",
     "migration:run": "pnpm typeorm migration:run",
     "migration:revert": "pnpm typeorm migration:revert",
-    "migration:show": "pnpm typeorm migration:show"
+    "migration:show": "pnpm typeorm migration:show",
+    "db:up": "docker compose up -d --wait db",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && pnpm db:up && pnpm migration:run",
+    "migration:verify": "sh tools/scripts/verify-migrations.sh"
   },
   "dependencies": {
     "@angular/common": "~22.2.0",

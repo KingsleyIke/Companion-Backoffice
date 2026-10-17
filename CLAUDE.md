@@ -8,7 +8,7 @@ NestJS API + BullMQ worker + Angular back office for a Nigerian Catholic parish 
 
 | Layer | Choice |
 |---|---|
-| Database | PostgreSQL 16 + PostGIS (hosted Supabase, **no Docker**) |
+| Database | PostgreSQL 17 + PostGIS — local Docker for development, Supabase for staging and production (Doc 7) |
 | Monorepo | Nx 23, pnpm |
 | ORM | TypeORM 1.x |
 | API | NestJS 11, Node 24 LTS, TypeScript 6 strict |
@@ -32,6 +32,7 @@ Located in `docs/`:
 | `02-work-breakdown-and-data-model.md` | **Every task.** Task IDs, full schema, API surface, sync strategy |
 | `03-day-one-setup-no-docker.md` | Environment problems, Supabase connection issues |
 | `04-ui-review-and-reconciliation.md` | Anything UI-facing. Decisions taken, missing screens |
+| `07-environments-and-databases.md` | Branch → database mapping, local Docker database, Supabase and CI setup |
 | `design/back-office/` | Building a back-office screen — read the relevant image |
 
 Work is identified by task ID (`1.2.4`, `1.3.15`). If a prompt names one, read that task in Doc 2 Part A first.
@@ -47,7 +48,27 @@ Every branch is named `TSK-<task-number>-<task-to-be-done>`:
 
 Examples: `TSK-1.1.4-church-hierarchy-schema`, `TSK-1.4.3-delta-sync-engine`.
 
-When asked to create a branch, build the name from the task ID and branch from `snapshot` unless told otherwise. If no task ID applies, ask for one rather than inventing a number.
+When asked to create a branch, build the name from the task ID and branch from `snapshot-dev` unless told otherwise. Work flows `TSK-*` → `snapshot-dev` → `snapshot` → `main`, each step a pull request. If no task ID applies, ask for one rather than inventing a number.
+
+---
+
+## Working agreement
+
+These apply to every task, whether or not the prompt repeats them.
+
+- **Never commit.** Leave every change uncommitted so it can be reviewed in the IDE, and finish with a suggested commit message (Conventional Commits). Push or open pull requests only when explicitly asked, and only what has already been committed.
+- **No Claude attribution.** No `Co-Authored-By` trailer in commit messages, suggested or real, and no "Generated with Claude Code" line in pull request descriptions.
+- **Never invent liturgical data.** Feast days, dates, ranks, colours and readings come only from the imported Ordo and Lectionary. If a task needs them, stop and ask.
+- **Never seed, fixture or test from the design mockups.** Their liturgical content is placeholder and factually wrong (Doc 4 §4, Doc 6 §3).
+- **Hold every code change to the thermo-nuclear quality bar before handing it over.** After implementing, review your own diff the way `/thermo-nuclear-code-quality-review` would, and fix what it finds rather than only reporting it:
+  - Look for the restructuring that deletes complexity (fewer branches, helpers, modes or layers), not a tidier version of the same idea.
+  - No file goes from 1000 lines or fewer to more than 1000. Decompose first.
+  - No ad-hoc conditionals or special cases bolted onto unrelated flows. Give the logic its own abstraction.
+  - No thin wrappers, pass-through helpers, unnecessary casts, `any`, `unknown` or optionality that hides the real contract.
+  - Logic lives in the layer that owns the concept. Reuse existing helpers instead of writing near-duplicates.
+  - No needlessly sequential orchestration and no updates that can leave state half-applied.
+
+  End the hand-over with a short **Quality review** note: what was simplified, and any finding deliberately left, with the reason. For a formal review before a pull request, run `/thermo-nuclear-code-quality-review`.
 
 ---
 
@@ -89,7 +110,7 @@ Read Doc 1 §9 in full. The traps:
 - **Never scrape** USCCB, Universalis, or any competitor app for readings. Prohibited by their terms and a takedown risk.
 - **Never port the Figma React code.** The back office is Angular. That code is a design reference for tokens and layout only.
 - **Never use the design mockups as test fixtures or seed data.** Their liturgical content is placeholder and factually wrong (see Doc 4 §4).
-- **Never run a destructive migration unattended** against the dev database — there is no local copy to fall back on.
+- **Never merge a destructive migration to `snapshot` unreviewed** — CI applies it to Supabase unattended from there.
 - **Never commit `.env`.** Only `.env.example` with placeholders.
 - **Never log PII.** Nigeria's NDPR applies.
 - **Never expose `parish_contact` rows with `is_public = false`** through a public endpoint.
@@ -101,7 +122,8 @@ Read Doc 1 §9 in full. The traps:
 
 ```bash
 pnpm install
-cp .env.example .env                # then fill in the Supabase connection strings
+cp .env.example .env                # points at the local Docker database
+pnpm db:up                          # start local Postgres + PostGIS
 
 npx nx serve api                    # API on :3000 under /api/v1
 npx nx serve back-office            # Angular on :4200
@@ -112,6 +134,7 @@ pnpm migration:create -- <Name>     # empty migration, for SQL TypeORM can't dif
 pnpm migration:run
 pnpm migration:revert
 pnpm migration:show
+pnpm migration:verify               # up, down, up — what CI runs on every PR
 
 pnpm lint && pnpm test && pnpm build   # what CI runs, after pnpm format:check
 npx nx e2e api-e2e
@@ -130,6 +153,7 @@ Entities live in `libs/entities` and must be added to its `ENTITIES` array. Migr
 - [ ] Error and empty states handled
 - [ ] No new lint warnings; strict mode clean
 - [ ] `docs/` updated if behaviour changed
+- [ ] Self-reviewed against the thermo-nuclear quality bar (Working agreement); findings fixed or explained
 
 ---
 
