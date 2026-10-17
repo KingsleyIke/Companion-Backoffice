@@ -383,7 +383,7 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `currency_code` | char(3) | `NGN` |
 | `is_active` | boolean | **Nigeria only at launch** |
 
-> Product is Nigeria-only; the schema is not. `diocese`, `bible_translation`, `liturgical_day` and `content_collection` all carry `country_id`. Adding Ghana later is seeding rows, not migrating a live schema — and Bible translation licences are **territorial**, so this separation is a legal requirement as much as a technical one.
+> Product is Nigeria-only; the schema is not. `diocese`, `licensed_text_source`, `liturgical_day` and `content_collection` all carry `country_id`. Adding Ghana later is seeding rows, not migrating a live schema — and Bible translation licences are **territorial**, so this separation is a legal requirement as much as a technical one.
 
 ### `app_module` — server-driven navigation
 | Column | Type | Notes |
@@ -393,12 +393,14 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `title`, `subtitle` | varchar | display text |
 | `icon` | varchar(60) | icon identifier the client resolves |
 | `route` | varchar(120) | client route or `content_collection` slug |
-| `group` | enum | `home_primary` \| `home_secondary` \| `drawer` \| `bottom_nav` |
+| `placement` | enum | `home_primary` \| `home_secondary` \| `drawer` \| `bottom_nav` — named `placement` because `group` is an SQL reserved word |
 | `sort_order` | smallint | |
-| `is_enabled` | boolean | |
+| `is_enabled` | boolean | default false — modules ship hidden |
 | `badge_text` | varchar(20) | e.g. "New", "Coming soon" |
 | `min_app_version` | varchar(20) | **hide from older clients that cannot render it** |
 | `country_id` | uuid | FK, nullable = all countries |
+
+**Index:** `(placement, sort_order)`
 
 > The home screen and drawer are **rendered from this table**. Ship "Rosary — Coming soon" as a disabled row, flip `is_enabled` when the content lands. `min_app_version` is what makes this safe: a v1.0 client never sees a module only v1.4 can render.
 
@@ -417,15 +419,19 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `sort_order` | smallint | |
 | `min_app_version` | varchar(20) | |
 
-### `device_notification_subscription`
-`device_id` (FK) · `topic_id` (FK) · `enabled` · `delivery_time` (time) · `lead_days` (smallint) · `frequency` (enum) · `rank_threshold` (enum) · `days_of_week` (jsonb) · `sound_enabled` · `settings` (jsonb, topic-specific overflow)
+**Index:** `(category, sort_order)`
 
-**Unique:** `(device_id, topic_id)`
+### `device_notification_subscription`
+`id` · `device_id` (FK) · `topic_id` (FK) · `enabled` · `delivery_time` (time) · `lead_days` (smallint, ≥ 0) · `frequency` (enum: `daily`\|`weekly`\|`custom`) · `rank_threshold` (`celebration_rank`) · `days_of_week` (jsonb, 0 = Sunday) · `sound_enabled` · `settings` (jsonb, topic-specific overflow)
+
+**Unique:** `(device_id, topic_id)` · **Index:** `(topic_id)`
 
 > **The settings screen has no hardcoded list.** It fetches topics, groups them by `category`, and renders a control per `supports_*` flag. "Divine Mercy at 3pm" and "Rosary reminder" cost one INSERT each and a planner rule. This replaces v1.0's wide `notification_preference` table, which needed a migration plus a release per new toggle.
 
 ### `content_category`
-`id` · `parent_category_id` (self-FK) · `name` · `slug` · `icon` · `sort_order` · `display_style` (`list`\|`grid`\|`carousel`) · `country_id`
+`id` · `parent_category_id` (self-FK) · `name` · `slug` (unique) · `icon` · `sort_order` · `display_style` (`list`\|`grid`\|`carousel`) · `country_id`
+
+**Index:** `(parent_category_id, sort_order)`
 
 ### `content_collection` ★ carries every devotion
 | Column | Type | Notes |
@@ -448,8 +454,10 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | **`days_of_week`** | jsonb | e.g. `[1,6]` for "Mondays & Saturdays" (Rosary mysteries) |
 | `parent_collection_id` | uuid | self-FK — tabs (Rosary = Prayers / Mysteries / Litany) |
 | `sort_order` | smallint | |
-| `status` | enum | `draft` \| `published` \| `archived` |
-| `search_vector` | tsvector | GIN |
+| `status` | enum | `record_status`: `draft` \| `published` \| `archived` |
+| `search_vector` | tsvector | GIN, generated (stored) from `title` (A) and `subtitle` (B), `simple` config |
+
+**Index:** `(category_id, sort_order)` · `(type, status)` · `(diocese_id)` · `(parent_collection_id)`
 
 ### `content_item` — ordered, nestable steps
 | Column | Type | Notes |
@@ -460,16 +468,16 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `sequence` | smallint | order within parent |
 | `item_type` | enum | `station` \| `mystery` \| `decade` \| `prayer` \| `reflection` \| `scripture` \| `antiphon` \| `response` \| `heading` |
 | `title` | varchar(200) | |
-| `body_html` | text | |
+| `body_html` | text | nullable — a `heading` item has no body |
 | `reflection_html` | text | nullable |
 | **`prayer_html`** | text | nullable — Stations show Scripture + Reflection + **Prayer** as three blocks |
 | **`response_text`** | varchar(300) | nullable — litany two-column: `title` is the invocation, this is the response |
 | `scripture_citation` | varchar(120) | nullable |
-| `repeat_count` | smallint | default 1 — "Hail Mary ×10" |
+| `repeat_count` | smallint | default 1, ≥ 1 — "Hail Mary ×10" |
 | `image_media_id` | uuid | FK — station artwork |
 | `audio_media_id` | uuid | FK — per-item audio, if not using collection audio |
 | `audio_start_ms` | int | **chapter offset into the collection recording** |
-| `audio_end_ms` | int | |
+| `audio_end_ms` | int | after `audio_start_ms` when both are set |
 | `metadata` | jsonb | type-specific overflow |
 
 **Indexes:** `(collection_id, parent_item_id, sequence)` · `(collection_id, item_type)`
@@ -506,15 +514,15 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 |---|---|---|
 | `id` | uuid | PK |
 | `country_id` | uuid | FK |
-| `province_id` | uuid | FK |
+| `province_id` | uuid | FK, nullable — null when immediately subject to the Holy See (e.g. a military ordinariate) |
 | `name` | varchar(160) | |
 | `slug` | varchar(180) | unique |
-| `type` | enum | `archdiocese` \| `diocese` \| `vicariate` \| `prefecture` |
+| `type` | enum | `archdiocese` \| `diocese` \| `vicariate` \| `prefecture` \| `military_ordinariate` |
 | `patron_saint`, `bishop_name` | varchar(160) | nullable |
 | `seat_city`, `state` | varchar(120) | |
 | `established_date` | date | nullable |
 | `website`, `email`, `phone` | varchar | nullable |
-| `logo_media_id` | uuid | FK |
+| `logo_media_id` | uuid | FK, nullable |
 | **`publication_status`** | enum | `hidden` \| `in_progress` \| `published` |
 | `published_at` | timestamptz | nullable |
 | `verified_parish_count` | int | cached; recomputed on parish publish |
@@ -536,47 +544,62 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `user_id` | uuid | FK, nullable |
 | `state` | varchar(120) | nullable — coarse location for unknown dioceses |
 
-**Unique:** `(device_id, diocese_id)` — one vote per device per diocese
+**Unique:** `(device_id, diocese_id)` — one vote per device per diocese · `(device_id)` where `diocese_id IS NULL` — one "not listed" vote per device
+
+**Check:** `diocese_id` or `requested_name` is set
 
 > Drives `rollout_priority` in the back office. This is how you learn where your users actually are rather than guessing which diocese to seed next.
 
 ### `deanery`
 `id` · `diocese_id` (FK) · `name` · `slug`
 
+### `religious_institute` — congregations and orders
+`id` · `name` (varchar 200) · `slug` (unique) · `abbreviation` (varchar 20, nullable) · `institute_type` (enum: `religious_order`\|`religious_congregation`\|`society_of_apostolic_life`\|`secular_institute`) · `membership` (enum: `men`\|`women`\|`mixed`) · `website`, `email`, `phone` (nullable) · `description` (text, nullable) · `status` (`record_status`)
+
+### `institution` — the body a chaplaincy serves
+`id` · `name` (varchar 200) · `slug` (unique) · `type` (enum: `seminary`\|`monastery`\|`convent`\|`religious_house`\|`school`\|`tertiary`\|`hospital`\|`military`\|`paramilitary`\|`correctional`\|`other`) · `diocese_id` (FK, nullable) · `religious_institute_id` (FK, nullable) · `affiliation` (varchar 160, nullable — e.g. "Nigerian Army") · `city` (nullable) · `state` · `website`, `email`, `phone` (nullable) · `description` (text, nullable) · `status` (`record_status`)
+
+**Index:** `(type)` · `(diocese_id)` · `(religious_institute_id)`
+
+> Seminaries, monasteries, convents, schools, barracks and the like. An institution has no location of its own; its chaplaincy is a `parish` row with `institution_id` set, and that row carries the map pin, Mass times and contacts. A convent without a public chapel is an `institution` with no `parish` row.
+
 ### `parish` ★ core entity
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
-| `diocese_id` | uuid | FK, denormalised for query performance |
+| `diocese_id` | uuid | FK, nullable — denormalised for query performance; null for a chaplaincy answerable to no diocese |
+| `institution_id` | uuid | FK, nullable — the institution a chaplaincy serves |
+| `religious_institute_id` | uuid | FK, nullable — the congregation it is run by or entrusted to |
 | `deanery_id` | uuid | FK, nullable |
 | `parent_parish_id` | uuid | self-FK — set for outstations |
 | `name` | varchar(200) | |
 | `slug` | varchar(220) | unique |
-| `type` | enum | `parish` \| `outstation` \| `chaplaincy` \| `cathedral` \| `shrine` |
+| `type` | enum | `parish` \| `outstation` \| `chaplaincy` \| `cathedral` \| `shrine` \| `chapel` |
 | `patron_saint` | varchar(160) | nullable |
 | `address_line`, `city`, `lga`, `state` | varchar | |
 | `location` | `geography(Point,4326)` | **GIST index** |
 | `phone`, `email`, `website` | varchar | nullable |
-| `parish_priest_name` | varchar(160) | nullable |
-| `assistant_priests` | jsonb | array of names |
 | `established_date` | date | nullable |
 | `description` | text | nullable |
-| `cover_media_id` | uuid | FK |
-| `status` | enum | `draft` \| `published` \| `archived` |
-| `search_vector` | tsvector | GIN, generated |
+| `cover_media_id` | uuid | FK, nullable |
+| `status` | enum | `record_status`: `draft` \| `published` \| `archived` |
+| `search_vector` | tsvector | GIN, generated (stored) from `name` (A), `patron_saint` (B), `city`/`lga`/`state` (C) with the `simple` config — English stemming mangles Igbo, Yoruba and Hausa names |
 | `verified_at` | timestamptz | last human verification |
 
-**Indexes:** `GIST(location)` · `GIN(search_vector)` · `(diocese_id, status)` · `(parent_parish_id)` · `(updated_at)`
+**Indexes:** `GIST(location)` · `GIN(search_vector)` · `(diocese_id, status)` · `(parent_parish_id)` · `(deanery_id)` · `(institution_id)` · `(religious_institute_id)` · `(updated_at)`
+
+**Checks:** belongs to at least one of diocese, institution or religious institute · a `chaplaincy` has an `institution_id` · an `outstation` has a `parent_parish_id` · a deanery implies a diocese
 
 ```sql
 -- Nearest parishes, ordered by true distance.
--- Note the diocese join: an unpublished diocese is invisible even if its
--- parishes are individually marked published.
+-- An unpublished diocese hides its parishes even if they are individually
+-- published. A chaplaincy with no diocese is gated by its own status alone.
 SELECT p.id, p.name, ST_Distance(p.location, :point) AS metres
 FROM parish p
-JOIN diocese d ON d.id = p.diocese_id
+LEFT JOIN diocese d ON d.id = p.diocese_id
 WHERE p.status = 'published' AND p.deleted_at IS NULL
-  AND d.publication_status = 'published' AND d.deleted_at IS NULL
+  AND (p.diocese_id IS NULL
+       OR (d.publication_status = 'published' AND d.deleted_at IS NULL))
   AND ST_DWithin(p.location, :point, :radius_metres)
 ORDER BY p.location <-> :point
 LIMIT 20;
@@ -585,19 +608,28 @@ LIMIT 20;
 ### `mass_schedule`
 `id` · `parish_id` (FK) · `day_of_week` (smallint 0–6, null if `specific_date`) · `specific_date` (date) · `start_time` (time) · `language` (enum: `english`\|`igbo`\|`yoruba`\|`hausa`\|`latin`\|`other`) · `type` (enum: `sunday`\|`weekday`\|`vigil`\|`holy_day`\|`adoration`\|`confession`\|`novena`) · `notes` · `effective_from` · `effective_to`
 
+`day_of_week` is 0 = Sunday … 6 = Saturday; exactly one of `day_of_week` and `specific_date` is set.
+
+**Index:** `(parish_id, day_of_week)`
+
+> **Vigil Masses are Saturday evening but fulfil the Sunday obligation.** Store `day_of_week = 6` with `type = 'vigil'`, surface under Sunday.
+
 ### `parish_contact` ★ clergy **and** pastoral team
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
 | `parish_id` | uuid | FK |
 | **`contact_group`** | enum | `clergy` \| `pastoral_team` — the design's two separate repeaters |
-| `role` | varchar(120) | free text: "Parish Priest", "Ass. Parish Priest", "Parish Catechist", "CWO Chairperson" |
+| `role` | enum | `parish_priest` \| `assistant_priest` \| `resident_priest` \| `chaplain` \| `rector` \| `catechist` \| `sacristan` \| `secretary` \| `other` |
+| `role_title` | varchar(120) | nullable; required when `role = 'other'` ("CWO Chairperson") |
 | `full_name` | varchar(160) | |
 | `phone`, `email` | varchar | nullable |
 | **`is_public`** | boolean | default false |
 | `sort_order` | smallint | |
 
-**Index:** `(parish_id, contact_group, sort_order)`
+**Index:** `(parish_id, contact_group, sort_order)` · unique `(parish_id)` where `role = 'parish_priest'` and not deleted — one parish priest per parish
+
+> Clergy and staff live here, not on `parish`. The parish priest is the `parish_priest` row.
 
 > **`is_public` is not optional.** Publishing a catechist's personal mobile number without consent is a data-protection problem under the NDPR and a trust problem with parishes. Default to hidden; require an explicit tick to publish.
 
@@ -607,15 +639,22 @@ LIMIT 20;
 > **`schedule_text` is deliberately free text.** Real entries are "First Thursday/Friday", "1st Sunday: workers & tithe", "Wed from 6:30am". Structuring this will fight reality and produce wrong data.
 
 ### `parish_gallery_album`
-`id` · `parish_id` (FK) · `title` (varchar 160) · `event_date` (date, nullable) · `cover_media_id` (FK) · `sort_order` · `status` (enum)
+`id` · `parish_id` (FK) · `title` (varchar 160) · `event_date` (date, nullable) · `cover_media_id` (FK, nullable) · `sort_order` · `status` (`record_status`)
 
-`parish_gallery_item` gains **`album_id`** (FK, nullable).
+**Index:** `(parish_id, sort_order)`
+
+`parish_gallery_item` gains **`album_id`** (FK, nullable). An item's album must belong to the same parish — enforced in the gallery service.
 
 > From the design: *"Each album represents an activity or event (e.g. Harvest 2025, Christmas Mass). This is separate from the parish building photos above."* An item with `album_id IS NULL` is a building photo.
 
-**Index:** `(parish_id, day_of_week)`
+---
 
-> **Vigil Masses are Saturday evening but fulfil the Sunday obligation.** Store `day_of_week = 6` with `type = 'vigil'`, surface under Sunday.
+### `parish_social_link`
+`id` · `parish_id` (FK) · `platform` (enum: `facebook`\|`instagram`\|`x`\|`youtube`\|`tiktok`\|`whatsapp`\|`website`\|`other`) · `url` (varchar 500) · `sort_order`
+
+**Index:** `(parish_id, sort_order)`
+
+> Backs the social links repeater (task 1.2.12).
 
 ---
 
@@ -628,14 +667,15 @@ LIMIT 20;
 | `country_id` | uuid | FK |
 | `date` | date | |
 | `season` | enum | `advent` \| `christmas` \| `ordinary` \| `lent` \| `triduum` \| `easter` |
-| `week_of_season`, `day_of_week` | smallint | |
-| `sunday_cycle` | enum | `A` \| `B` \| `C` |
-| `weekday_cycle` | enum | `I` \| `II` |
+| `week_of_season` | smallint | nullable — as printed |
+| `day_of_week` | smallint | 0 = Sunday; must match `date` |
+| `sunday_cycle` | enum | `A` \| `B` \| `C` — nullable, as printed |
+| `weekday_cycle` | enum | `I` \| `II` — nullable, as printed |
 | `liturgical_color` | enum | `green` \| `white` \| `red` \| `violet` \| `rose` \| `black` \| **`gold`** |
-| `rosary_mystery_set` | enum | `joyful` \| `luminous` \| `sorrowful` \| `glorious` — the "Today's Rosary" field |
+| `rosary_mystery_set` | enum | `joyful` \| `luminous` \| `sorrowful` \| `glorious` — the "Today's Rosary" field; nullable, **editor-entered, not in the Ordo** — the Ordo import never writes it |
 | `is_holy_day_of_obligation` | boolean | **country-specific** |
-| `import_id` | uuid | FK → `liturgical_year_import` — provenance |
-| `source_reference` | varchar(160) | e.g. `Nigerian Ordo 2026/2027, p.44` |
+| `import_id` | uuid | FK → `liturgical_year_import` — provenance, required |
+| `source_reference` | varchar(160) | e.g. `Nigerian Ordo 2026/2027, p.44` — required |
 
 **Unique:** `(country_id, date)` — *not* `date` alone. National calendars diverge.
 
@@ -649,22 +689,22 @@ LIMIT 20;
 | `year_label` | varchar(20) | `2026/2027` — liturgical year, begins at Advent |
 | `source_document` | varchar(160) | `Nigerian Ordo 2026/2027` |
 | `start_date`, `end_date` | date | coverage |
-| `file_media_id` | uuid | FK — the uploaded spreadsheet, retained |
+| `file_media_id` | uuid | FK — the uploaded spreadsheet, retained; required |
 | `uploaded_by_admin_id` | uuid | FK |
 | `row_count`, `inserted_count`, `updated_count` | int | |
 | `status` | enum | `uploaded` \| `validated` \| `committed` \| `rolled_back` \| `failed` |
 | `error_report` | jsonb | `[{row, column, message}]` |
 | `committed_at`, `rolled_back_at` | timestamptz | |
 
-**Unique:** `(country_id, year_label)` where `status = 'committed'` — one committed Ordo per year.
+**Unique:** `(country_id, year_label)` where `status = 'committed'` — one committed Ordo per year. **Check:** `end_date >= start_date`
 
 ### `celebration`
 `id` · `liturgical_day_id` (FK) · `name` · `rank` (enum: `solemnity`\|`feast`\|`memorial`\|`optional_memorial`\|`ferial`) · `precedence` (smallint, lower wins) · `saint_id` (FK, nullable) · `is_proper_to_country` (boolean) · `liturgical_color` · `is_primary`
 
-**Index:** `(liturgical_day_id, precedence)`
+**Index:** `(liturgical_day_id, precedence)` · unique `(liturgical_day_id)` where `is_primary` — one primary celebration per day
 
 ### `saint`
-`id` · `name` · `feast_date` (month-day) · `biography` · `patronage` · `birth_year` · `death_year` · `canonization_date` · `image_media_id`
+`id` · `name` · `feast_month`, `feast_day` (smallints, both or neither) · `biography` · `patronage` · `birth_year` · `death_year` · `canonization_date` · `image_media_id` · `status` (`record_status`)
 
 ### `reading_set` ★ multi-Mass days
 | Column | Type | Notes |
@@ -680,14 +720,16 @@ LIMIT 20;
 | **`personal_devotion_html`** | text | "Personal Devotion" — nullable |
 | `sort_order` | smallint | |
 
-**Unique:** `(liturgical_day_id, mass_type, cycle)`
+**Unique:** `(liturgical_day_id, mass_type, cycle)` · `(liturgical_day_id, mass_type)` where `cycle IS NULL`
 
-> **Why this exists:** Christmas has four distinct Mass sets with different readings; the Easter Vigil has nine. One-set-per-date is wrong and expensive to fix later. The back office presents a **day-centric editor with a Mass-set selector** (task 1.3.13) — one form, but an admin can add sets to a date.
+**Verification:** carries the same verification columns as `reading` (see below) — they gate the reflection and personal devotion.
+
+> **Why this exists:** Christmas has four distinct Mass sets with different readings; Easter has a Vigil Mass and a Mass during the Day. One-set-per-date is wrong and expensive to fix later. The Easter Vigil is one set holding up to nine readings: readings beyond the first and second are typed `additional`, ordered by `sequence`, with the printed label in `heading`. The back office presents a **day-centric editor with a Mass-set selector** (task 1.3.13) — one form, but an admin can add sets to a date.
 >
 > **Reflection and devotion are original content**, not Lectionary text. Someone must write them 365 days a year, and a doctrinal error there is as damaging as a wrong Gospel — so they pass through the same verification gate.
 
 ### `mass_proper`
-`id` · `reading_set_id` (FK) · `type` (enum: `entrance_antiphon` \| `collect` \| `prayer_after_communion` \| `offertory` \| `communion_antiphon`) · `body_html` (sanitised) · `source_reference`
+`id` · `reading_set_id` (FK) · `type` (enum: `entrance_antiphon` \| `collect` \| `prayer_after_communion` \| `offertory` \| `communion_antiphon`) · `body_html` (sanitised) · `source_id` (FK → `licensed_text_source` of kind `missal`, required) · `source_reference` · the verification columns of `reading`
 
 **Unique:** `(reading_set_id, type)`
 
@@ -696,7 +738,7 @@ LIMIT 20;
 ### `psalm_stanza`
 `id` · `reading_id` (FK) · `sequence` (smallint) · `body_html`
 
-**Index:** `(reading_id, sequence)`
+**Unique:** `(reading_id, sequence)` — verified with its parent reading
 
 > The renderer inserts `reading.psalm_response` between stanzas, matching the design. Storing the psalm as one blob cannot produce that layout.
 
@@ -705,7 +747,7 @@ LIMIT 20;
 |---|---|---|
 | `id` | uuid | PK |
 | `reading_set_id` | uuid | FK |
-| `type` | enum | `first` \| `psalm` \| `second` \| `acclamation` \| `gospel` \| `sequence` |
+| `type` | enum | `first` \| `psalm` \| `second` \| `additional` \| `acclamation` \| `gospel` \| `sequence` — `additional` is for readings beyond the second, as at the Easter Vigil |
 | `sequence` | smallint | display order |
 | `citation` | varchar(120) | display string, e.g. `Lk 21:25-28, 34-36` |
 | `heading` | varchar(200) | nullable — "First Reading", "Gospel" |
@@ -713,9 +755,9 @@ LIMIT 20;
 | `title` | varchar(240) | the reading's theme, e.g. "The Transfiguration of the Lord" |
 | **`closing_line`** | varchar(120) | "The word of the Lord." / "The Gospel of the Lord." |
 | `body_html` | text | **sanitised on write** — the text as printed in the Lectionary |
-| `psalm_response` | varchar(300) | psalms only |
+| `psalm_response` | varchar(300) | psalms only (CHECK) |
 | `is_shorter_form` | boolean | the Lectionary's optional shorter readings |
-| `translation_id` | uuid | FK → `bible_translation` |
+| `source_id` | uuid | FK → `licensed_text_source` (kind `lectionary`), required |
 | `audio_media_id` | uuid | FK, nullable — Phase 3 |
 | **`verification_status`** | enum | `draft` \| `ocr_raw` \| `proofread` \| `verified` |
 | `proofread_by_admin_id`, `proofread_at` | uuid, timestamptz | first pass |
@@ -723,9 +765,11 @@ LIMIT 20;
 | **`published_by_admin_id`**, `published_at` | uuid, timestamptz | set on super-admin override |
 | **`override_reason`** | text | **mandatory** when published below `verified` |
 | `import_batch_id` | uuid | FK, nullable — provenance |
-| `source_reference` | varchar(160) | `Lectionary Vol. II, p. 341` |
+| `source_reference` | varchar(160) | `Lectionary Vol. II, p. 341` — required |
 
-**Index:** `(reading_set_id, sequence)` · `(verification_status)` · `(import_batch_id)`
+**Unique:** `(reading_set_id, sequence, is_shorter_form)` · **Index:** `(verification_status)` · `(import_batch_id)`
+
+**Checks** (shared with `reading_set` and `mass_proper`): `proofread` or `verified` requires the proofreader and time · `verified` requires the verifier and time · `published_by_admin_id` requires `published_at` and `override_reason`. The different-person rule for Sundays and solemnities depends on the day's rank and is enforced by the verification service.
 
 > **Publish gate:** only `verification_status = 'verified'` rows are exposed by `/readings` or `/sync`. Enforce in the query layer, not the UI.
 >
@@ -748,14 +792,16 @@ LIMIT 20;
 | `error_report` | jsonb | `[{row, column, message}]` |
 | `committed_at`, `rolled_back_at` | timestamptz | |
 
-**Index:** `(status, created_at)` · `(date_range_start, date_range_end)`
+**Index:** `(status, created_at)` · `(date_range_start, date_range_end)` · **Check:** `date_range_end >= date_range_start`
 
 > **Rollback semantics:** committing a batch stamps `import_batch_id` on every row it touched and snapshots prior values in `audit_log`. Rollback restores from that snapshot and sets `status = 'rolled_back'`. This is the safety net that makes bulk upload of thousands of scripture passages an acceptable risk.
 
-### `bible_translation`
-`id` · `country_id` (FK) · `name` · `abbreviation` · `licence_holder` · `licence_reference` · `permission_document_url` · `is_approved_lectionary` (boolean)
+### `licensed_text_source`
+`id` · `country_id` (FK) · `source_kind` (enum: `lectionary`\|`missal`) · `name` · `abbreviation` · `licence_holder` · `licence_reference` · `permission_document_media_id` (FK → `media_asset`, the signed permission kept in our storage) · `is_approved_lectionary` (boolean)
 
-> Keep this populated. When asked under what authority you publish these texts, this table is the answer. **Licences are territorial** — hence `country_id`.
+**Unique:** `(country_id, abbreviation)`
+
+> Keep this populated. When asked under what authority you publish these texts, this table is the answer. **Licences are territorial** — hence `country_id`. Missal texts (`mass_proper`) reference a `missal` row; readings reference a `lectionary` row. Named `licensed_text_source` rather than `bible_translation` because it holds Missal sources too. Internal only — never exposed by a public endpoint.
 
 ---
 
@@ -793,61 +839,81 @@ LIMIT 20;
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
-| `storage_key` | varchar(300) | R2 object key |
+| `storage_key` | varchar(300) | R2 object key — unique with `bucket` |
 | `bucket` | varchar(80) | |
 | `kind` | enum | **`image` \| `audio` \| `document`** |
 | `mime_type` | varchar(60) | allowlist enforced |
 | `width`, `height` | int | images |
 | `duration_ms` | int | **audio** |
 | `bitrate_kbps` | smallint | **audio** |
-| `size_bytes` | bigint | |
+| `size_bytes` | bigint | non-negative |
 | `blurhash` | varchar(60) | image placeholder |
 | `variants` | jsonb | `{thumb, medium, large}` or `{low, high}` for audio |
-| `uploaded_by_user_id` | uuid | FK, nullable |
-| `moderation_status` | enum | `pending` \| `auto_passed` \| `auto_flagged` \| `approved` \| `rejected` |
+| `uploaded_by_user_id` | uuid | FK → `app_user`, nullable, indexed |
+| `moderation_status` | enum | `pending` \| `auto_passed` \| `auto_flagged` \| `approved` \| `rejected` — default `pending`, indexed |
 | `moderation_labels` | jsonb | Vision/Rekognition output |
 
 ### `parish_gallery_item`
-`id` · `parish_id` (FK) · `media_asset_id` (FK) · `caption` · `event_date` · `sort_order` · `status`
+`id` · `parish_id` (FK) · `album_id` (FK, nullable — null is a building photo) · `media_asset_id` (FK) · `caption` (varchar 300) · `event_date` · `sort_order` · `status` (`record_status`)
+
+**Index:** `(parish_id, album_id, sort_order)` · `(album_id)` · `(media_asset_id)`
 
 ---
 
 ## B6. Users, auth & contributions
 
 ### `app_user`
-`id` · `email` (unique, nullable) · `phone` · `display_name` · `avatar_media_id` · `auth_provider` (`email`\|`google`\|`apple`) · `provider_uid` · `password_hash` (nullable) · `email_verified_at` · `status` · `points` · `locale` · `timezone` · `country_id`
+`id` · `email` (nullable, stored lowercase, unique among non-deleted rows so a deleted account frees its address) · `phone` · `display_name` · `avatar_media_id` · `auth_provider` (`email`\|`google`\|`apple`) · `provider_uid` · `password_hash` (Argon2id, nullable, never selected by default) · `email_verified_at` · `status` (`active`\|`suspended`) · `points` · `locale` · `timezone` · `country_id`
+
+**Unique:** `(auth_provider, provider_uid)` · **Check:** the `email` provider needs `email` and `password_hash`; Google and Apple need `provider_uid`
 
 ### `admin_user`
-`id` · `email` (unique) · `name` · `password_hash` · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret` · `last_login_at` · `invited_by`
+`id` · `email` (stored lowercase, unique among non-deleted rows) · `name` · `password_hash` (Argon2id, nullable until an invited admin sets one; required once `active`) · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable; required for `diocese_admin`) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret_ciphertext` (encrypted by the application) · `last_login_at` · `invited_by_id` (self-FK)
 
-> **No self-registration.** A super admin creates accounts.
+> **No self-registration.** A super admin creates accounts. `password_hash` and `mfa_secret_ciphertext` are never selected by default.
+
+### `admin_session` — refresh tokens
+`id` · `admin_user_id` (FK) · `token_hash` (unique) · `family_id` · `expires_at` · `revoked_at` · `replaced_by_id` (self-FK)
+
+> One row per issued refresh token. Rotation links each token to its replacement; reuse of an already-replaced token revokes every session in its `family_id`. Only hashes are stored.
+
+### `admin_password_reset`
+`id` · `admin_user_id` (FK) · `token_hash` (unique) · `expires_at` · `used_at`
+
+> Single use: `used_at` is set on redemption.
 
 ### `contributor_profile`
-`id` · `user_id` (FK, unique) · `status` (`pending`\|`approved`\|`rejected`\|`revoked`) · `applied_at` · `reviewed_by_admin_id` · `reviewed_at` · `diocese_id` · `parish_affiliation_id` · `bio` · `verification_notes` · `rejection_reason`
+`id` · `user_id` (FK, unique) · `status` (`pending`\|`approved`\|`rejected`\|`revoked`) · `applied_at` · `reviewed_by_admin_id` · `reviewed_at` · `diocese_id` · `parish_affiliation_id` · `bio` · `verification_notes` · `rejection_reason` (required when `rejected`)
 
 ### `submission` ★ moderation core
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
-| `submitter_user_id` | uuid | FK |
+| `submitter_user_id` | uuid | FK, nullable — null for anonymous "suggest my parish" (task 1.5.8) |
+| `submitter_device_id` | uuid | FK, nullable — the anonymous submitter's device |
+| `contact_name`, `contact_email`, `contact_phone` | varchar | nullable — optional anonymous contact details; PII, never logged or exposed |
 | `entity_type` | enum | `parish` \| `parish_info` \| `mass_schedule` \| `gallery` \| `announcement` |
-| `target_entity_id` | uuid | null for creations |
+| `target_entity_id` | uuid | null for creations; required for `update` and `delete` |
 | `operation` | enum | `create` \| `update` \| `delete` |
 | `payload` | jsonb | proposed values |
 | `diff` | jsonb | `{field: {before, after}}` |
 | `status` | enum | `pending` \| `approved` \| `rejected` \| `withdrawn` \| `superseded` |
 | `reviewed_by_admin_id` | uuid | FK, nullable |
 | `reviewed_at` | timestamptz | |
-| `rejection_reason` | text | |
+| `rejection_reason` | text | required when `rejected` |
 | `applied_entity_version` | int | optimistic-lock guard |
-| `diocese_id` | uuid | denormalised for admin scoping |
+| `diocese_id` | uuid | denormalised for admin scoping; null for chaplaincies outside a diocese |
 
-**Index:** `(status, diocese_id, created_at)` · `(submitter_user_id)` · `(target_entity_id)`
+**Index:** `(status, diocese_id, created_at)` · `(submitter_user_id)` · `(submitter_device_id)` · `(target_entity_id)`
+
+**Check:** `submitter_user_id` or `submitter_device_id` is set
 
 > **Never write directly from a contribution.** Store payload, compute diff, apply on approval.
 
 ### `submission_attachment`
-`submission_id` (FK) · `media_asset_id` (FK) · `sort_order`
+`id` · `submission_id` (FK) · `media_asset_id` (FK) · `sort_order`
+
+**Unique:** `(submission_id, media_asset_id)`
 
 ### `announcement`
 `id` · `parish_id` (FK) · `title` · `body_html` · `event_date` · `expires_at` · `media_asset_id` · `status` · `created_by_user_id` · `approved_by_admin_id`
@@ -855,16 +921,18 @@ LIMIT 20;
 **Index:** `(parish_id, status, expires_at)`
 
 ### `audit_log`
-`id` · `actor_type` (`admin`\|`user`\|`system`) · `actor_id` · `action` · `entity_type` · `entity_id` · `before` (jsonb) · `after` (jsonb) · `ip_address` · `user_agent` · `created_at`
+`id` · `actor_type` (`admin`\|`user`\|`system`) · `actor_id` · `action` · `entity_type` · `entity_id` · `before` (jsonb) · `after` (jsonb) · `reason` (text — mandatory override reason, rollback notes) · `ip_address` (inet) · `user_agent` · `created_at`
 
-**Append-only.**
+**Index:** `(entity_type, entity_id, created_at)` · `(actor_type, actor_id, created_at)`
+
+**Append-only**, enforced by a trigger that rejects UPDATE and DELETE.
 
 ---
 
 ## B7. Notifications runtime
 
 ### `device`
-`id` · `user_id` (FK, **nullable**) · `fcm_token` (unique) · `platform` · `app_version` · `locale` · `timezone` · `country_id` · `last_seen_at` · `is_active`
+`id` · `user_id` (FK, **nullable**) · `fcm_token` (unique) · `platform` (`android`\|`ios`) · `app_version` · `locale` · `timezone` (required — the planner groups by it) · `country_id` · `last_seen_at` · `is_active`
 
 **Index:** `(fcm_token)` unique · `(user_id)` · `(is_active, timezone)`
 
@@ -874,8 +942,12 @@ LIMIT 20;
 ### `scheduled_notification`
 `id` · `topic_id` (FK) · `title` · `body` · `data` (jsonb deep-link payload) · `target_criteria` (jsonb) · `scheduled_for` · `status` (`scheduled`\|`processing`\|`sent`\|`failed`\|`cancelled`) · `sent_count` · `failed_count`
 
+**Index:** `(status, scheduled_for)` · `(topic_id)`
+
 ### `notification_receipt`
 `id` · `scheduled_notification_id` (FK) · `device_id` (FK) · `status` (`sent`\|`failed`\|`invalid_token`) · `error_code` · `sent_at`
+
+**Unique:** `(scheduled_notification_id, device_id)` — a retried fan-out updates the receipt · **Index:** `(device_id)`
 
 > **Prune aggressively.** On `invalid_token` / `UNREGISTERED`, set `device.is_active = false`.
 
@@ -884,10 +956,12 @@ LIMIT 20;
 ## B8. Sync, gamification & monetisation
 
 ### `content_version`
-`resource` (varchar, PK) · `version` (bigint) · `updated_at`
+`resource` (varchar 60, PK) · `version` (bigint, default 0) · `updated_at` — documented `BaseEntity` exception
 
 ### `app_setting`
-`key` (varchar, PK) · `value` (text) · `value_type` (enum: `string`\|`int`\|`bool`\|`json`) · `description` · `updated_by_admin_id` · `updated_at`
+`id` · `key` (varchar 80, unique) · `value` (text) · `value_type` (enum: `string`\|`int`\|`bool`\|`json`) · `description` · `is_public` (default false — only public settings are served by `/bootstrap`) · `requires_super_admin` (default false) · `BaseEntity` columns
+
+> Extends `BaseEntity` with a unique `key` rather than a natural primary key, so it is not a fourth exception. `BaseEntity.updated_by` records the admin who last changed it.
 
 Seeded keys: `app_name` · `support_email` · `max_gallery_images_per_parish` · `email_notify_on_submission` · `allow_contributor_updates` · `auto_publish_readings` *(super admin only)* · `maintenance_mode` · `maintenance_message` · `bank_account_details`.
 
@@ -902,10 +976,10 @@ Seeded keys: `app_name` · `support_email` · `max_gallery_images_per_parish` ·
 | `topic_id` | uuid | FK |
 | `title`, `body` | varchar / text | denormalised so history survives topic changes |
 | `icon`, `deep_link` | varchar | |
-| `read_at`, `deleted_at` | timestamptz | per-device state |
+| `read_at`, `deleted_at` | timestamptz | per-device state (`deleted_at` from `BaseEntity`) |
 | `created_at` | timestamptz | day grouping in the UI |
 
-**Index:** `(device_id, deleted_at, created_at DESC)` · `(device_id, read_at)`
+**Index:** `(device_id, deleted_at, created_at)` — Postgres scans it backwards for newest-first · `(device_id, read_at)` · `(scheduled_notification_id)`
 
 > **This was missing from v2.2 entirely.** Push *delivery* is not an inbox: the design has All / Unread tabs, day grouping (Today / Yesterday / dated), per-item delete and an unread badge. Mirrored in Drift so history reads offline; backfilled from `GET /notifications/inbox` on reinstall.
 

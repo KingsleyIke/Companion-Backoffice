@@ -19,7 +19,8 @@
     "db:up": "docker compose up -d --wait db",
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && pnpm db:up && pnpm migration:run",
-    "migration:verify": "sh tools/scripts/verify-migrations.sh"
+    "migration:verify": "sh tools/scripts/verify-migrations.sh",
+    "test:db": "node --env-file-if-exists=.env node_modules/jest/bin/jest.js -c libs/common/jest.db.config.cts"
   },
   "dependencies": {
     "@angular/common": "~22.2.0",
