@@ -2,18 +2,21 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
+  Index,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 export abstract class BaseEntity {
-  // uuid_generate_v7() is created by the first migration; Postgres 16 has no native v7.
-  @PrimaryColumn({ type: 'uuid', default: () => 'uuid_generate_v7()' })
+  // uuid_v7() is defined in migrations; Postgres 17 has no native v7.
+  @PrimaryColumn({ type: 'uuid', default: () => 'uuid_v7()' })
   id!: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;
 
+  // Delta sync scans every table by updated_at.
+  @Index()
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt!: Date;
 

@@ -506,10 +506,10 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 |---|---|---|
 | `id` | uuid | PK |
 | `country_id` | uuid | FK |
-| `province_id` | uuid | FK |
+| `province_id` | uuid | FK, nullable — null when immediately subject to the Holy See (e.g. a military ordinariate) |
 | `name` | varchar(160) | |
 | `slug` | varchar(180) | unique |
-| `type` | enum | `archdiocese` \| `diocese` \| `vicariate` \| `prefecture` |
+| `type` | enum | `archdiocese` \| `diocese` \| `vicariate` \| `prefecture` \| `military_ordinariate` |
 | `patron_saint`, `bishop_name` | varchar(160) | nullable |
 | `seat_city`, `state` | varchar(120) | |
 | `established_date` | date | nullable |
@@ -543,40 +543,53 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 ### `deanery`
 `id` · `diocese_id` (FK) · `name` · `slug`
 
+### `religious_institute` — congregations and orders
+`id` · `name` (varchar 200) · `slug` (unique) · `abbreviation` (varchar 20, nullable) · `institute_type` (enum: `religious_order`\|`religious_congregation`\|`society_of_apostolic_life`\|`secular_institute`) · `membership` (enum: `men`\|`women`\|`mixed`) · `website`, `email`, `phone` (nullable) · `description` (text, nullable) · `status` (`record_status`)
+
+### `institution` — the body a chaplaincy serves
+`id` · `name` (varchar 200) · `slug` (unique) · `type` (enum: `seminary`\|`monastery`\|`convent`\|`religious_house`\|`school`\|`tertiary`\|`hospital`\|`military`\|`paramilitary`\|`correctional`\|`other`) · `diocese_id` (FK, nullable) · `religious_institute_id` (FK, nullable) · `affiliation` (varchar 160, nullable — e.g. "Nigerian Army") · `city` (nullable) · `state` · `website`, `email`, `phone` (nullable) · `description` (text, nullable) · `status` (`record_status`)
+
+**Index:** `(type)` · `(diocese_id)` · `(religious_institute_id)`
+
+> Seminaries, monasteries, convents, schools, barracks and the like. An institution has no location of its own; its chaplaincy is a `parish` row with `institution_id` set, and that row carries the map pin, Mass times and contacts. A convent without a public chapel is an `institution` with no `parish` row.
+
 ### `parish` ★ core entity
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
-| `diocese_id` | uuid | FK, denormalised for query performance |
+| `diocese_id` | uuid | FK, nullable — denormalised for query performance; null for a chaplaincy answerable to no diocese |
+| `institution_id` | uuid | FK, nullable — the institution a chaplaincy serves |
+| `religious_institute_id` | uuid | FK, nullable — the congregation it is run by or entrusted to |
 | `deanery_id` | uuid | FK, nullable |
 | `parent_parish_id` | uuid | self-FK — set for outstations |
 | `name` | varchar(200) | |
 | `slug` | varchar(220) | unique |
-| `type` | enum | `parish` \| `outstation` \| `chaplaincy` \| `cathedral` \| `shrine` |
+| `type` | enum | `parish` \| `outstation` \| `chaplaincy` \| `cathedral` \| `shrine` \| `chapel` |
 | `patron_saint` | varchar(160) | nullable |
 | `address_line`, `city`, `lga`, `state` | varchar | |
 | `location` | `geography(Point,4326)` | **GIST index** |
 | `phone`, `email`, `website` | varchar | nullable |
-| `parish_priest_name` | varchar(160) | nullable |
-| `assistant_priests` | jsonb | array of names |
 | `established_date` | date | nullable |
 | `description` | text | nullable |
 | `cover_media_id` | uuid | FK |
-| `status` | enum | `draft` \| `published` \| `archived` |
-| `search_vector` | tsvector | GIN, generated |
+| `status` | enum | `record_status`: `draft` \| `published` \| `archived` |
+| `search_vector` | tsvector | GIN, generated (stored) from `name` (A), `patron_saint` (B), `city`/`lga`/`state` (C) with the `simple` config — English stemming mangles Igbo, Yoruba and Hausa names |
 | `verified_at` | timestamptz | last human verification |
 
-**Indexes:** `GIST(location)` · `GIN(search_vector)` · `(diocese_id, status)` · `(parent_parish_id)` · `(updated_at)`
+**Indexes:** `GIST(location)` · `GIN(search_vector)` · `(diocese_id, status)` · `(parent_parish_id)` · `(deanery_id)` · `(institution_id)` · `(religious_institute_id)` · `(updated_at)`
+
+**Checks:** belongs to at least one of diocese, institution or religious institute · a `chaplaincy` has an `institution_id` · an `outstation` has a `parent_parish_id` · a deanery implies a diocese
 
 ```sql
 -- Nearest parishes, ordered by true distance.
--- Note the diocese join: an unpublished diocese is invisible even if its
--- parishes are individually marked published.
+-- An unpublished diocese hides its parishes even if they are individually
+-- published. A chaplaincy with no diocese is gated by its own status alone.
 SELECT p.id, p.name, ST_Distance(p.location, :point) AS metres
 FROM parish p
-JOIN diocese d ON d.id = p.diocese_id
+LEFT JOIN diocese d ON d.id = p.diocese_id
 WHERE p.status = 'published' AND p.deleted_at IS NULL
-  AND d.publication_status = 'published' AND d.deleted_at IS NULL
+  AND (p.diocese_id IS NULL
+       OR (d.publication_status = 'published' AND d.deleted_at IS NULL))
   AND ST_DWithin(p.location, :point, :radius_metres)
 ORDER BY p.location <-> :point
 LIMIT 20;
@@ -585,19 +598,28 @@ LIMIT 20;
 ### `mass_schedule`
 `id` · `parish_id` (FK) · `day_of_week` (smallint 0–6, null if `specific_date`) · `specific_date` (date) · `start_time` (time) · `language` (enum: `english`\|`igbo`\|`yoruba`\|`hausa`\|`latin`\|`other`) · `type` (enum: `sunday`\|`weekday`\|`vigil`\|`holy_day`\|`adoration`\|`confession`\|`novena`) · `notes` · `effective_from` · `effective_to`
 
+`day_of_week` is 0 = Sunday … 6 = Saturday; exactly one of `day_of_week` and `specific_date` is set.
+
+**Index:** `(parish_id, day_of_week)`
+
+> **Vigil Masses are Saturday evening but fulfil the Sunday obligation.** Store `day_of_week = 6` with `type = 'vigil'`, surface under Sunday.
+
 ### `parish_contact` ★ clergy **and** pastoral team
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
 | `parish_id` | uuid | FK |
 | **`contact_group`** | enum | `clergy` \| `pastoral_team` — the design's two separate repeaters |
-| `role` | varchar(120) | free text: "Parish Priest", "Ass. Parish Priest", "Parish Catechist", "CWO Chairperson" |
+| `role` | enum | `parish_priest` \| `assistant_priest` \| `resident_priest` \| `chaplain` \| `rector` \| `catechist` \| `sacristan` \| `secretary` \| `other` |
+| `role_title` | varchar(120) | nullable; required when `role = 'other'` ("CWO Chairperson") |
 | `full_name` | varchar(160) | |
 | `phone`, `email` | varchar | nullable |
 | **`is_public`** | boolean | default false |
 | `sort_order` | smallint | |
 
-**Index:** `(parish_id, contact_group, sort_order)`
+**Index:** `(parish_id, contact_group, sort_order)` · unique `(parish_id)` where `role = 'parish_priest'` and not deleted — one parish priest per parish
+
+> Clergy and staff live here, not on `parish`. The parish priest is the `parish_priest` row.
 
 > **`is_public` is not optional.** Publishing a catechist's personal mobile number without consent is a data-protection problem under the NDPR and a trust problem with parishes. Default to hidden; require an explicit tick to publish.
 
@@ -612,10 +634,6 @@ LIMIT 20;
 `parish_gallery_item` gains **`album_id`** (FK, nullable).
 
 > From the design: *"Each album represents an activity or event (e.g. Harvest 2025, Christmas Mass). This is separate from the parish building photos above."* An item with `album_id IS NULL` is a building photo.
-
-**Index:** `(parish_id, day_of_week)`
-
-> **Vigil Masses are Saturday evening but fulfil the Sunday obligation.** Store `day_of_week = 6` with `type = 'vigil'`, surface under Sunday.
 
 ---
 
