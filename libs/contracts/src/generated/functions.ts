@@ -3,3 +3,17 @@
 
 export type { ListDioceses$Params as ListDioceses$Params } from './fn/dioceses/list-dioceses';
 export { listDioceses as listDioceses } from './fn/dioceses/list-dioceses';
+export type { AdminLogin$Params as AdminLogin$Params } from './fn/admin-auth/admin-login';
+export { adminLogin as adminLogin } from './fn/admin-auth/admin-login';
+export type { AdminLoginMfa$Params as AdminLoginMfa$Params } from './fn/admin-auth/admin-login-mfa';
+export { adminLoginMfa as adminLoginMfa } from './fn/admin-auth/admin-login-mfa';
+export type { AdminRefresh$Params as AdminRefresh$Params } from './fn/admin-auth/admin-refresh';
+export { adminRefresh as adminRefresh } from './fn/admin-auth/admin-refresh';
+export type { AdminLogout$Params as AdminLogout$Params } from './fn/admin-auth/admin-logout';
+export { adminLogout as adminLogout } from './fn/admin-auth/admin-logout';
+export type { AdminForgotPassword$Params as AdminForgotPassword$Params } from './fn/admin-auth/admin-forgot-password';
+export { adminForgotPassword as adminForgotPassword } from './fn/admin-auth/admin-forgot-password';
+export type { AdminResetPassword$Params as AdminResetPassword$Params } from './fn/admin-auth/admin-reset-password';
+export { adminResetPassword as adminResetPassword } from './fn/admin-auth/admin-reset-password';
+export type { AdminMe$Params as AdminMe$Params } from './fn/admin-auth/admin-me';
+export { adminMe as adminMe } from './fn/admin-auth/admin-me';

@@ -2,3 +2,8 @@ export * from './config/environment';
 export * from './database/data-source-options';
 export * from './database/snake-naming.strategy';
 export * from './pagination/cursor';
+export * from './config/auth-config';
+export * from './auth/access-token';
+export * from './auth/current-admin.decorator';
+export * from './auth/jwt-auth.guard';
+export * from './auth/public.decorator';

@@ -8,6 +8,7 @@ describe('loadEnvironment', () => {
     expect(loadEnvironment({ DATABASE_URL: POOLER_URL })).toEqual({
       nodeEnv: 'development',
       port: 3000,
+      trustProxy: false,
       database: { url: POOLER_URL, migrationUrl: undefined, ssl: true },
     });
   });
@@ -19,11 +20,13 @@ describe('loadEnvironment', () => {
       DATABASE_URL: POOLER_URL,
       MIGRATION_DATABASE_URL: DIRECT_URL,
       DATABASE_SSL: 'false',
+      TRUST_PROXY: 'true',
     });
 
     expect(environment).toEqual({
       nodeEnv: 'test',
       port: 4000,
+      trustProxy: true,
       database: { url: POOLER_URL, migrationUrl: DIRECT_URL, ssl: false },
     });
   });
