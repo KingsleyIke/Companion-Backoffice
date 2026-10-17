@@ -17,7 +17,7 @@ describe('BaseEntity', () => {
     const id = column('id');
     expect(id?.options.primary).toBe(true);
     expect(id?.options.type).toBe('uuid');
-    expect((id?.options.default as () => string)()).toBe('uuid_generate_v7()');
+    expect((id?.options.default as () => string)()).toBe('uuid_v7()');
   });
 
   it('tracks updates and soft deletes as timestamptz', () => {
