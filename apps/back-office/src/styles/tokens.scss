@@ -3,8 +3,12 @@
 //  Angular back office. Mirror of theme.dart — change both together.
 //
 //  Source: extracted from the Figma-generated React code (task 1.1.10).
-//  Values marked OBSERVED appear in the design components. Values marked
-//  DERIVED were interpolated to complete the scale — approve or replace them.
+//  OBSERVED values appear in the design components; DERIVED values complete the
+//  scale. All were approved in task 1.1.10 with measured WCAG 2.1 contrast;
+//  ADJUSTED values were darkened from the design to pass AA (4.5:1) as text.
+//
+//  Components use the semantic aliases at the end, never raw scale values for
+//  text or controls, and never a literal colour (CI: pnpm check:colours).
 //
 //  NOTE: the design's own theme.css was stock shadcn/ui defaults and contained
 //  none of these colours. The palette below was mined from hardcoded values in
@@ -14,8 +18,8 @@
 // ── Brand: maroon (mobile primary, liturgical red/violet register) ──────────
 $maroon-50:  #fdf2f4;  // DERIVED — pale surface, icon-circle backgrounds
 $maroon-100: #fbe4e8;  // DERIVED — accent circles behind icons
-$maroon-200: #f5c6cd;  // DERIVED — borders on tinted cards
-$maroon-300: #e89aa5;  // DERIVED
+$maroon-200: #f5c6cd;  // DERIVED — decorative only: 1.52:1 on white, never text
+$maroon-300: #e89aa5;  // DERIVED — decorative only: 2.19:1 on white, never text
 $maroon-400: #8b1a26;  // OBSERVED
 $maroon-500: #7a1520;  // OBSERVED
 $maroon-600: #6b0f1a;  // OBSERVED — ★ BRAND PRIMARY
@@ -24,14 +28,15 @@ $maroon-800: #3a0509;  // OBSERVED — header gradient end
 $maroon-900: #2a0408;  // OBSERVED — deepest
 
 // ── Back office: blue ──────────────────────────────────────────────────────
-// ⚠ #2196f3 has only 3.12:1 against white — it FAILS WCAG AA (4.5:1) for
-//   body text and links. Use $blue-700 for text and keep $blue-500 for large
-//   headers and filled buttons only.
+// ⚠ #2196f3 has only 3.12:1 against white, and a white label on it is 3.12:1
+//   too: it FAILS WCAG AA (4.5:1) for text either way. $blue-500 is for large
+//   headings (24px+) and decorative fills only. Links and text use $blue-700;
+//   filled buttons use $blue-600 (white label 4.60:1).
 $blue-50:   #e3f2fd;  // DERIVED
-$blue-100:  #bbdefb;  // DERIVED
-$blue-500:  #2196f3;  // OBSERVED — large surfaces / filled buttons only
-$blue-600:  #1976d2;  // DERIVED
-$blue-700:  #1565c0;  // DERIVED — 5.75:1, use for text and links
+$blue-100:  #bbdefb;  // DERIVED — fill only: $blue-700 on it is 4.09:1
+$blue-500:  #2196f3;  // OBSERVED — large headings and decorative fills only
+$blue-600:  #1976d2;  // DERIVED — 4.60:1, filled buttons
+$blue-700:  #1565c0;  // DERIVED — 5.75:1, text and links; button hover
 $navy-900:  #1a1d2e;  // OBSERVED — sidebar
 $navy-800:  #1a2035;  // OBSERVED — sidebar hover
 
@@ -42,14 +47,14 @@ $surface:      #ffffff;
 $input-bg:     #f3f3f5;  // OBSERVED
 $neutral-100:  #ececf0;  // OBSERVED — muted
 $neutral-200:  #e9ebef;  // OBSERVED — accent
-$neutral-500:  #717182;  // OBSERVED — muted foreground
+$neutral-500:  #6d6d7e;  // ADJUSTED from #717182 — muted text, 5.07:1 white, 4.58:1 page bg
 $neutral-900:  #030213;  // OBSERVED — foreground
 $switch-bg:    #cbced4;  // OBSERVED
 
 // ── Semantic ───────────────────────────────────────────────────────────────
 $destructive:  #d4183d;  // OBSERVED
 $success:      #2e7d32;  // DERIVED — approval states
-$warning:      #b26a00;  // DERIVED — pending states, "Tradition:" callouts
+$warning:      #a05f00;  // ADJUSTED from #b26a00 — pending states, callouts; 5.08:1 white, 4.59:1 page bg
 $info:         $blue-700;
 
 // ── Liturgical colours ─────────────────────────────────────────────────────
@@ -107,3 +112,17 @@ $image-scrim: linear-gradient(
   rgba(0, 0, 0, 0.45) 45%,
   rgba(0, 0, 0, 0.05) 100%
 );
+
+// ── Semantic roles ─────────────────────────────────────────────────────────
+// What components use. Every text pair here reaches WCAG AA (4.5:1).
+$text-primary:          $neutral-900;
+$text-muted:            $neutral-500;
+$text-link:             $blue-700;
+$text-danger:           $destructive;
+$surface-page:          $page-bg;
+$surface-card:          $surface;
+$border-subtle:         $neutral-200;
+$button-primary-bg:     $blue-600;
+$button-primary-hover:  $blue-700;
+$button-primary-text:   $white;
+$focus-ring:            $blue-700;

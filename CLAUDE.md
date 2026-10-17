@@ -115,6 +115,7 @@ Read Doc 1 §9 in full. The traps:
 - **Never merge a destructive migration to `snapshot` unreviewed** — CI applies it to Supabase unattended from there.
 - **Never commit `.env`.** Only `.env.example` with placeholders.
 - **Never log PII.** Nigeria's NDPR applies.
+- **Never write a literal colour in the back office.** Use `@use 'tokens' as t` and the semantic aliases in `apps/back-office/src/styles/tokens.scss`; `pnpm check:colours` fails CI otherwise.
 - **Never return internal error details.** Throw an `HttpException` for expected failures; anything else is answered as a bare 500 by `AllExceptionsFilter`, logged with its stack and reported to Sentry.
 - **Never expose `parish_contact` rows with `is_public = false`** through a public endpoint.
 - **Never run migrations through Supabase's transaction pooler** (port 6543). Use the direct/session connection on 5432 — see Doc 3 §5.2.

@@ -30,7 +30,16 @@ Every colour you see in the mobile app is hardcoded in individual components. Th
 
 ### One accessibility failure to fix
 
-**`#2196f3` has a contrast ratio of 3.12:1 against white.** WCAG AA requires 4.50:1 for normal text. Any body text, link or small label in that blue **fails**. The token file keeps `$blue-500` for large headers and filled buttons, and adds `$blue-700: #1565c0` (5.75:1) for text.
+**`#2196f3` has a contrast ratio of 3.12:1 against white.** WCAG AA requires 4.50:1 for normal text. Any body text, link or small label in that blue **fails** — and so does a white label on a `#2196f3` button, at the same 3.12:1. `$blue-500` is therefore for large headings (24px+) and decorative fills only. Links and text use `$blue-700: #1565c0` (5.75:1); filled buttons use `$blue-600: #1976d2` (white label 4.60:1), hovering to `$blue-700`.
+
+**Approved in task 1.1.10**, with measured WCAG 2.1 contrast. Every DERIVED value was kept except one, and one OBSERVED value was adjusted:
+
+| Token | Was | Now | Why |
+|---|---|---|---|
+| `$warning` | `#b26a00` (DERIVED) | `#a05f00` | Used for text; 4.24:1 on white failed. Now 5.08:1 on white, 4.59:1 on the page background |
+| `$neutral-500` | `#717182` (OBSERVED) | `#6d6d7e` | Muted text failed on the page background (4.32:1). Now 5.07:1 and 4.58:1 |
+
+`$maroon-200`, `$maroon-300` (1.52:1, 2.19:1 on white) and `$blue-100` are decorative fills only — never text, never the only edge of a control. Components use the semantic aliases at the end of `tokens.scss` (`$text-link`, `$text-muted`, `$button-primary-bg`…); `pnpm check:colours` fails CI on any colour literal outside the token file.
 
 The maroon family is fine — `#6b0f1a` is 12.29:1 on white, and even the lightest, `#8b1a26`, is 9.24:1.
 
@@ -131,8 +140,8 @@ Two things follow. The phase plan may be worth re-sequencing where UI already ex
 
 | # | Action | Where |
 |---|---|---|
-| 1 | Adopt `tokens.scss` + `theme.dart`; approve or replace the DERIVED values | Both repos |
-| 2 | Replace `#2196f3` with `$blue-700` for all text and links | Back office |
+| 1 | Adopt `tokens.scss` + `theme.dart`; approve or replace the DERIVED values | Both repos — **done for the back office (1.1.10)**; `theme.dart` takes the same two value changes |
+| 2 | Replace `#2196f3` with `$blue-700` for all text and links | Back office — **done (1.1.10)**: enforced by the semantic aliases and the colour check |
 | 3 | Revise task 1.1.10 from 6h → 12h | Doc 2 |
 | 4 | **Delete all `MOCK_*` constants** before the code reaches any repo | design-reference |
 | 5 | Keep normalised `mass_schedule`; render the grouped view over it | Doc 2 B1 |

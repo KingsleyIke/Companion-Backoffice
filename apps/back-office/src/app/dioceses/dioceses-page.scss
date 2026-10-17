@@ -1,0 +1,44 @@
+@use 'tokens' as t;
+
+:host {
+  display: block;
+  padding: t.$space-6;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: t.$surface-card;
+  border-radius: t.$radius-lg;
+}
+
+th,
+td {
+  padding: t.$space-2 t.$space-3;
+  text-align: left;
+  border-bottom: 1px solid t.$border-subtle;
+}
+
+th {
+  color: t.$text-muted;
+  font-weight: t.$weight-medium;
+}
+
+[role='alert'] {
+  color: t.$text-danger;
+}
+
+button {
+  margin-top: t.$space-4;
+  padding: t.$space-2 t.$space-4;
+  border: 0;
+  border-radius: t.$radius-md;
+  background: t.$button-primary-bg;
+  color: t.$button-primary-text;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: t.$button-primary-hover;
+  }
+}
