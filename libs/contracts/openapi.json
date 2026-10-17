@@ -1,0 +1,158 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/dioceses": {
+      "get": {
+        "operationId": "listDioceses",
+        "parameters": [
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "The nextCursor of the previous page; omit for the first page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiocesePageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid cursor or limit"
+          }
+        },
+        "summary": "List published dioceses, by name",
+        "tags": [
+          "dioceses"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Catholic Companion API",
+    "description": "",
+    "version": "1",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "DioceseType": {
+        "type": "string",
+        "enum": [
+          "archdiocese",
+          "diocese",
+          "vicariate",
+          "prefecture",
+          "military_ordinariate"
+        ]
+      },
+      "DiocesePublicationStatus": {
+        "type": "string",
+        "enum": [
+          "hidden",
+          "in_progress",
+          "published"
+        ]
+      },
+      "DioceseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DioceseType"
+              }
+            ]
+          },
+          "provinceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "seatCity": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "publicationStatus": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiocesePublicationStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "type",
+          "provinceId",
+          "seatCity",
+          "state",
+          "publicationStatus"
+        ]
+      },
+      "DiocesePageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DioceseDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "Pass as cursor for the next page; null on the last page"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    }
+  }
+}

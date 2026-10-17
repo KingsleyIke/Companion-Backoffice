@@ -1,0 +1,33 @@
+<h1>Dioceses</h1>
+
+@if (dioceses().length > 0) {
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Seat</th>
+      <th>State</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (diocese of dioceses(); track diocese.id) {
+    <tr>
+      <td>{{ diocese.name }}</td>
+      <td>{{ diocese.type }}</td>
+      <td>{{ diocese.seatCity }}</td>
+      <td>{{ diocese.state }}</td>
+    </tr>
+    }
+  </tbody>
+</table>
+} @else if (status() === 'ready') {
+<p>No published dioceses yet.</p>
+} @switch (status()) { @case ('loading') {
+<p role="status">Loading dioceses…</p>
+} @case ('error') {
+<p role="alert">Could not load dioceses.</p>
+<button type="button" (click)="loadMore()">Try again</button>
+} @case ('ready') { @if (nextCursor()) {
+<button type="button" (click)="loadMore()">Load more</button>
+} } }

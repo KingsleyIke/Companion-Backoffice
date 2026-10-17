@@ -139,7 +139,8 @@ pnpm test:db                        # database constraint specs, against a migra
 
 pnpm lint && pnpm test && pnpm build   # what CI runs, after pnpm format:check
 npx nx e2e api-e2e
-pnpm generate:client                # OpenAPI → Angular client (from task 1.1.7)
+pnpm generate:spec                  # NestJS decorators → libs/contracts/openapi.json (no database needed)
+pnpm generate:client                # generate:spec, then the Angular client into libs/contracts; CI fails if stale
 ```
 
 **Generated migrations can need hand edits** — review every generated file for them:

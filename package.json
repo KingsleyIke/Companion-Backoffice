@@ -20,7 +20,9 @@
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && pnpm db:up && pnpm migration:run",
     "migration:verify": "sh tools/scripts/verify-migrations.sh",
-    "test:db": "node --env-file-if-exists=.env node_modules/jest/bin/jest.js -c libs/common/jest.db.config.cts"
+    "generate:spec": "TS_NODE_PROJECT=tsconfig.typeorm.json TS_NODE_TRANSPILE_ONLY=true node -r ts-node/register -r tsconfig-paths/register apps/api/scripts/generate-openapi.ts",
+    "generate:client": "pnpm generate:spec && ng-openapi-gen -c libs/contracts/ng-openapi-gen.json",
+    "test:db": "node --env-file-if-exists=.env node_modules/jest/bin/jest.js -c jest.db.config.cts"
   },
   "dependencies": {
     "@angular/common": "~22.2.0",

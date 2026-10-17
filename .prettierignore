@@ -6,3 +6,5 @@ docs/
 CLAUDE.md
 pnpm-lock.yaml
 apps/back-office/src/styles/tokens.scss
+libs/contracts/openapi.json
+libs/contracts/src/generated/
