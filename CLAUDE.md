@@ -37,6 +37,8 @@ Located in `docs/`:
 
 Work is identified by task ID (`1.2.4`, `1.3.15`). If a prompt names one, read that task in Doc 2 Part A first.
 
+**Docs `00`–`06` are shared with the mobile repo (`KingsleyIke/Companion-Mobile`), and this repo is their source of truth.** When a task changes one, copy the same file into the mobile repo's `docs/` as part of that task. The mobile repo's CI fails while its copies differ.
+
 ---
 
 ## Branches
