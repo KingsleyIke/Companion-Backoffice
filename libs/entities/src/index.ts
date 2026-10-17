@@ -18,6 +18,16 @@ import { ParishGalleryItem } from './lib/church/parish-gallery-item.entity';
 import { ParishSocialLink } from './lib/church/parish-social-link.entity';
 import { Parish } from './lib/church/parish.entity';
 import { ReligiousInstitute } from './lib/church/religious-institute.entity';
+import { BibleTranslation } from './lib/liturgy/bible-translation.entity';
+import { Celebration } from './lib/liturgy/celebration.entity';
+import { LiturgicalDay } from './lib/liturgy/liturgical-day.entity';
+import { LiturgicalYearImport } from './lib/liturgy/liturgical-year-import.entity';
+import { MassProper } from './lib/liturgy/mass-proper.entity';
+import { PsalmStanza } from './lib/liturgy/psalm-stanza.entity';
+import { ReadingImportBatch } from './lib/liturgy/reading-import-batch.entity';
+import { ReadingSet } from './lib/liturgy/reading-set.entity';
+import { Reading } from './lib/liturgy/reading.entity';
+import { Saint } from './lib/liturgy/saint.entity';
 import { MediaAsset } from './lib/media/media-asset.entity';
 import { SubmissionAttachment } from './lib/submissions/submission-attachment.entity';
 import { Submission } from './lib/submissions/submission.entity';
@@ -44,6 +54,18 @@ export * from './lib/church/parish-gallery-item.entity';
 export * from './lib/church/parish-social-link.entity';
 export * from './lib/church/parish.entity';
 export * from './lib/church/religious-institute.entity';
+export * from './lib/liturgy/bible-translation.entity';
+export * from './lib/liturgy/celebration.entity';
+export * from './lib/liturgy/liturgical-day.entity';
+export * from './lib/liturgy/liturgical-enums';
+export * from './lib/liturgy/liturgical-year-import.entity';
+export * from './lib/liturgy/mass-proper.entity';
+export * from './lib/liturgy/psalm-stanza.entity';
+export * from './lib/liturgy/reading-import-batch.entity';
+export * from './lib/liturgy/reading-set.entity';
+export * from './lib/liturgy/reading.entity';
+export * from './lib/liturgy/saint.entity';
+export * from './lib/liturgy/verified-content';
 export * from './lib/media/media-asset.entity';
 export * from './lib/record-status';
 export * from './lib/submissions/submission-attachment.entity';
@@ -77,4 +99,14 @@ export const ENTITIES: NonNullable<DataSourceOptions['entities']> = [
   ContributorProfile,
   Submission,
   SubmissionAttachment,
+  BibleTranslation,
+  LiturgicalYearImport,
+  LiturgicalDay,
+  Saint,
+  Celebration,
+  ReadingImportBatch,
+  ReadingSet,
+  Reading,
+  PsalmStanza,
+  MassProper,
 ];

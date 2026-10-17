@@ -97,7 +97,7 @@ Read Doc 1 §9 in full. The traps:
 - **The Ordo is the sole calendar authority.** Never compute, infer, or derive a liturgical calendar. Every `liturgical_day` row traces to an imported Ordo page.
 - **Never infer feast precedence.** The Ordo has already resolved it for every date. Transcribe, don't compute.
 - **A Vigil Mass is Saturday evening but fulfils the Sunday obligation.** Store `day_of_week = 6`, `type = 'vigil'`; display under Sunday.
-- **Christmas has four distinct Mass sets; the Easter Vigil has nine.** That is why `reading_set` exists. One-set-per-date is wrong.
+- **Christmas has four distinct Mass sets; Easter has a Vigil Mass and a Mass during the Day.** That is why `reading_set` exists. One-set-per-date is wrong. The Easter Vigil itself is one set with up to nine readings, ordered by `reading.sequence`.
 - **The liturgical year begins at Advent, not 1 January.**
 - **Publish gate:** only `verification_status = 'verified'` readings are exposed by `/readings` or `/sync`. Enforce in the query layer. A `super_admin` may override, but `override_reason` is mandatory and the action writes to `audit_log`.
 - **Reflection and personal devotion are original content** and pass through the same verification gate as scripture.

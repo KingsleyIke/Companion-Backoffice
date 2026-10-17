@@ -659,14 +659,15 @@ LIMIT 20;
 | `country_id` | uuid | FK |
 | `date` | date | |
 | `season` | enum | `advent` \| `christmas` \| `ordinary` \| `lent` \| `triduum` \| `easter` |
-| `week_of_season`, `day_of_week` | smallint | |
-| `sunday_cycle` | enum | `A` \| `B` \| `C` |
-| `weekday_cycle` | enum | `I` \| `II` |
+| `week_of_season` | smallint | nullable — as printed |
+| `day_of_week` | smallint | 0 = Sunday; must match `date` |
+| `sunday_cycle` | enum | `A` \| `B` \| `C` — nullable, as printed |
+| `weekday_cycle` | enum | `I` \| `II` — nullable, as printed |
 | `liturgical_color` | enum | `green` \| `white` \| `red` \| `violet` \| `rose` \| `black` \| **`gold`** |
-| `rosary_mystery_set` | enum | `joyful` \| `luminous` \| `sorrowful` \| `glorious` — the "Today's Rosary" field |
+| `rosary_mystery_set` | enum | `joyful` \| `luminous` \| `sorrowful` \| `glorious` — the "Today's Rosary" field; nullable, **editor-entered, not in the Ordo** — the Ordo import never writes it |
 | `is_holy_day_of_obligation` | boolean | **country-specific** |
-| `import_id` | uuid | FK → `liturgical_year_import` — provenance |
-| `source_reference` | varchar(160) | e.g. `Nigerian Ordo 2026/2027, p.44` |
+| `import_id` | uuid | FK → `liturgical_year_import` — provenance, required |
+| `source_reference` | varchar(160) | e.g. `Nigerian Ordo 2026/2027, p.44` — required |
 
 **Unique:** `(country_id, date)` — *not* `date` alone. National calendars diverge.
 
@@ -680,22 +681,22 @@ LIMIT 20;
 | `year_label` | varchar(20) | `2026/2027` — liturgical year, begins at Advent |
 | `source_document` | varchar(160) | `Nigerian Ordo 2026/2027` |
 | `start_date`, `end_date` | date | coverage |
-| `file_media_id` | uuid | FK — the uploaded spreadsheet, retained |
+| `file_media_id` | uuid | FK — the uploaded spreadsheet, retained; required |
 | `uploaded_by_admin_id` | uuid | FK |
 | `row_count`, `inserted_count`, `updated_count` | int | |
 | `status` | enum | `uploaded` \| `validated` \| `committed` \| `rolled_back` \| `failed` |
 | `error_report` | jsonb | `[{row, column, message}]` |
 | `committed_at`, `rolled_back_at` | timestamptz | |
 
-**Unique:** `(country_id, year_label)` where `status = 'committed'` — one committed Ordo per year.
+**Unique:** `(country_id, year_label)` where `status = 'committed'` — one committed Ordo per year. **Check:** `end_date >= start_date`
 
 ### `celebration`
 `id` · `liturgical_day_id` (FK) · `name` · `rank` (enum: `solemnity`\|`feast`\|`memorial`\|`optional_memorial`\|`ferial`) · `precedence` (smallint, lower wins) · `saint_id` (FK, nullable) · `is_proper_to_country` (boolean) · `liturgical_color` · `is_primary`
 
-**Index:** `(liturgical_day_id, precedence)`
+**Index:** `(liturgical_day_id, precedence)` · unique `(liturgical_day_id)` where `is_primary` — one primary celebration per day
 
 ### `saint`
-`id` · `name` · `feast_date` (month-day) · `biography` · `patronage` · `birth_year` · `death_year` · `canonization_date` · `image_media_id`
+`id` · `name` · `feast_month`, `feast_day` (smallints, both or neither) · `biography` · `patronage` · `birth_year` · `death_year` · `canonization_date` · `image_media_id` · `status` (`record_status`)
 
 ### `reading_set` ★ multi-Mass days
 | Column | Type | Notes |
@@ -711,14 +712,16 @@ LIMIT 20;
 | **`personal_devotion_html`** | text | "Personal Devotion" — nullable |
 | `sort_order` | smallint | |
 
-**Unique:** `(liturgical_day_id, mass_type, cycle)`
+**Unique:** `(liturgical_day_id, mass_type, cycle)` · `(liturgical_day_id, mass_type)` where `cycle IS NULL`
 
-> **Why this exists:** Christmas has four distinct Mass sets with different readings; the Easter Vigil has nine. One-set-per-date is wrong and expensive to fix later. The back office presents a **day-centric editor with a Mass-set selector** (task 1.3.13) — one form, but an admin can add sets to a date.
+**Verification:** carries the same verification columns as `reading` (see below) — they gate the reflection and personal devotion.
+
+> **Why this exists:** Christmas has four distinct Mass sets with different readings; Easter has a Vigil Mass and a Mass during the Day. One-set-per-date is wrong and expensive to fix later. The Easter Vigil is one set holding up to nine readings: readings beyond the first and second are typed `additional`, ordered by `sequence`, with the printed label in `heading`. The back office presents a **day-centric editor with a Mass-set selector** (task 1.3.13) — one form, but an admin can add sets to a date.
 >
 > **Reflection and devotion are original content**, not Lectionary text. Someone must write them 365 days a year, and a doctrinal error there is as damaging as a wrong Gospel — so they pass through the same verification gate.
 
 ### `mass_proper`
-`id` · `reading_set_id` (FK) · `type` (enum: `entrance_antiphon` \| `collect` \| `prayer_after_communion` \| `offertory` \| `communion_antiphon`) · `body_html` (sanitised) · `source_reference`
+`id` · `reading_set_id` (FK) · `type` (enum: `entrance_antiphon` \| `collect` \| `prayer_after_communion` \| `offertory` \| `communion_antiphon`) · `body_html` (sanitised) · `translation_id` (FK → `bible_translation` of kind `missal`, required) · `source_reference` · the verification columns of `reading`
 
 **Unique:** `(reading_set_id, type)`
 
@@ -727,7 +730,7 @@ LIMIT 20;
 ### `psalm_stanza`
 `id` · `reading_id` (FK) · `sequence` (smallint) · `body_html`
 
-**Index:** `(reading_id, sequence)`
+**Unique:** `(reading_id, sequence)` — verified with its parent reading
 
 > The renderer inserts `reading.psalm_response` between stanzas, matching the design. Storing the psalm as one blob cannot produce that layout.
 
@@ -736,7 +739,7 @@ LIMIT 20;
 |---|---|---|
 | `id` | uuid | PK |
 | `reading_set_id` | uuid | FK |
-| `type` | enum | `first` \| `psalm` \| `second` \| `acclamation` \| `gospel` \| `sequence` |
+| `type` | enum | `first` \| `psalm` \| `second` \| `additional` \| `acclamation` \| `gospel` \| `sequence` — `additional` is for readings beyond the second, as at the Easter Vigil |
 | `sequence` | smallint | display order |
 | `citation` | varchar(120) | display string, e.g. `Lk 21:25-28, 34-36` |
 | `heading` | varchar(200) | nullable — "First Reading", "Gospel" |
@@ -744,9 +747,9 @@ LIMIT 20;
 | `title` | varchar(240) | the reading's theme, e.g. "The Transfiguration of the Lord" |
 | **`closing_line`** | varchar(120) | "The word of the Lord." / "The Gospel of the Lord." |
 | `body_html` | text | **sanitised on write** — the text as printed in the Lectionary |
-| `psalm_response` | varchar(300) | psalms only |
+| `psalm_response` | varchar(300) | psalms only (CHECK) |
 | `is_shorter_form` | boolean | the Lectionary's optional shorter readings |
-| `translation_id` | uuid | FK → `bible_translation` |
+| `translation_id` | uuid | FK → `bible_translation`, required |
 | `audio_media_id` | uuid | FK, nullable — Phase 3 |
 | **`verification_status`** | enum | `draft` \| `ocr_raw` \| `proofread` \| `verified` |
 | `proofread_by_admin_id`, `proofread_at` | uuid, timestamptz | first pass |
@@ -754,9 +757,11 @@ LIMIT 20;
 | **`published_by_admin_id`**, `published_at` | uuid, timestamptz | set on super-admin override |
 | **`override_reason`** | text | **mandatory** when published below `verified` |
 | `import_batch_id` | uuid | FK, nullable — provenance |
-| `source_reference` | varchar(160) | `Lectionary Vol. II, p. 341` |
+| `source_reference` | varchar(160) | `Lectionary Vol. II, p. 341` — required |
 
-**Index:** `(reading_set_id, sequence)` · `(verification_status)` · `(import_batch_id)`
+**Unique:** `(reading_set_id, sequence, is_shorter_form)` · **Index:** `(verification_status)` · `(import_batch_id)`
+
+**Checks** (shared with `reading_set` and `mass_proper`): `proofread` or `verified` requires the proofreader and time · `verified` requires the verifier and time · `published_by_admin_id` requires `published_at` and `override_reason`. The different-person rule for Sundays and solemnities depends on the day's rank and is enforced by the verification service.
 
 > **Publish gate:** only `verification_status = 'verified'` rows are exposed by `/readings` or `/sync`. Enforce in the query layer, not the UI.
 >
@@ -779,14 +784,16 @@ LIMIT 20;
 | `error_report` | jsonb | `[{row, column, message}]` |
 | `committed_at`, `rolled_back_at` | timestamptz | |
 
-**Index:** `(status, created_at)` · `(date_range_start, date_range_end)`
+**Index:** `(status, created_at)` · `(date_range_start, date_range_end)` · **Check:** `date_range_end >= date_range_start`
 
 > **Rollback semantics:** committing a batch stamps `import_batch_id` on every row it touched and snapshots prior values in `audit_log`. Rollback restores from that snapshot and sets `status = 'rolled_back'`. This is the safety net that makes bulk upload of thousands of scripture passages an acceptable risk.
 
 ### `bible_translation`
-`id` · `country_id` (FK) · `name` · `abbreviation` · `licence_holder` · `licence_reference` · `permission_document_url` · `is_approved_lectionary` (boolean)
+`id` · `country_id` (FK) · `source_kind` (enum: `lectionary`\|`missal`) · `name` · `abbreviation` · `licence_holder` · `licence_reference` · `permission_document_media_id` (FK → `media_asset`, the signed permission kept in our storage) · `is_approved_lectionary` (boolean)
 
-> Keep this populated. When asked under what authority you publish these texts, this table is the answer. **Licences are territorial** — hence `country_id`.
+**Unique:** `(country_id, abbreviation)`
+
+> Keep this populated. When asked under what authority you publish these texts, this table is the answer. **Licences are territorial** — hence `country_id`. Missal texts (`mass_proper`) reference a `missal` row; readings reference a `lectionary` row. Internal only — never exposed by a public endpoint.
 
 ---
 
