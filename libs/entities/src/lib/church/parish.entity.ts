@@ -2,6 +2,7 @@ import { Check, Column, Entity, Index, JoinColumn, ManyToOne, type Relation } fr
 import type { Point } from 'typeorm';
 
 import { BaseEntity } from '../base.entity';
+import { MediaAsset } from '../media/media-asset.entity';
 import { RECORD_STATUSES, type RecordStatus } from '../record-status';
 import { Deanery } from './deanery.entity';
 import { Diocese } from './diocese.entity';
@@ -122,6 +123,13 @@ export class Parish extends BaseEntity {
 
   @Column({ type: 'text', nullable: true })
   description!: string | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  coverMediaId!: string | null;
+
+  @ManyToOne(() => MediaAsset, { nullable: true })
+  @JoinColumn()
+  coverMedia!: Relation<MediaAsset> | null;
 
   @Column({ type: 'enum', enum: RECORD_STATUSES, enumName: 'record_status', default: 'draft' })
   status!: RecordStatus;

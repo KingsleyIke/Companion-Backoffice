@@ -514,7 +514,7 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `seat_city`, `state` | varchar(120) | |
 | `established_date` | date | nullable |
 | `website`, `email`, `phone` | varchar | nullable |
-| `logo_media_id` | uuid | FK |
+| `logo_media_id` | uuid | FK, nullable |
 | **`publication_status`** | enum | `hidden` \| `in_progress` \| `published` |
 | `published_at` | timestamptz | nullable |
 | `verified_parish_count` | int | cached; recomputed on parish publish |
@@ -571,7 +571,7 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `phone`, `email`, `website` | varchar | nullable |
 | `established_date` | date | nullable |
 | `description` | text | nullable |
-| `cover_media_id` | uuid | FK |
+| `cover_media_id` | uuid | FK, nullable |
 | `status` | enum | `record_status`: `draft` \| `published` \| `archived` |
 | `search_vector` | tsvector | GIN, generated (stored) from `name` (A), `patron_saint` (B), `city`/`lga`/`state` (C) with the `simple` config — English stemming mangles Igbo, Yoruba and Hausa names |
 | `verified_at` | timestamptz | last human verification |
@@ -629,11 +629,22 @@ LIMIT 20;
 > **`schedule_text` is deliberately free text.** Real entries are "First Thursday/Friday", "1st Sunday: workers & tithe", "Wed from 6:30am". Structuring this will fight reality and produce wrong data.
 
 ### `parish_gallery_album`
-`id` · `parish_id` (FK) · `title` (varchar 160) · `event_date` (date, nullable) · `cover_media_id` (FK) · `sort_order` · `status` (enum)
+`id` · `parish_id` (FK) · `title` (varchar 160) · `event_date` (date, nullable) · `cover_media_id` (FK, nullable) · `sort_order` · `status` (`record_status`)
 
-`parish_gallery_item` gains **`album_id`** (FK, nullable).
+**Index:** `(parish_id, sort_order)`
+
+`parish_gallery_item` gains **`album_id`** (FK, nullable). An item's album must belong to the same parish — enforced in the gallery service.
 
 > From the design: *"Each album represents an activity or event (e.g. Harvest 2025, Christmas Mass). This is separate from the parish building photos above."* An item with `album_id IS NULL` is a building photo.
+
+---
+
+### `parish_social_link`
+`id` · `parish_id` (FK) · `platform` (enum: `facebook`\|`instagram`\|`x`\|`youtube`\|`tiktok`\|`whatsapp`\|`website`\|`other`) · `url` (varchar 500) · `sort_order`
+
+**Index:** `(parish_id, sort_order)`
+
+> Backs the social links repeater (task 1.2.12).
 
 ---
 
@@ -811,22 +822,24 @@ LIMIT 20;
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid | PK |
-| `storage_key` | varchar(300) | R2 object key |
+| `storage_key` | varchar(300) | R2 object key — unique with `bucket` |
 | `bucket` | varchar(80) | |
 | `kind` | enum | **`image` \| `audio` \| `document`** |
 | `mime_type` | varchar(60) | allowlist enforced |
 | `width`, `height` | int | images |
 | `duration_ms` | int | **audio** |
 | `bitrate_kbps` | smallint | **audio** |
-| `size_bytes` | bigint | |
+| `size_bytes` | bigint | non-negative |
 | `blurhash` | varchar(60) | image placeholder |
 | `variants` | jsonb | `{thumb, medium, large}` or `{low, high}` for audio |
 | `uploaded_by_user_id` | uuid | FK, nullable |
-| `moderation_status` | enum | `pending` \| `auto_passed` \| `auto_flagged` \| `approved` \| `rejected` |
+| `moderation_status` | enum | `pending` \| `auto_passed` \| `auto_flagged` \| `approved` \| `rejected` — default `pending`, indexed |
 | `moderation_labels` | jsonb | Vision/Rekognition output |
 
 ### `parish_gallery_item`
-`id` · `parish_id` (FK) · `media_asset_id` (FK) · `caption` · `event_date` · `sort_order` · `status`
+`id` · `parish_id` (FK) · `album_id` (FK, nullable — null is a building photo) · `media_asset_id` (FK) · `caption` (varchar 300) · `event_date` · `sort_order` · `status` (`record_status`)
+
+**Index:** `(parish_id, album_id, sort_order)` · `(album_id)` · `(media_asset_id)`
 
 ---
 

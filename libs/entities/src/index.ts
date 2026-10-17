@@ -8,8 +8,12 @@ import { Institution } from './lib/church/institution.entity';
 import { MassSchedule } from './lib/church/mass-schedule.entity';
 import { ParishActivity } from './lib/church/parish-activity.entity';
 import { ParishContact } from './lib/church/parish-contact.entity';
+import { ParishGalleryAlbum } from './lib/church/parish-gallery-album.entity';
+import { ParishGalleryItem } from './lib/church/parish-gallery-item.entity';
+import { ParishSocialLink } from './lib/church/parish-social-link.entity';
 import { Parish } from './lib/church/parish.entity';
 import { ReligiousInstitute } from './lib/church/religious-institute.entity';
+import { MediaAsset } from './lib/media/media-asset.entity';
 
 export * from './lib/base.entity';
 export * from './lib/church/country.entity';
@@ -20,8 +24,12 @@ export * from './lib/church/institution.entity';
 export * from './lib/church/mass-schedule.entity';
 export * from './lib/church/parish-activity.entity';
 export * from './lib/church/parish-contact.entity';
+export * from './lib/church/parish-gallery-album.entity';
+export * from './lib/church/parish-gallery-item.entity';
+export * from './lib/church/parish-social-link.entity';
 export * from './lib/church/parish.entity';
 export * from './lib/church/religious-institute.entity';
+export * from './lib/media/media-asset.entity';
 export * from './lib/record-status';
 
 export const ENTITIES: NonNullable<DataSourceOptions['entities']> = [
@@ -35,4 +43,8 @@ export const ENTITIES: NonNullable<DataSourceOptions['entities']> = [
   MassSchedule,
   ParishContact,
   ParishActivity,
+  MediaAsset,
+  ParishGalleryAlbum,
+  ParishGalleryItem,
+  ParishSocialLink,
 ];
