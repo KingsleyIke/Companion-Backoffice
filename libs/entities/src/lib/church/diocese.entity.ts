@@ -1,6 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typeorm';
 
 import { BaseEntity } from '../base.entity';
+import { MediaAsset } from '../media/media-asset.entity';
 import { Country } from './country.entity';
 import { EcclesiasticalProvince } from './ecclesiastical-province.entity';
 
@@ -67,6 +68,13 @@ export class Diocese extends BaseEntity {
 
   @Column({ type: 'varchar', length: 32, nullable: true })
   phone!: string | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  logoMediaId!: string | null;
+
+  @ManyToOne(() => MediaAsset, { nullable: true })
+  @JoinColumn()
+  logoMedia!: Relation<MediaAsset> | null;
 
   @Index()
   @Column({
