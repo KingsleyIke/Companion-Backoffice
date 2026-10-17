@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2021",
+    "strict": true,
+    "types": ["node"]
+  },
+  "include": [
+    "libs/**/*.ts",
+    "migrations/**/*.ts",
+    "apps/api/src/**/*.ts",
+    "apps/api/scripts/**/*.ts"
+  ],
+  "exclude": ["**/*.spec.ts", "**/*.db-spec.ts"]
+}

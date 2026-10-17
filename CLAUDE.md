@@ -37,6 +37,8 @@ Located in `docs/`:
 
 Work is identified by task ID (`1.2.4`, `1.3.15`). If a prompt names one, read that task in Doc 2 Part A first.
 
+**Docs `00`–`06` are shared with the mobile repo (`KingsleyIke/Companion-Mobile`), and this repo is their source of truth.** When a task changes one, copy the same file into the mobile repo's `docs/` as part of that task. The mobile repo's CI fails while its copies differ.
+
 ---
 
 ## Branches
@@ -139,7 +141,8 @@ pnpm test:db                        # database constraint specs, against a migra
 
 pnpm lint && pnpm test && pnpm build   # what CI runs, after pnpm format:check
 npx nx e2e api-e2e
-pnpm generate:client                # OpenAPI → Angular client (from task 1.1.7)
+pnpm generate:spec                  # NestJS decorators → libs/contracts/openapi.json (no database needed)
+pnpm generate:client                # generate:spec, then the Angular client into libs/contracts; CI fails if stale
 ```
 
 **Generated migrations can need hand edits** — review every generated file for them:

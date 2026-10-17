@@ -50,6 +50,9 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/back-office/proxy.conf.json"
+      },
       "configurations": {
         "production": {
           "buildTarget": "back-office:build:production"

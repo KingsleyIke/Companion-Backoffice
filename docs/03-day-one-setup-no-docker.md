@@ -169,13 +169,15 @@ pnpm add -D @types/passport-jwt
 ### 6.2 Mobile
 
 ```bash
-flutter create --org ng.catholicapp --platforms=android,ios catholic_mobile
-cd catholic_mobile
-flutter pub add drift sqlite3_flutter_libs path_provider dio \
+flutter create --org com.hezetech --project-name companionapp --platforms=android,ios Companion-Mobile
+cd Companion-Mobile
+flutter pub add drift drift_flutter path_provider dio \
   geolocator url_launcher firebase_core firebase_messaging \
   flutter_secure_storage
 flutter pub add --dev drift_dev build_runner
 ```
+
+The application ID is `com.hezetech.companion`, not the `com.hezetech.companionapp` that `flutter create` derives. It is set per flavour in `android/app/build.gradle.kts` and `ios/Flutter/Flavor-*.xcconfig` (dev and staging add `.dev` / `.staging`).
 
 ---
 

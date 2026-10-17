@@ -1132,6 +1132,8 @@ The single most important mechanism in the app.
 ### Rules
 
 - **Only `verified` readings sync.** A reading in `draft`, `ocr_raw` or `proofread` is invisible to `/sync` and `/readings`. Enforce in the query layer.
+- **Leaving the visible set is a deletion, and it carries the children with it.** A row stops being visible when it is soft-deleted, unpublished, drops below `verified`, is made private (`parish_contact.is_public = false`), or its diocese is unpublished. `/sync` then sends a tombstone for that row **and for every row beneath it**: a liturgical day's celebrations, reading sets, readings, psalm stanzas and Mass propers; a parish's Mass times, contacts, activities, gallery and social links; a collection's items and their translations. It never sends a child whose parent the device cannot hold. Soft deletes do not cascade on the server, so the sync query must apply this rule itself.
+- **The device rejects orphans.** The local schema enforces each child → parent link within a resource, so an orphan would fail the whole apply. The client sets such a row aside and logs it rather than stalling that resource's sync (task 1.4.3).
 - **Corrections propagate automatically.** Fixing a typo in a Gospel bumps `updated_at`; every device self-corrects on next sync. This is a genuine advantage over apps that ship content fixes by store update.
 - **Rollback is a sync event.** Rolling back an import batch restores prior values and bumps `updated_at`, so devices converge on the restored text. Never hard-delete readings a client may hold.
 - **Server time is authoritative.** Never use device clocks for sync cursors.

@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-describe('GET /api/v1', () => {
-  it('should return a message', async () => {
-    const res = await axios.get(`/api/v1`);
+describe('GET /api/v1/dioceses', () => {
+  it('returns a page of published dioceses', async () => {
+    const res = await axios.get(`/api/v1/dioceses`);
 
     expect(res.status).toBe(200);
-    expect(res.data).toEqual({ message: 'Hello API' });
+    expect(res.data.items.length).toBeLessThanOrEqual(50);
+    expect(res.data).toHaveProperty('nextCursor');
   });
 });

@@ -124,7 +124,7 @@ This is the table to consult when you pick up a task and need to know what to re
 | 1 | **Nearest-parish search** | PostGIS `ST_DWithin` + KNN `<->` operator, GIST index, TypeORM raw query | `geolocator` for device position |
 | 2 | **Map display** | Serve `nigeria.pmtiles` from R2 | `maplibre_gl` (Flutter) / `maplibre-gl-js` (Angular) |
 | 3 | **Directions** | None | `url_launcher` → Google/Apple Maps deep link |
-| 4 | **Offline storage** | — | `drift` + `sqlite3_flutter_libs`; pre-built `.db` bundled as an asset |
+| 4 | **Offline storage** | — | `drift` + `drift_flutter` (SQLite bundled by `sqlite3` 3.x); pre-built `.db` bundled as an asset |
 | 5 | **Delta sync** | Custom `/sync` endpoints, `updated_at` + soft deletes | `dio` + background isolate |
 | 6 | **Image upload** | Presigned PUT via `@aws-sdk/client-s3`; `sharp` resize in a BullMQ worker | `image_picker`, `dio` direct-to-R2 upload |
 | 7 | **Push notifications** | `firebase-admin`, batched ≤500 tokens, BullMQ retry | `firebase_messaging`, `flutter_local_notifications` |
@@ -200,11 +200,13 @@ catholic-mobile/
 │   ├── core/                   # DI, routing, theme, config
 │   ├── data/
 │   │   ├── local/              # Drift database, DAOs, migrations
-│   │   ├── remote/             # Generated API client
+│   │   ├── remote/             # Wiring for the generated API client (base URL per flavour)
 │   │   └── sync/               # Delta sync engine
 │   ├── features/               # readings, calendar, parishes, prayers,
 │   │                           # notifications, contribute, settings
 │   └── shared/                 # Widgets, formatters, extensions
+├── packages/api_client/        # Generated dart-dio client — never edit; regenerate
+├── openapi/                    # Vendored copy of the platform's openapi.json + its source commit
 ├── assets/
 │   ├── seed.db                 # Pre-built SQLite — readings, prayers, parishes
 │   └── nigeria.pmtiles         # Optional bundled basemap
