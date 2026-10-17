@@ -171,7 +171,7 @@ pnpm add -D @types/passport-jwt
 ```bash
 flutter create --org com.hezetech --project-name companionapp --platforms=android,ios Companion-Mobile
 cd Companion-Mobile
-flutter pub add drift sqlite3_flutter_libs path_provider dio \
+flutter pub add drift drift_flutter path_provider dio \
   geolocator url_launcher firebase_core firebase_messaging \
   flutter_secure_storage
 flutter pub add --dev drift_dev build_runner
