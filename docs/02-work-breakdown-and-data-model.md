@@ -393,12 +393,14 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `title`, `subtitle` | varchar | display text |
 | `icon` | varchar(60) | icon identifier the client resolves |
 | `route` | varchar(120) | client route or `content_collection` slug |
-| `group` | enum | `home_primary` \| `home_secondary` \| `drawer` \| `bottom_nav` |
+| `placement` | enum | `home_primary` \| `home_secondary` \| `drawer` \| `bottom_nav` — named `placement` because `group` is an SQL reserved word |
 | `sort_order` | smallint | |
-| `is_enabled` | boolean | |
+| `is_enabled` | boolean | default false — modules ship hidden |
 | `badge_text` | varchar(20) | e.g. "New", "Coming soon" |
 | `min_app_version` | varchar(20) | **hide from older clients that cannot render it** |
 | `country_id` | uuid | FK, nullable = all countries |
+
+**Index:** `(placement, sort_order)`
 
 > The home screen and drawer are **rendered from this table**. Ship "Rosary — Coming soon" as a disabled row, flip `is_enabled` when the content lands. `min_app_version` is what makes this safe: a v1.0 client never sees a module only v1.4 can render.
 
@@ -417,15 +419,19 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `sort_order` | smallint | |
 | `min_app_version` | varchar(20) | |
 
-### `device_notification_subscription`
-`device_id` (FK) · `topic_id` (FK) · `enabled` · `delivery_time` (time) · `lead_days` (smallint) · `frequency` (enum) · `rank_threshold` (enum) · `days_of_week` (jsonb) · `sound_enabled` · `settings` (jsonb, topic-specific overflow)
+**Index:** `(category, sort_order)`
 
-**Unique:** `(device_id, topic_id)`
+### `device_notification_subscription`
+`id` · `device_id` (FK) · `topic_id` (FK) · `enabled` · `delivery_time` (time) · `lead_days` (smallint, ≥ 0) · `frequency` (enum: `daily`\|`weekly`\|`custom`) · `rank_threshold` (`celebration_rank`) · `days_of_week` (jsonb, 0 = Sunday) · `sound_enabled` · `settings` (jsonb, topic-specific overflow)
+
+**Unique:** `(device_id, topic_id)` · **Index:** `(topic_id)`
 
 > **The settings screen has no hardcoded list.** It fetches topics, groups them by `category`, and renders a control per `supports_*` flag. "Divine Mercy at 3pm" and "Rosary reminder" cost one INSERT each and a planner rule. This replaces v1.0's wide `notification_preference` table, which needed a migration plus a release per new toggle.
 
 ### `content_category`
-`id` · `parent_category_id` (self-FK) · `name` · `slug` · `icon` · `sort_order` · `display_style` (`list`\|`grid`\|`carousel`) · `country_id`
+`id` · `parent_category_id` (self-FK) · `name` · `slug` (unique) · `icon` · `sort_order` · `display_style` (`list`\|`grid`\|`carousel`) · `country_id`
+
+**Index:** `(parent_category_id, sort_order)`
 
 ### `content_collection` ★ carries every devotion
 | Column | Type | Notes |
@@ -448,8 +454,10 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | **`days_of_week`** | jsonb | e.g. `[1,6]` for "Mondays & Saturdays" (Rosary mysteries) |
 | `parent_collection_id` | uuid | self-FK — tabs (Rosary = Prayers / Mysteries / Litany) |
 | `sort_order` | smallint | |
-| `status` | enum | `draft` \| `published` \| `archived` |
-| `search_vector` | tsvector | GIN |
+| `status` | enum | `record_status`: `draft` \| `published` \| `archived` |
+| `search_vector` | tsvector | GIN, generated (stored) from `title` (A) and `subtitle` (B), `simple` config |
+
+**Index:** `(category_id, sort_order)` · `(type, status)` · `(diocese_id)` · `(parent_collection_id)`
 
 ### `content_item` — ordered, nestable steps
 | Column | Type | Notes |
@@ -460,16 +468,16 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `sequence` | smallint | order within parent |
 | `item_type` | enum | `station` \| `mystery` \| `decade` \| `prayer` \| `reflection` \| `scripture` \| `antiphon` \| `response` \| `heading` |
 | `title` | varchar(200) | |
-| `body_html` | text | |
+| `body_html` | text | nullable — a `heading` item has no body |
 | `reflection_html` | text | nullable |
 | **`prayer_html`** | text | nullable — Stations show Scripture + Reflection + **Prayer** as three blocks |
 | **`response_text`** | varchar(300) | nullable — litany two-column: `title` is the invocation, this is the response |
 | `scripture_citation` | varchar(120) | nullable |
-| `repeat_count` | smallint | default 1 — "Hail Mary ×10" |
+| `repeat_count` | smallint | default 1, ≥ 1 — "Hail Mary ×10" |
 | `image_media_id` | uuid | FK — station artwork |
 | `audio_media_id` | uuid | FK — per-item audio, if not using collection audio |
 | `audio_start_ms` | int | **chapter offset into the collection recording** |
-| `audio_end_ms` | int | |
+| `audio_end_ms` | int | after `audio_start_ms` when both are set |
 | `metadata` | jsonb | type-specific overflow |
 
 **Indexes:** `(collection_id, parent_item_id, sequence)` · `(collection_id, item_type)`

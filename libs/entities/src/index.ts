@@ -18,6 +18,10 @@ import { ParishGalleryItem } from './lib/church/parish-gallery-item.entity';
 import { ParishSocialLink } from './lib/church/parish-social-link.entity';
 import { Parish } from './lib/church/parish.entity';
 import { ReligiousInstitute } from './lib/church/religious-institute.entity';
+import { ContentCategory } from './lib/content/content-category.entity';
+import { ContentCollection } from './lib/content/content-collection.entity';
+import { ContentItemTranslation } from './lib/content/content-item-translation.entity';
+import { ContentItem } from './lib/content/content-item.entity';
 import { BibleTranslation } from './lib/liturgy/bible-translation.entity';
 import { Celebration } from './lib/liturgy/celebration.entity';
 import { LiturgicalDay } from './lib/liturgy/liturgical-day.entity';
@@ -29,6 +33,9 @@ import { ReadingSet } from './lib/liturgy/reading-set.entity';
 import { Reading } from './lib/liturgy/reading.entity';
 import { Saint } from './lib/liturgy/saint.entity';
 import { MediaAsset } from './lib/media/media-asset.entity';
+import { AppModule } from './lib/navigation/app-module.entity';
+import { DeviceNotificationSubscription } from './lib/notifications/device-notification-subscription.entity';
+import { NotificationTopic } from './lib/notifications/notification-topic.entity';
 import { SubmissionAttachment } from './lib/submissions/submission-attachment.entity';
 import { Submission } from './lib/submissions/submission.entity';
 import { AppUser } from './lib/users/app-user.entity';
@@ -54,6 +61,10 @@ export * from './lib/church/parish-gallery-item.entity';
 export * from './lib/church/parish-social-link.entity';
 export * from './lib/church/parish.entity';
 export * from './lib/church/religious-institute.entity';
+export * from './lib/content/content-category.entity';
+export * from './lib/content/content-collection.entity';
+export * from './lib/content/content-item-translation.entity';
+export * from './lib/content/content-item.entity';
 export * from './lib/liturgy/bible-translation.entity';
 export * from './lib/liturgy/celebration.entity';
 export * from './lib/liturgy/liturgical-day.entity';
@@ -67,6 +78,9 @@ export * from './lib/liturgy/reading.entity';
 export * from './lib/liturgy/saint.entity';
 export * from './lib/liturgy/verified-content';
 export * from './lib/media/media-asset.entity';
+export * from './lib/navigation/app-module.entity';
+export * from './lib/notifications/device-notification-subscription.entity';
+export * from './lib/notifications/notification-topic.entity';
 export * from './lib/record-status';
 export * from './lib/submissions/submission-attachment.entity';
 export * from './lib/submissions/submission.entity';
@@ -109,4 +123,11 @@ export const ENTITIES: NonNullable<DataSourceOptions['entities']> = [
   Reading,
   PsalmStanza,
   MassProper,
+  AppModule,
+  NotificationTopic,
+  DeviceNotificationSubscription,
+  ContentCategory,
+  ContentCollection,
+  ContentItem,
+  ContentItemTranslation,
 ];
