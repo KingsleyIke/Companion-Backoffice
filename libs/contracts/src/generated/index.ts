@@ -15,6 +15,7 @@ export type { DioceseDto } from './models/diocese-dto';
 export type { DiocesePageDto } from './models/diocese-page-dto';
 export type { DiocesePublicationStatus } from './models/diocese-publication-status';
 export type { DioceseType } from './models/diocese-type';
+export type { ErrorResponseDto } from './models/error-response-dto';
 export type { ForgotPasswordRequestDto } from './models/forgot-password-request-dto';
 export type { LoginRequestDto } from './models/login-request-dto';
 export type { LoginResultDto } from './models/login-result-dto';

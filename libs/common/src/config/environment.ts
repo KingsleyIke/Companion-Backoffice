@@ -2,6 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 import {
   readBoolean,
+  readHttpUrl,
   readOneOf,
   readOptional,
   readPort,
@@ -12,6 +13,10 @@ import {
 const NODE_ENVS = ['development', 'test', 'staging', 'production'] as const;
 export type NodeEnv = (typeof NODE_ENVS)[number];
 
+// Most to least severe; LOG_LEVEL keeps its level and everything more severe.
+export const LOG_LEVELS = ['fatal', 'error', 'warn', 'log', 'debug', 'verbose'] as const;
+export type LogLevel = (typeof LOG_LEVELS)[number];
+
 export interface Environment {
   nodeEnv: NodeEnv;
   port: number;
@@ -21,6 +26,12 @@ export interface Environment {
     url: string;
     migrationUrl: string | undefined;
     ssl: boolean;
+  };
+  observability: {
+    logLevel: LogLevel;
+    // Sentry is off unless a DSN is set, so local runs, tests and CI never report.
+    sentryDsn: string | undefined;
+    sentryRelease: string | undefined;
   };
 }
 
@@ -35,6 +46,11 @@ export function loadEnvironment(source: Source = process.env): Environment {
     : undefined;
   const ssl = readBoolean(source, 'DATABASE_SSL', true, errors);
   const trustProxy = readBoolean(source, 'TRUST_PROXY', false, errors);
+  const logLevel = readOneOf(source, 'LOG_LEVEL', LOG_LEVELS, 'log', errors);
+  const sentryDsn = readOptional(source, 'SENTRY_DSN')
+    ? readHttpUrl(source, 'SENTRY_DSN', errors)
+    : undefined;
+  const sentryRelease = readOptional(source, 'SENTRY_RELEASE');
 
   // The transaction pooler lacks the prepared statements and advisory locks
   // TypeORM's migration runner needs (docs/03 §5.2).
@@ -53,6 +69,7 @@ export function loadEnvironment(source: Source = process.env): Environment {
     port,
     trustProxy,
     database: { url, migrationUrl, ssl },
+    observability: { logLevel, sentryDsn, sentryRelease },
   };
   assertNotPointedAtProduction(environment, readOptional(source, 'PRODUCTION_DATABASE_REF'));
   return environment;

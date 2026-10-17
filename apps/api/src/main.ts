@@ -1,16 +1,20 @@
 import { Logger } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule } from '@nestjs/swagger';
-import { environmentConfig } from '@companion/common';
+import { loadEnvironment } from '@companion/common';
 
 import { AppModule } from './app/app.module';
 import { configureApp, createOpenApiDocument } from './app/configure-app';
+import { createLogger } from './app/http/logger';
+import { initSentry } from './app/http/sentry';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const environment = app.get<ConfigType<typeof environmentConfig>>(environmentConfig.KEY);
+  const environment = loadEnvironment();
+  initSentry(environment);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: createLogger(environment),
+  });
 
   configureApp(app);
   if (environment.trustProxy) {
