@@ -200,11 +200,13 @@ catholic-mobile/
 │   ├── core/                   # DI, routing, theme, config
 │   ├── data/
 │   │   ├── local/              # Drift database, DAOs, migrations
-│   │   ├── remote/             # Generated API client
+│   │   ├── remote/             # Wiring for the generated API client (base URL per flavour)
 │   │   └── sync/               # Delta sync engine
 │   ├── features/               # readings, calendar, parishes, prayers,
 │   │                           # notifications, contribute, settings
 │   └── shared/                 # Widgets, formatters, extensions
+├── packages/api_client/        # Generated dart-dio client — never edit; regenerate
+├── openapi/                    # Vendored copy of the platform's openapi.json + its source commit
 ├── assets/
 │   ├── seed.db                 # Pre-built SQLite — readings, prayers, parishes
 │   └── nigeria.pmtiles         # Optional bundled basemap

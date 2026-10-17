@@ -10,7 +10,7 @@ export class CursorPageQueryDto {
   @IsString()
   cursor?: string;
 
-  @ApiPropertyOptional({ type: Number, minimum: 1, maximum: 100, default: 50 })
+  @ApiPropertyOptional({ type: 'integer', minimum: 1, maximum: 100, default: 50 })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
