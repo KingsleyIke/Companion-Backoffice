@@ -43,7 +43,8 @@ There is no single, reliable, current directory of Catholic parishes in Nigeria.
 | **Registered user** | Email / Google / Apple | Follow parishes, sync preferences, apply to contribute |
 | **Contributor** | Approved by admin | Propose parish additions and edits, upload gallery images, post announcements |
 | **Content editor** | Back office | Upload readings, prayers, feasts |
-| **Diocese admin** | Back office | Everything above, scoped to one diocese; approve submissions in their diocese |
+| **Diocese admin** | Back office | The directory and submissions of one diocese, and that diocese's own devotions. Not national readings |
+| **Admin** | Back office | Everything nationally, except creating admins, managing roles and super-admin-only actions |
 | **Super admin** | Back office | Full access, create admins, manage roles |
 
 > **Design rule:** the app must be fully useful with **no account at all**. Authentication is only required to contribute. Do not gate readings or the directory behind a login.

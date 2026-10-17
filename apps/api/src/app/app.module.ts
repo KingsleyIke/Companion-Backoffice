@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, DiscoveryModule } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +9,8 @@ import {
   createDataSourceOptions,
   environmentConfig,
   JwtAuthGuard,
+  RolesGuard,
+  RouteAccessCheck,
 } from '@companion/common';
 
 import { AdminAuthModule } from '../modules/admin-auth/admin-auth.module';
@@ -48,10 +50,16 @@ import { DiocesesModule } from '../modules/dioceses/dioceses.module';
         },
       ],
     }),
+    DiscoveryModule,
     DiocesesModule,
     AdminAuthModule,
   ],
-  // Every route requires an access token unless it is marked @Public().
-  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
+  // Global guards run in this order: identify the admin, then check their role. Every route
+  // must be @Public() or declare its roles; RouteAccessCheck refuses to start otherwise.
+  providers: [
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+    RouteAccessCheck,
+  ],
 })
 export class AppModule {}

@@ -169,7 +169,7 @@ describe('schema constraints (database)', () => {
       await client.query(admin('ada@test.invalid'));
     });
 
-    it('requires a password once active and a scope for diocese admins', async () => {
+    it('requires a password once active, and a scope for diocese admins only', async () => {
       expect(await violation(admin('b@test.invalid', 'active'))).toBe(
         'CHK_admin_user_active_has_password',
       );
@@ -177,7 +177,13 @@ describe('schema constraints (database)', () => {
         await violation(
           `INSERT INTO admin_user (email, name, role) VALUES ('c@test.invalid', 'C', 'diocese_admin')`,
         ),
-      ).toBe('CHK_admin_user_diocese_admin_scoped');
+      ).toBe('CHK_admin_user_scope_matches_role');
+      expect(
+        await violation(
+          `INSERT INTO admin_user (email, name, role, diocese_scope_id)
+           VALUES ('d@test.invalid', 'D', 'admin', '${ID.diocese}')`,
+        ),
+      ).toBe('CHK_admin_user_scope_matches_role');
     });
 
     it('keeps the audit log append-only', async () => {

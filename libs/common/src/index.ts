@@ -7,3 +7,8 @@ export * from './auth/access-token';
 export * from './auth/current-admin.decorator';
 export * from './auth/jwt-auth.guard';
 export * from './auth/public.decorator';
+export * from './auth/diocese-scope';
+export * from './auth/permissions';
+export * from './auth/roles.decorator';
+export * from './auth/roles.guard';
+export * from './auth/route-access.check';

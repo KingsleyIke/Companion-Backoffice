@@ -13,9 +13,10 @@ export type AdminStatus = (typeof ADMIN_STATUSES)[number];
 @Index('UQ_admin_user_active_email', ['email'], { unique: true, where: '"deleted_at" IS NULL' })
 @Check('CHK_admin_user_email_lowercase', `"email" = lower("email")`)
 @Check('CHK_admin_user_active_has_password', `"status" <> 'active' OR "password_hash" IS NOT NULL`)
+// A diocese scope exists exactly when the role is diocese_admin: every other role is national.
 @Check(
-  'CHK_admin_user_diocese_admin_scoped',
-  `"role" <> 'diocese_admin' OR "diocese_scope_id" IS NOT NULL`,
+  'CHK_admin_user_scope_matches_role',
+  `("role" = 'diocese_admin') = ("diocese_scope_id" IS NOT NULL)`,
 )
 export class AdminUser extends BaseEntity {
   @Column({ type: 'varchar', length: 254 })
