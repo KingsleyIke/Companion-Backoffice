@@ -1,6 +1,16 @@
-import { Check, Column, Entity, Index, Unique } from 'typeorm';
+import {
+  Check,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  Unique,
+  type Relation,
+} from 'typeorm';
 
 import { BaseEntity } from '../base.entity';
+import { AppUser } from '../users/app-user.entity';
 
 export const MEDIA_KINDS = ['image', 'audio', 'document'] as const;
 export type MediaKind = (typeof MEDIA_KINDS)[number];
@@ -51,6 +61,14 @@ export class MediaAsset extends BaseEntity {
 
   @Column({ type: 'jsonb', nullable: true })
   variants!: Record<string, string> | null;
+
+  @Index()
+  @Column({ type: 'uuid', nullable: true })
+  uploadedByUserId!: string | null;
+
+  @ManyToOne(() => AppUser, { nullable: true })
+  @JoinColumn()
+  uploadedByUser!: Relation<AppUser> | null;
 
   @Index()
   @Column({
