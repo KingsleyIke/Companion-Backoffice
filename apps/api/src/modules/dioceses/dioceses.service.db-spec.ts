@@ -66,5 +66,8 @@ describe('DiocesesService.listPublished (database)', () => {
     await expect(
       service.listPublished({ limit: 2, cursor: encodeCursor(['only-one-key']) }),
     ).rejects.toThrow(BadRequestException);
+    await expect(
+      service.listPublished({ limit: 2, cursor: encodeCursor(['Alpha', 'not-a-uuid']) }),
+    ).rejects.toThrow(BadRequestException);
   });
 });

@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { isUUID } from 'class-validator';
 import { Repository } from 'typeorm';
 import { decodeCursor, encodeCursor } from '@companion/common';
 import type { CursorPageQueryDto, DioceseDto, DiocesePageDto } from '@companion/dto';
@@ -19,8 +20,9 @@ export class DiocesesService {
       .limit(limit + 1);
 
     if (cursor !== undefined) {
+      // The id is bound as a uuid parameter: anything else would fail in Postgres as a 500.
       const after = decodeCursor(cursor, 2);
-      if (!after) {
+      if (!after || !isUUID(after[1])) {
         throw new BadRequestException('Invalid cursor');
       }
       const [name, id] = after;

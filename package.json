@@ -10,7 +10,7 @@
     "test": "nx run-many -t test",
     "format": "nx format:write --all",
     "format:check": "nx format:check --all",
-    "typeorm": "TS_NODE_PROJECT=tsconfig.typeorm.json TS_NODE_TRANSPILE_ONLY=true node --env-file-if-exists=.env -r ts-node/register -r tsconfig-paths/register node_modules/typeorm/cli.js -d libs/common/src/database/migration-data-source.ts",
+    "typeorm": "TS_NODE_PROJECT=tsconfig.scripts.json TS_NODE_TRANSPILE_ONLY=true node --env-file-if-exists=.env -r ts-node/register -r tsconfig-paths/register node_modules/typeorm/cli.js -d libs/common/src/database/migration-data-source.ts",
     "migration:generate": "sh tools/scripts/migration-generate.sh",
     "migration:create": "sh tools/scripts/migration-generate.sh --empty",
     "migration:run": "pnpm typeorm migration:run",
@@ -20,7 +20,7 @@
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && pnpm db:up && pnpm migration:run",
     "migration:verify": "sh tools/scripts/verify-migrations.sh",
-    "generate:spec": "TS_NODE_PROJECT=tsconfig.typeorm.json TS_NODE_TRANSPILE_ONLY=true node -r ts-node/register -r tsconfig-paths/register apps/api/scripts/generate-openapi.ts",
+    "generate:spec": "TS_NODE_PROJECT=tsconfig.scripts.json TS_NODE_TRANSPILE_ONLY=true node -r ts-node/register -r tsconfig-paths/register apps/api/scripts/generate-openapi.ts",
     "generate:client": "pnpm generate:spec && ng-openapi-gen -c libs/contracts/ng-openapi-gen.json",
     "test:db": "node --env-file-if-exists=.env node_modules/jest/bin/jest.js -c jest.db.config.cts"
   },
