@@ -35,9 +35,14 @@ import { Saint } from './lib/liturgy/saint.entity';
 import { MediaAsset } from './lib/media/media-asset.entity';
 import { AppModule } from './lib/navigation/app-module.entity';
 import { DeviceNotificationSubscription } from './lib/notifications/device-notification-subscription.entity';
+import { NotificationInboxItem } from './lib/notifications/notification-inbox-item.entity';
+import { NotificationReceipt } from './lib/notifications/notification-receipt.entity';
 import { NotificationTopic } from './lib/notifications/notification-topic.entity';
+import { ScheduledNotification } from './lib/notifications/scheduled-notification.entity';
+import { AppSetting } from './lib/settings/app-setting.entity';
 import { SubmissionAttachment } from './lib/submissions/submission-attachment.entity';
 import { Submission } from './lib/submissions/submission.entity';
+import { ContentVersion } from './lib/sync/content-version.entity';
 import { AppUser } from './lib/users/app-user.entity';
 import { ContributorProfile } from './lib/users/contributor-profile.entity';
 import { Device } from './lib/users/device.entity';
@@ -80,10 +85,15 @@ export * from './lib/liturgy/verified-content';
 export * from './lib/media/media-asset.entity';
 export * from './lib/navigation/app-module.entity';
 export * from './lib/notifications/device-notification-subscription.entity';
+export * from './lib/notifications/notification-inbox-item.entity';
+export * from './lib/notifications/notification-receipt.entity';
 export * from './lib/notifications/notification-topic.entity';
+export * from './lib/notifications/scheduled-notification.entity';
 export * from './lib/record-status';
+export * from './lib/settings/app-setting.entity';
 export * from './lib/submissions/submission-attachment.entity';
 export * from './lib/submissions/submission.entity';
+export * from './lib/sync/content-version.entity';
 export * from './lib/users/app-user.entity';
 export * from './lib/users/contributor-profile.entity';
 export * from './lib/users/device.entity';
@@ -130,4 +140,9 @@ export const ENTITIES: NonNullable<DataSourceOptions['entities']> = [
   ContentCollection,
   ContentItem,
   ContentItemTranslation,
+  ContentVersion,
+  AppSetting,
+  ScheduledNotification,
+  NotificationReceipt,
+  NotificationInboxItem,
 ];

@@ -942,8 +942,12 @@ LIMIT 20;
 ### `scheduled_notification`
 `id` · `topic_id` (FK) · `title` · `body` · `data` (jsonb deep-link payload) · `target_criteria` (jsonb) · `scheduled_for` · `status` (`scheduled`\|`processing`\|`sent`\|`failed`\|`cancelled`) · `sent_count` · `failed_count`
 
+**Index:** `(status, scheduled_for)` · `(topic_id)`
+
 ### `notification_receipt`
 `id` · `scheduled_notification_id` (FK) · `device_id` (FK) · `status` (`sent`\|`failed`\|`invalid_token`) · `error_code` · `sent_at`
+
+**Unique:** `(scheduled_notification_id, device_id)` — a retried fan-out updates the receipt · **Index:** `(device_id)`
 
 > **Prune aggressively.** On `invalid_token` / `UNREGISTERED`, set `device.is_active = false`.
 
@@ -952,10 +956,12 @@ LIMIT 20;
 ## B8. Sync, gamification & monetisation
 
 ### `content_version`
-`resource` (varchar, PK) · `version` (bigint) · `updated_at`
+`resource` (varchar 60, PK) · `version` (bigint, default 0) · `updated_at` — documented `BaseEntity` exception
 
 ### `app_setting`
-`key` (varchar, PK) · `value` (text) · `value_type` (enum: `string`\|`int`\|`bool`\|`json`) · `description` · `updated_by_admin_id` · `updated_at`
+`id` · `key` (varchar 80, unique) · `value` (text) · `value_type` (enum: `string`\|`int`\|`bool`\|`json`) · `description` · `is_public` (default false — only public settings are served by `/bootstrap`) · `requires_super_admin` (default false) · `BaseEntity` columns
+
+> Extends `BaseEntity` with a unique `key` rather than a natural primary key, so it is not a fourth exception. `BaseEntity.updated_by` records the admin who last changed it.
 
 Seeded keys: `app_name` · `support_email` · `max_gallery_images_per_parish` · `email_notify_on_submission` · `allow_contributor_updates` · `auto_publish_readings` *(super admin only)* · `maintenance_mode` · `maintenance_message` · `bank_account_details`.
 
@@ -970,10 +976,10 @@ Seeded keys: `app_name` · `support_email` · `max_gallery_images_per_parish` ·
 | `topic_id` | uuid | FK |
 | `title`, `body` | varchar / text | denormalised so history survives topic changes |
 | `icon`, `deep_link` | varchar | |
-| `read_at`, `deleted_at` | timestamptz | per-device state |
+| `read_at`, `deleted_at` | timestamptz | per-device state (`deleted_at` from `BaseEntity`) |
 | `created_at` | timestamptz | day grouping in the UI |
 
-**Index:** `(device_id, deleted_at, created_at DESC)` · `(device_id, read_at)`
+**Index:** `(device_id, deleted_at, created_at)` — Postgres scans it backwards for newest-first · `(device_id, read_at)` · `(scheduled_notification_id)`
 
 > **This was missing from v2.2 entirely.** Push *delivery* is not an inbox: the design has All / Unread tabs, day grouping (Today / Yesterday / dated), per-item delete and an unread badge. Mirrored in Drift so history reads offline; backfilled from `GET /notifications/inbox` on reinstall.
 
