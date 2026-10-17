@@ -10,6 +10,7 @@ export const ADMIN_STATUSES = ['pending', 'active', 'suspended'] as const;
 export type AdminStatus = (typeof ADMIN_STATUSES)[number];
 
 @Entity()
+@Index('UQ_admin_user_active_email', ['email'], { unique: true, where: '"deleted_at" IS NULL' })
 @Check('CHK_admin_user_email_lowercase', `"email" = lower("email")`)
 @Check('CHK_admin_user_active_has_password', `"status" <> 'active' OR "password_hash" IS NOT NULL`)
 @Check(
@@ -17,7 +18,7 @@ export type AdminStatus = (typeof ADMIN_STATUSES)[number];
   `"role" <> 'diocese_admin' OR "diocese_scope_id" IS NOT NULL`,
 )
 export class AdminUser extends BaseEntity {
-  @Column({ type: 'varchar', length: 254, unique: true })
+  @Column({ type: 'varchar', length: 254 })
   email!: string;
 
   @Column({ type: 'varchar', length: 160 })

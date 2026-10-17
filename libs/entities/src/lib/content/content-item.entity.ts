@@ -90,7 +90,6 @@ export class ContentItem extends BaseEntity {
   @Column({ type: 'int', nullable: true })
   audioEndMs!: number | null;
 
-  // Type-specific overflow.
   @Column({ type: 'jsonb', nullable: true })
   metadata!: Record<string, unknown> | null;
 }

@@ -1,7 +1,8 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typeorm';
 
 import { BaseEntity } from '../base.entity';
-import { RECORD_STATUSES, type RecordStatus } from '../record-status';
+import { ContactDetails } from './contact-details';
+import { RECORD_STATUS_COLUMN, type RecordStatus } from '../record-status';
 import { Diocese } from './diocese.entity';
 import { ReligiousInstitute } from './religious-institute.entity';
 
@@ -58,18 +59,12 @@ export class Institution extends BaseEntity {
   @Column({ type: 'varchar', length: 120 })
   state!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  website!: string | null;
-
-  @Column({ type: 'varchar', length: 254, nullable: true })
-  email!: string | null;
-
-  @Column({ type: 'varchar', length: 32, nullable: true })
-  phone!: string | null;
+  @Column(() => ContactDetails, { prefix: false })
+  contact!: ContactDetails;
 
   @Column({ type: 'text', nullable: true })
   description!: string | null;
 
-  @Column({ type: 'enum', enum: RECORD_STATUSES, enumName: 'record_status', default: 'draft' })
+  @Column(RECORD_STATUS_COLUMN)
   status!: RecordStatus;
 }

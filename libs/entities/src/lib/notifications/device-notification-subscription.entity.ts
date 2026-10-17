@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 import { BaseEntity } from '../base.entity';
-import { CELEBRATION_RANKS, type CelebrationRank } from '../liturgy/liturgical-enums';
+import { CELEBRATION_RANK_COLUMN, type CelebrationRank } from '../liturgy/liturgical-enums';
 import { Device } from '../users/device.entity';
 import { NotificationTopic } from './notification-topic.entity';
 
@@ -53,7 +53,7 @@ export class DeviceNotificationSubscription extends BaseEntity {
   })
   frequency!: NotificationFrequency | null;
 
-  @Column({ type: 'enum', enum: CELEBRATION_RANKS, enumName: 'celebration_rank', nullable: true })
+  @Column({ ...CELEBRATION_RANK_COLUMN, nullable: true })
   rankThreshold!: CelebrationRank | null;
 
   // 0 = Sunday … 6 = Saturday.
@@ -63,7 +63,6 @@ export class DeviceNotificationSubscription extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   soundEnabled!: boolean;
 
-  // Topic-specific overflow.
   @Column({ type: 'jsonb', nullable: true })
   settings!: Record<string, unknown> | null;
 }

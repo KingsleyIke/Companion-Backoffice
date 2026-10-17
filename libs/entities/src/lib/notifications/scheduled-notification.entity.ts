@@ -29,7 +29,6 @@ export class ScheduledNotification extends BaseEntity {
   @Column({ type: 'text' })
   body!: string;
 
-  // Deep-link payload.
   @Column({ type: 'jsonb', nullable: true })
   data!: Record<string, unknown> | null;
 

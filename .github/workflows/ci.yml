@@ -57,3 +57,4 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm migration:verify
+      - run: pnpm test:db

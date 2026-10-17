@@ -21,6 +21,7 @@ export type AppUserStatus = (typeof APP_USER_STATUSES)[number];
 
 @Entity()
 @Unique(['authProvider', 'providerUid'])
+@Index('UQ_app_user_active_email', ['email'], { unique: true, where: '"deleted_at" IS NULL' })
 @Check('CHK_app_user_email_lowercase', `"email" = lower("email")`)
 @Check(
   'CHK_app_user_credentials',
@@ -28,7 +29,7 @@ export type AppUserStatus = (typeof APP_USER_STATUSES)[number];
    OR ("auth_provider" <> 'email' AND "provider_uid" IS NOT NULL)`,
 )
 export class AppUser extends BaseEntity {
-  @Column({ type: 'varchar', length: 254, unique: true, nullable: true })
+  @Column({ type: 'varchar', length: 254, nullable: true })
   email!: string | null;
 
   @Column({ type: 'varchar', length: 32, nullable: true })

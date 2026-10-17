@@ -4,7 +4,11 @@ import { AdminUser } from '../admin/admin-user.entity';
 import { BaseEntity } from '../base.entity';
 import { Country } from '../church/country.entity';
 import { MediaAsset } from '../media/media-asset.entity';
-import { IMPORT_STATUSES, type ImportErrorReport, type ImportStatus } from './liturgical-enums';
+import {
+  IMPORT_STATUS_COLUMN,
+  type ImportErrorReport,
+  type ImportStatus,
+} from './liturgical-enums';
 
 @Entity()
 @Index('UQ_liturgical_year_import_one_committed', ['countryId', 'yearLabel'], {
@@ -56,7 +60,7 @@ export class LiturgicalYearImport extends BaseEntity {
   @Column({ type: 'int', default: 0 })
   updatedCount!: number;
 
-  @Column({ type: 'enum', enum: IMPORT_STATUSES, enumName: 'import_status', default: 'uploaded' })
+  @Column(IMPORT_STATUS_COLUMN)
   status!: ImportStatus;
 
   @Column({ type: 'jsonb', nullable: true })

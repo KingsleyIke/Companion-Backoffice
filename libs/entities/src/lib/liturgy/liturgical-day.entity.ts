@@ -12,8 +12,8 @@ import {
 import { BaseEntity } from '../base.entity';
 import { Country } from '../church/country.entity';
 import {
-  LITURGICAL_COLORS,
-  LITURGICAL_SEASONS,
+  LITURGICAL_COLOR_COLUMN,
+  LITURGICAL_SEASON_COLUMN,
   ROSARY_MYSTERY_SETS,
   SUNDAY_CYCLES,
   WEEKDAY_CYCLES,
@@ -41,7 +41,7 @@ export class LiturgicalDay extends BaseEntity {
   @Column({ type: 'date' })
   date!: string;
 
-  @Column({ type: 'enum', enum: LITURGICAL_SEASONS, enumName: 'liturgical_season' })
+  @Column(LITURGICAL_SEASON_COLUMN)
   season!: LiturgicalSeason;
 
   @Column({ type: 'smallint', nullable: true })
@@ -57,7 +57,7 @@ export class LiturgicalDay extends BaseEntity {
   @Column({ type: 'enum', enum: WEEKDAY_CYCLES, enumName: 'weekday_cycle', nullable: true })
   weekdayCycle!: WeekdayCycle | null;
 
-  @Column({ type: 'enum', enum: LITURGICAL_COLORS, enumName: 'liturgical_color' })
+  @Column(LITURGICAL_COLOR_COLUMN)
   liturgicalColor!: LiturgicalColor;
 
   @Column({

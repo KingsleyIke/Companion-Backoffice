@@ -383,7 +383,7 @@ Three data-driven registries. Together they are the answer to *"make provisions 
 | `currency_code` | char(3) | `NGN` |
 | `is_active` | boolean | **Nigeria only at launch** |
 
-> Product is Nigeria-only; the schema is not. `diocese`, `bible_translation`, `liturgical_day` and `content_collection` all carry `country_id`. Adding Ghana later is seeding rows, not migrating a live schema — and Bible translation licences are **territorial**, so this separation is a legal requirement as much as a technical one.
+> Product is Nigeria-only; the schema is not. `diocese`, `licensed_text_source`, `liturgical_day` and `content_collection` all carry `country_id`. Adding Ghana later is seeding rows, not migrating a live schema — and Bible translation licences are **territorial**, so this separation is a legal requirement as much as a technical one.
 
 ### `app_module` — server-driven navigation
 | Column | Type | Notes |
@@ -729,7 +729,7 @@ LIMIT 20;
 > **Reflection and devotion are original content**, not Lectionary text. Someone must write them 365 days a year, and a doctrinal error there is as damaging as a wrong Gospel — so they pass through the same verification gate.
 
 ### `mass_proper`
-`id` · `reading_set_id` (FK) · `type` (enum: `entrance_antiphon` \| `collect` \| `prayer_after_communion` \| `offertory` \| `communion_antiphon`) · `body_html` (sanitised) · `translation_id` (FK → `bible_translation` of kind `missal`, required) · `source_reference` · the verification columns of `reading`
+`id` · `reading_set_id` (FK) · `type` (enum: `entrance_antiphon` \| `collect` \| `prayer_after_communion` \| `offertory` \| `communion_antiphon`) · `body_html` (sanitised) · `source_id` (FK → `licensed_text_source` of kind `missal`, required) · `source_reference` · the verification columns of `reading`
 
 **Unique:** `(reading_set_id, type)`
 
@@ -757,7 +757,7 @@ LIMIT 20;
 | `body_html` | text | **sanitised on write** — the text as printed in the Lectionary |
 | `psalm_response` | varchar(300) | psalms only (CHECK) |
 | `is_shorter_form` | boolean | the Lectionary's optional shorter readings |
-| `translation_id` | uuid | FK → `bible_translation`, required |
+| `source_id` | uuid | FK → `licensed_text_source` (kind `lectionary`), required |
 | `audio_media_id` | uuid | FK, nullable — Phase 3 |
 | **`verification_status`** | enum | `draft` \| `ocr_raw` \| `proofread` \| `verified` |
 | `proofread_by_admin_id`, `proofread_at` | uuid, timestamptz | first pass |
@@ -796,12 +796,12 @@ LIMIT 20;
 
 > **Rollback semantics:** committing a batch stamps `import_batch_id` on every row it touched and snapshots prior values in `audit_log`. Rollback restores from that snapshot and sets `status = 'rolled_back'`. This is the safety net that makes bulk upload of thousands of scripture passages an acceptable risk.
 
-### `bible_translation`
+### `licensed_text_source`
 `id` · `country_id` (FK) · `source_kind` (enum: `lectionary`\|`missal`) · `name` · `abbreviation` · `licence_holder` · `licence_reference` · `permission_document_media_id` (FK → `media_asset`, the signed permission kept in our storage) · `is_approved_lectionary` (boolean)
 
 **Unique:** `(country_id, abbreviation)`
 
-> Keep this populated. When asked under what authority you publish these texts, this table is the answer. **Licences are territorial** — hence `country_id`. Missal texts (`mass_proper`) reference a `missal` row; readings reference a `lectionary` row. Internal only — never exposed by a public endpoint.
+> Keep this populated. When asked under what authority you publish these texts, this table is the answer. **Licences are territorial** — hence `country_id`. Missal texts (`mass_proper`) reference a `missal` row; readings reference a `lectionary` row. Named `licensed_text_source` rather than `bible_translation` because it holds Missal sources too. Internal only — never exposed by a public endpoint.
 
 ---
 
@@ -863,12 +863,12 @@ LIMIT 20;
 ## B6. Users, auth & contributions
 
 ### `app_user`
-`id` · `email` (unique, nullable, stored lowercase) · `phone` · `display_name` · `avatar_media_id` · `auth_provider` (`email`\|`google`\|`apple`) · `provider_uid` · `password_hash` (Argon2id, nullable, never selected by default) · `email_verified_at` · `status` (`active`\|`suspended`) · `points` · `locale` · `timezone` · `country_id`
+`id` · `email` (nullable, stored lowercase, unique among non-deleted rows so a deleted account frees its address) · `phone` · `display_name` · `avatar_media_id` · `auth_provider` (`email`\|`google`\|`apple`) · `provider_uid` · `password_hash` (Argon2id, nullable, never selected by default) · `email_verified_at` · `status` (`active`\|`suspended`) · `points` · `locale` · `timezone` · `country_id`
 
 **Unique:** `(auth_provider, provider_uid)` · **Check:** the `email` provider needs `email` and `password_hash`; Google and Apple need `provider_uid`
 
 ### `admin_user`
-`id` · `email` (unique, stored lowercase) · `name` · `password_hash` (Argon2id, nullable until an invited admin sets one; required once `active`) · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable; required for `diocese_admin`) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret_ciphertext` (encrypted by the application) · `last_login_at` · `invited_by_id` (self-FK)
+`id` · `email` (stored lowercase, unique among non-deleted rows) · `name` · `password_hash` (Argon2id, nullable until an invited admin sets one; required once `active`) · `role` (`super_admin`\|`admin`\|`diocese_admin`\|`content_editor`) · `diocese_scope_id` (FK, nullable; required for `diocese_admin`) · `status` (`pending`\|`active`\|`suspended`) · `mfa_secret_ciphertext` (encrypted by the application) · `last_login_at` · `invited_by_id` (self-FK)
 
 > **No self-registration.** A super admin creates accounts. `password_hash` and `mfa_secret_ciphertext` are never selected by default.
 

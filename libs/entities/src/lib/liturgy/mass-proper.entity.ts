@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, Unique, type Relation } from 'typeorm';
 
-import { BibleTranslation } from './bible-translation.entity';
+import { LicensedTextSource } from './licensed-text-source.entity';
 import { ReadingSet } from './reading-set.entity';
 import { VerifiedContent } from './verified-content';
 
@@ -13,8 +13,8 @@ export const MASS_PROPER_TYPES = [
 ] as const;
 export type MassProperType = (typeof MASS_PROPER_TYPES)[number];
 
-// Missal texts: a different copyright holder from the Lectionary, so translation_id points to
-// a source of kind 'missal'.
+// Missal texts: a different copyright holder from the Lectionary, so source_id points to a
+// source of kind 'missal'.
 @Entity()
 @Unique(['readingSetId', 'type'])
 export class MassProper extends VerifiedContent {
@@ -33,11 +33,11 @@ export class MassProper extends VerifiedContent {
   bodyHtml!: string;
 
   @Column({ type: 'uuid' })
-  translationId!: string;
+  sourceId!: string;
 
-  @ManyToOne(() => BibleTranslation)
+  @ManyToOne(() => LicensedTextSource)
   @JoinColumn()
-  translation!: Relation<BibleTranslation>;
+  source!: Relation<LicensedTextSource>;
 
   @Column({ type: 'varchar', length: 160, nullable: true })
   sourceReference!: string | null;

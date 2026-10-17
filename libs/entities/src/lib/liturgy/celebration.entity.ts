@@ -2,8 +2,8 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, type Relation } from 'typ
 
 import { BaseEntity } from '../base.entity';
 import {
-  CELEBRATION_RANKS,
-  LITURGICAL_COLORS,
+  CELEBRATION_RANK_COLUMN,
+  LITURGICAL_COLOR_COLUMN,
   type CelebrationRank,
   type LiturgicalColor,
 } from './liturgical-enums';
@@ -28,7 +28,7 @@ export class Celebration extends BaseEntity {
   @Column({ type: 'varchar', length: 200 })
   name!: string;
 
-  @Column({ type: 'enum', enum: CELEBRATION_RANKS, enumName: 'celebration_rank' })
+  @Column(CELEBRATION_RANK_COLUMN)
   rank!: CelebrationRank;
 
   @Column({ type: 'smallint' })
@@ -45,12 +45,7 @@ export class Celebration extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isProperToCountry!: boolean;
 
-  @Column({
-    type: 'enum',
-    enum: LITURGICAL_COLORS,
-    enumName: 'liturgical_color',
-    nullable: true,
-  })
+  @Column({ ...LITURGICAL_COLOR_COLUMN, nullable: true })
   liturgicalColor!: LiturgicalColor | null;
 
   @Column({ type: 'boolean', default: false })
