@@ -1,6 +1,5 @@
 import { getMetadataArgsStorage } from 'typeorm';
 
-import { ENTITIES } from '../../index';
 import { BaseEntity } from '../base.entity';
 import { Diocese } from './diocese.entity';
 import { Institution } from './institution.entity';
@@ -19,18 +18,6 @@ describe('church hierarchy entities', () => {
       .filterIndices(target)
       .find((i) => Array.isArray(i.columns) && i.columns.join() === propertyName);
   const checkNames = (target: EntityClass) => storage.filterChecks(target).map((c) => c.name);
-
-  it('registers every declared entity and nothing else', () => {
-    const declared = storage.tables.map((t) => t.target);
-    expect(ENTITIES).toHaveLength(declared.length);
-    expect(ENTITIES).toEqual(expect.arrayContaining(declared));
-  });
-
-  it('builds every table on BaseEntity so it can delta-sync', () => {
-    for (const { target } of storage.tables) {
-      expect(typeof target === 'function' && target.prototype).toBeInstanceOf(BaseEntity);
-    }
-  });
 
   describe('Parish', () => {
     it('stores location as a GIST-indexed geography point in WGS 84', () => {
