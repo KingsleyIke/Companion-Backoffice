@@ -10,6 +10,7 @@ describe('loadEnvironment', () => {
       port: 3000,
       trustProxy: false,
       database: { url: POOLER_URL, migrationUrl: undefined, ssl: true },
+      observability: { logLevel: 'log', sentryDsn: undefined, sentryRelease: undefined },
     });
   });
 
@@ -21,6 +22,9 @@ describe('loadEnvironment', () => {
       MIGRATION_DATABASE_URL: DIRECT_URL,
       DATABASE_SSL: 'false',
       TRUST_PROXY: 'true',
+      LOG_LEVEL: 'debug',
+      SENTRY_DSN: 'https://publickey@o0.ingest.sentry.io/0',
+      SENTRY_RELEASE: 'abc1234',
     });
 
     expect(environment).toEqual({
@@ -28,7 +32,18 @@ describe('loadEnvironment', () => {
       port: 4000,
       trustProxy: true,
       database: { url: POOLER_URL, migrationUrl: DIRECT_URL, ssl: false },
+      observability: {
+        logLevel: 'debug',
+        sentryDsn: 'https://publickey@o0.ingest.sentry.io/0',
+        sentryRelease: 'abc1234',
+      },
     });
+  });
+
+  it('rejects an unknown log level and a malformed Sentry DSN', () => {
+    expect(() =>
+      loadEnvironment({ DATABASE_URL: POOLER_URL, LOG_LEVEL: 'loud', SENTRY_DSN: 'not a url' }),
+    ).toThrow(/LOG_LEVEL must be one of[\s\S]*SENTRY_DSN is not a valid URL/);
   });
 
   it('reports every invalid variable at once', () => {

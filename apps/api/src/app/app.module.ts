@@ -15,6 +15,7 @@ import {
 
 import { AdminAuthModule } from '../modules/admin-auth/admin-auth.module';
 import { DiocesesModule } from '../modules/dioceses/dioceses.module';
+import { HealthModule } from '../modules/health/health.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { DiocesesModule } from '../modules/dioceses/dioceses.module';
       ],
     }),
     DiscoveryModule,
+    HealthModule,
     DiocesesModule,
     AdminAuthModule,
   ],

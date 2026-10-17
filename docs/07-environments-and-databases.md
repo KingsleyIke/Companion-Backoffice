@@ -98,3 +98,27 @@ Occasionally you will want to reproduce a staging problem. Put the `catholic-tes
 - **Review destructive migrations before merging to `snapshot`.** From there CI applies them unattended.
 - A migration that cannot be reverted fails CI. Fix the `down`, not the check.
 - Local data is disposable. Anything worth keeping belongs in a seed script, not your Docker volume.
+
+---
+
+## 6. Health, logs and error tracking
+
+| Route | Answers | Use it for |
+|---|---|---|
+| `GET /api/v1/health/live` | 200 while the process runs; never touches the database | Restarting a hung process |
+| `GET /api/v1/health/ready` | 200 when the database answers `SELECT 1` within 2 s, otherwise 503 | **Railway's deploy health check**, so a release that cannot reach its database never takes traffic |
+
+Both are public and left out of the OpenAPI spec.
+
+**Logs.** One JSON line per request in staging and production (readable colour locally): request id, method, path, status and duration. Never the query string, body, headers, client address or user agent — no personal data reaches the logs (NDPR). Every response carries an `X-Request-Id` header with the same id, so a user's error report can be matched to its log line. `LOG_LEVEL` sets the minimum level (default `log`).
+
+**Errors.** Every error response has one shape — `{ statusCode, error, message, details, requestId }`, documented as `ErrorResponseDto`. An unexpected error (anything that is not an `HttpException`) is answered with a bare `500 Internal server error`; its stack goes only to the log and Sentry.
+
+**Sentry** (free tier, errors only — no performance tracing):
+
+1. Create a Sentry organisation and one project, platform **Node.js** (the API). One project serves every environment; Sentry separates them by the `environment` tag (`staging`, `production`).
+2. Copy the project's DSN: *Project Settings → Client Keys (DSN)*. It looks like `https://<public-key>@o<org>.ingest.sentry.io/<project>`. The DSN only allows sending events, but keep it in the host's secrets rather than in git.
+3. In the hosting platform, set `SENTRY_DSN` for staging and production, and optionally `SENTRY_RELEASE` to the deployed commit (on Railway, `${{RAILWAY_GIT_COMMIT_SHA}}`).
+4. Leave `SENTRY_DSN` unset locally and in CI, so nothing is reported from them.
+
+Only unexpected (5xx) errors are reported. Before anything leaves the server, Sentry's data collection is switched off for user details, cookies, headers, request bodies and query strings, and the event is scrubbed again — the refresh cookie, passwords and emails are never sent.
