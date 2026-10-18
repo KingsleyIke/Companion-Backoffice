@@ -1,0 +1,27 @@
+<div class="layout">
+  <nav class="sidebar" aria-label="Main">
+    @if (admin(); as current) {
+    <div class="profile">
+      <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+      <span class="name">{{ current.name }}</span>
+      <span class="email">{{ current.email }}</span>
+    </div>
+    }
+    <ul class="nav">
+      <li>
+        <a routerLink="/dioceses" routerLinkActive="active" ariaCurrentWhenActive="page"
+          >Dioceses</a
+        >
+      </li>
+    </ul>
+    <button type="button" class="sign-out" (click)="signOut()">Sign Out</button>
+  </nav>
+  <div class="main">
+    <header class="page-header">
+      <h1>{{ title() }}</h1>
+    </header>
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

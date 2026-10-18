@@ -126,3 +126,19 @@ $button-primary-bg:     $blue-600;
 $button-primary-hover:  $blue-700;
 $button-primary-text:   $white;
 $focus-ring:            $blue-700;
+$surface-danger:        $maroon-50;
+
+// Shell (measured on the navy sidebar). The design's red "Sign Out" is 3.17:1 there and fails,
+// so it uses maroon-200 (10.99:1).
+$sidebar-bg:            $navy-900;
+$sidebar-active-bg:     $navy-800;
+$sidebar-text:          $neutral-200;   // 13.97:1
+$sidebar-text-strong:   $white;         // 16.68:1
+$sidebar-text-secondary: $switch-bg;    // 10.58:1
+$sidebar-sign-out:      $maroon-200;    // 10.99:1
+$header-bg:             $blue-600;      // design's #2196f3 fails with white titles (3.12:1)
+$header-text:           $white;         // 4.60:1
+$avatar-bg:             $blue-600;
+$avatar-text:           $white;
+
+$font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;

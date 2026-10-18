@@ -1,9 +1,38 @@
+@use '@angular/material' as mat;
 @use 'tokens' as t;
+
+html {
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        theme-type: light,
+      ),
+      typography: t.$font-family,
+      density: 0,
+    )
+  );
+  // The roles components actually show come from our tokens, not the generated palette.
+  @include mat.theme-overrides(
+    (
+      primary: t.$button-primary-bg,
+      on-primary: t.$button-primary-text,
+      surface: t.$surface-card,
+      on-surface: t.$text-primary,
+      on-surface-variant: t.$text-muted,
+      error: t.$text-danger,
+      outline: t.$border-subtle,
+      outline-variant: t.$border-subtle,
+    )
+  );
+}
 
 body {
   margin: 0;
   background: t.$surface-page;
   color: t.$text-primary;
+  font-family: t.$font-family;
   font-size: t.$font-base;
   line-height: t.$line-height;
 }
