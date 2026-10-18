@@ -1,0 +1,56 @@
+@use 'tokens' as t;
+
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 24rem;
+  margin: 0 auto;
+  padding: t.$space-16 t.$space-4;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  color: t.$text-link;
+  font-size: t.$text-2xl;
+  font-weight: t.$weight-medium;
+}
+
+.subtitle {
+  margin: t.$space-2 0 t.$space-8;
+  color: t.$text-muted;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-2;
+  text-align: left;
+}
+
+.secondary-link {
+  align-self: flex-end;
+  font-size: t.$text-sm;
+}
+
+.error {
+  margin: 0;
+  padding: t.$space-3;
+  border: 1px solid t.$text-danger;
+  border-radius: t.$radius-md;
+  background: t.$surface-danger;
+  color: t.$text-danger;
+  font-size: t.$text-sm;
+}
+
+.notice {
+  margin: 0;
+  color: t.$text-primary;
+}
+
+.footnote {
+  margin-top: t.$space-8;
+  color: t.$text-muted;
+  font-size: t.$text-xs;
+}

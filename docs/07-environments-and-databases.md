@@ -30,7 +30,11 @@ cp .env.example .env     # already points at the local database
 pnpm db:up               # builds the image on first run, waits until healthy
 pnpm migration:run
 npx nx serve api         # http://localhost:3000/api/v1
+pnpm admin:create-super-admin   # once: an admin to sign in with (scan the TOTP QR)
+npx nx serve back-office # http://localhost:4200, proxies /api to :3000
 ```
+
+The back office proxies `/api` to the API so the refresh cookie stays same-origin. It keeps the access token in memory only, and a page reload restores the session from that cookie. In staging and production the back office and the API must therefore share a site (Doc 1 §7).
 
 | Script | Does |
 |---|---|
